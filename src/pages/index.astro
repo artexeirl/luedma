@@ -1,17 +1,387 @@
 ---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import WhatsAppFloat from '../components/WhatsAppFloat.astro';
+import { brands, products as catalogProducts } from '../data/snapshot';
+import { hasSanityConfig, sanityFetch } from '../lib/sanity.client';
 
+type ShowcaseItem = {
+  slug?: string;
+  brand: string;
+  name: string;
+  price: string;
+  oldPrice?: string;
+  badge?: string;
+  stockText?: string;
+  image?: string;
+  path?: string;
+};
+
+const SHOWCASE_BRAND_TABS = [
+  { key: 'ronix', label: 'Ronix', slugs: ['ronix'] },
+  { key: 'makita', label: 'Makita', slugs: ['makita'] },
+  { key: 'bosch', label: 'Bosch', slugs: ['bosch'] },
+  { key: 'milwaukee', label: 'Milwaukee', slugs: ['milwaukee'] },
+  { key: 'DeWalt', label: 'DeWalt', slugs: ['dewalt', 'de-walt'] },
+] as const;
+
+const formatCurrency = (value?: number) => (typeof value === 'number' ? `S/ ${value.toFixed(2)}` : 'Consultar');
+const toCardThumb = (src?: string) => {
+  if (!src) return src;
+  return src.includes('cdn.sanity.io') ? `${src}?w=400&h=400&fit=crop&auto=format` : src;
+};
+const effectiveShowcaseIndex = SHOWCASE_BRAND_TABS.reduce<Record<string, ShowcaseItem[]>>((acc, tab) => {
+  const tabProducts = catalogProducts
+    .filter((product) => tab.slugs.includes(product.brandSlug as (typeof tab.slugs)[number]))
+    .slice(0, 8)
+    .map((product) => {
+      const brand = brands.find((b) => b.slug === product.brandSlug);
+      return {
+        slug: product.slug,
+        brand: brand?.name || tab.label,
+        name: product.name,
+        price: formatCurrency(product.price),
+        oldPrice: product.compareAtPrice ? formatCurrency(product.compareAtPrice) : undefined,
+        stockText: (product.stock || 0) > 0 ? 'Stock disponible' : 'Sin stock',
+        badge: product.isNew ? 'NUEVO' : undefined,
+        image: toCardThumb(product.images?.[0]),
+        path: product.path || '/c/',
+      } as ShowcaseItem;
+    });
+  acc[tab.key] = tabProducts;
+  return acc;
+}, {});
+
+const defaultKey = SHOWCASE_BRAND_TABS[0].key;
+const defaultItems = effectiveShowcaseIndex[defaultKey] || [];
+type CmsHomeData = {
+  heroSlides?: Array<{
+    alt?: string;
+    imageDesktop?: { asset?: { url?: string } };
+    imageMobile?: { asset?: { url?: string } };
+  }>;
+  trustStrip?: Array<{ icon?: string; title?: string; text?: string }>;
+};
+
+const homeCms = hasSanityConfig
+  ? await sanityFetch<CmsHomeData>(`*[_type == "homePage"][0]{
+      heroSlides[]{
+        alt,
+        imageDesktop{asset->{url}},
+        imageMobile{asset->{url}}
+      }
+    }`)
+  : null;
+
+const marqueeBrandImagesFromCms = brands
+  .filter((brand) => Boolean(brand.logo))
+  .slice(0, 12)
+  .map((brand) => ({
+    name: brand.name,
+    slug: brand.slug,
+    logo: brand.logo as string,
+    path: brand.path,
+  }));
+const marqueeBrandImages =
+  marqueeBrandImagesFromCms.length > 0
+    ? marqueeBrandImagesFromCms
+    : [
+        { name: 'bosch', slug: 'bosch', logo: '/images/brands/bosch.webp', path: '/marca/bosch/' },
+        { name: 'DeWalt', slug: 'de-walt', logo: '/images/brands/dewalt.webp', path: '/marca/de-walt/' },
+        { name: 'hilti', slug: 'hilti', logo: '/images/brands/hilti.webp', path: '/marca/hilti/' },
+        { name: 'irwin', slug: 'irwin', logo: '/images/brands/irwin.webp', path: '/marca/irwin/' },
+        { name: 'karcher', slug: 'karcher', logo: '/images/brands/karcher.webp', path: '/marca/karcher/' },
+        { name: 'makute', slug: 'makute', logo: '/images/brands/makute.webp', path: '/marca/makute/' },
+        { name: 'ronix', slug: 'ronix', logo: '/images/brands/ronix.webp', path: '/marca/ronix/' },
+        { name: 'sagola', slug: 'sagola', logo: '/images/brands/sagola.webp', path: '/marca/sagola/' },
+        { name: 'stanley', slug: 'stanley', logo: '/images/brands/stanley.webp', path: '/marca/stanley/' },
+        { name: 'total', slug: 'total', logo: '/images/brands/total.webp', path: '/marca/total/' },
+        { name: 'truper', slug: 'truper', logo: '/images/brands/truper.webp', path: '/marca/truper/' },
+        { name: 'wagner', slug: 'wagner', logo: '/images/brands/wagner.webp', path: '/marca/wagner/' },
+      ];
+const uniqueMarqueeBrandImages = Array.from(new Map(marqueeBrandImages.map((brand) => [brand.slug, brand])).values());
+const marqueeBrands = uniqueMarqueeBrandImages.length > 1
+  ? [...uniqueMarqueeBrandImages, ...uniqueMarqueeBrandImages]
+  : uniqueMarqueeBrandImages;
+const heroSlides =
+  homeCms?.heroSlides && homeCms.heroSlides.length > 0
+    ? homeCms.heroSlides.map((item, index) => ({
+        desktop: item.imageDesktop?.asset?.url || '/images/banners/banner-principal-1.webp',
+        mobile: item.imageMobile?.asset?.url || '/images/banners/movil/banner-principal-movil.webp',
+        alt: item.alt || `Banner principal ${index + 1}`,
+      }))
+    : [
+        {
+          desktop: '/images/banners/banner-principal-1.webp',
+          mobile: '/images/banners/movil/banner-principal-movil.webp',
+          alt: 'Banner principal 1',
+        },
+        {
+          desktop: '/images/banners/banner-principal-1.webp',
+          mobile: '/images/banners/movil/banner-principal-movil.webp',
+          alt: 'Banner principal 2',
+        },
+        {
+          desktop: '/images/banners/banner-principal-1.webp',
+          mobile: '/images/banners/movil/banner-principal-movil.webp',
+          alt: 'Banner principal 3',
+        },
+      ];
+const showcasePreviewImages = [
+  '/images/products/p3.jpg',
+  '/images/products/p1.png',
+  '/images/products/p6.jpg',
+  '/images/products/p2.jpg',
+  '/images/products/p8.jpg',
+  '/images/products/p5.jpg',
+  '/images/products/p4.jpg',
+  '/images/products/p7.jpg',
+];
+const featuredProducts: ShowcaseItem[] = Object.values(effectiveShowcaseIndex).flat().slice(0, 12);
+const featuredPages = Array.from({ length: Math.ceil(featuredProducts.length / 4) }, (_, pageIndex) =>
+  featuredProducts.slice(pageIndex * 4, pageIndex * 4 + 4)
+);
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<BaseLayout>
+  <Header />
+
+  <main id="contenido">
+    <section class="hero-carousel" data-island="hero-carousel" aria-label="Carrusel principal">
+      <div class="hero-carousel__viewport">
+        <div class="hero-carousel__track" data-hero-track>
+          {heroSlides.map((slide, index) => (
+            <article class="hero-carousel__slide">
+              <picture>
+                <source media="(max-width: 760px)" srcset={slide.mobile} />
+                <img
+                  src={slide.desktop}
+                  alt={slide.alt}
+                  width="1920"
+                  height="640"
+                  loading={index === 0 ? 'eager' : 'lazy'}
+                  decoding="async"
+                />
+              </picture>
+            </article>
+          ))}
+        </div>
+      </div>
+
+      <button class="hero-carousel__arrow hero-carousel__arrow--prev" type="button" data-hero-prev aria-label="Diapositiva anterior"></button>
+      <button class="hero-carousel__arrow hero-carousel__arrow--next" type="button" data-hero-next aria-label="Diapositiva siguiente"></button>
+
+      <div class="hero-carousel__dots" data-hero-dots>
+        {heroSlides.map((_, index) => (
+          <button
+            class={index === 0 ? 'is-active' : undefined}
+            type="button"
+            data-hero-dot={index}
+            aria-label={`Ir al slide ${index + 1}`}
+            aria-selected={index === 0 ? 'true' : 'false'}
+          ></button>
+        ))}
+      </div>
+    </section>
+
+    <section class="section home-showcase" data-island="home-product-selector">
+      <div class="container">
+        <h1 class="home-showcase__title">Los mejores equipos en taladros y otras herramientas en Lima con envío rápido</h1>
+
+        <div class="home-showcase__tabs" role="tablist" aria-label="Selector de productos por marca">
+          {SHOWCASE_BRAND_TABS.map((tab, index) => (
+            <button type="button" role="tab" class:list={{ 'is-active': index === 0 }} aria-selected={index === 0 ? 'true' : 'false'} data-showcase-tab={tab.key}>
+              {tab.label}
+            </button>
+          ))}
+        </div>
+
+        <div class="showcase-stage" data-showcase-stage>
+          <div class="showcase-grid is-current" data-showcase-grid data-showcase-panel={defaultKey}>
+            {defaultItems.map((item) => (
+              <article class="showcase-card">
+                <svg class="card-cut-border" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+                  <polygon class="card-cut-border__shape" points="0,0 97,0 100,3 100,100 3,100 0,97"></polygon>
+                </svg>
+                <a href={item.path || '/c/'} class="showcase-card__image-link" aria-label={`Ver producto ${item.name}`}>
+                  <img
+                    src={item.image || showcasePreviewImages[Math.floor(Math.random() * showcasePreviewImages.length)]}
+                    alt={`Imagen de ${item.name}`}
+                    loading="lazy"
+                  />
+                </a>
+
+                <div class="showcase-card__meta">
+                  <p class="showcase-card__brand">{item.brand}</p>
+                  {item.badge && <span class="showcase-card__badge">{item.badge}</span>}
+                </div>
+
+                <h3 class="showcase-card__name">{item.name}</h3>
+                <p class="showcase-card__delivery">{item.stockText || 'Sin stock'}</p>
+
+                <div class="showcase-card__footer">
+                  <div class="showcase-card__price-wrap">
+                    {item.oldPrice && <span class="showcase-card__old-price">{item.oldPrice}</span>}
+                    <p class="showcase-card__price">{item.price}</p>
+                  </div>
+                  <a class="btn btn-primary showcase-card__cta" href={item.path || '/c/'}>Ver detalles</a>
+                </div>
+              </article>
+            ))}
+          </div>
+        </div>
+
+        <script type="application/json" data-showcase-index set:html={JSON.stringify(effectiveShowcaseIndex)}></script>
+      </div>
+    </section>
+
+    <section class="section offers-strip" aria-label="Ofertas destacadas">
+      <div class="container">
+        <div class="offers-strip__row">
+          <article class="offers-strip__item offers-strip__item--left">
+            <img src="/images/banners/banner-tool-1.webp" alt="Banner herramienta destacado" loading="lazy" decoding="async" />
+          </article>
+          <article class="offers-strip__item offers-strip__item--top"></article>
+          <article class="offers-strip__item offers-strip__item--bottom"></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section featured-products" data-island="featured-products-carousel" aria-label="Productos destacados">
+      <div class="container">
+        <div class="featured-products__head">
+          <h2>Productos destacados</h2>
+          <a class="btn btn-outline featured-products__cta" href="/c/">Ver productos</a>
+        </div>
+
+        <div class="featured-products__carousel" data-featured-carousel>
+          <button class="featured-products__arrow featured-products__arrow--prev" type="button" data-featured-prev aria-label="Ver productos anteriores">
+            <img src="/icons/chevron-left.svg" alt="" aria-hidden="true" />
+          </button>
+
+          <div class="featured-products__viewport">
+            <div class="featured-products__track" data-featured-track>
+              {featuredPages.map((page, pageIndex) => (
+                <div class="featured-products__page" data-featured-page={pageIndex}>
+                  {page.map((item, itemIndex) => (
+                    <article class="showcase-card">
+                      <svg class="card-cut-border" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+                        <polygon class="card-cut-border__shape" points="0,0 97,0 100,3 100,100 3,100 0,97"></polygon>
+                      </svg>
+                      <a href={item.path || '/c/'} class="showcase-card__image-link" aria-label={`Ver producto ${item.name}`}>
+                        <img
+                          src={item.image || showcasePreviewImages[(pageIndex * 4 + itemIndex) % showcasePreviewImages.length]}
+                          alt={`Imagen de ${item.name}`}
+                          loading="lazy"
+                        />
+                      </a>
+
+                      <div class="showcase-card__meta">
+                        <p class="showcase-card__brand">{item.brand}</p>
+                        {item.badge && <span class="showcase-card__badge">{item.badge}</span>}
+                      </div>
+
+                      <h3 class="showcase-card__name">{item.name}</h3>
+                      <p class="showcase-card__delivery">{item.stockText || 'Sin stock'}</p>
+
+                      <div class="showcase-card__footer">
+                        <div class="showcase-card__price-wrap">
+                          {item.oldPrice && <span class="showcase-card__old-price">{item.oldPrice}</span>}
+                          <p class="showcase-card__price">{item.price}</p>
+                        </div>
+                        <a class="btn btn-primary showcase-card__cta" href={item.path || '/c/'}>Ver detalles</a>
+                      </div>
+                    </article>
+                  ))}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <button class="featured-products__arrow featured-products__arrow--next" type="button" data-featured-next aria-label="Ver más productos">
+            <img src="/icons/chevron-right.svg" alt="" aria-hidden="true" />
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <section class="section shipping-banner" aria-label="Envío destacado">
+      <div class="container">
+        <picture>
+          <source media="(max-width: 760px)" srcset="/images/banners/movil/banner-envio-movil.webp" />
+          <img src="/images/banners/banner-envio.webp" alt="Banner de envío" loading="lazy" decoding="async" />
+        </picture>
+      </div>
+    </section>
+
+    <section class="section contact-map" aria-label="Información de tienda y mapa">
+      <div class="container contact-map__grid">
+        <div class="contact-map__info">
+          <h2>Ubícanos</h2>
+          <hr class="contact-map__divider" />
+          <ul class="contact-map__list">
+            <li>
+              <span class="contact-map__icon" aria-hidden="true"><img src="/icons/map-pin.svg" alt="" /></span>
+              <span>Las Malvinas Jr. Huarochirí 560, Lima, Perú</span>
+            </li>
+            <li>
+              <span class="contact-map__icon" aria-hidden="true"><img src="/icons/brand-whatsapp.svg" alt="" /></span>
+              <a href="https://wa.me/51936829528" target="_blank" rel="noreferrer">+51 936 829 528</a>
+            </li>
+            <li>
+              <span class="contact-map__icon" aria-hidden="true"><img src="/icons/mail.svg" alt="" /></span>
+              <a href="mailto:maquinariasluedma@gmail.com">maquinariasluedma@gmail.com</a>
+            </li>
+          </ul>
+
+          <div class="contact-map__extra">
+            <h3>Horario de atención</h3>
+            <p>Lunes a sábado: 7:00 a. m. - 9:00 p. m.</p>
+            <p>Despachos rápidos en Lima Metropolitana.</p>
+            <div class="contact-map__socials">
+              <a href="#" aria-label="Facebook">
+                <img src="/icons/brand-facebook.svg" alt="" />
+              </a>
+              <a href="#" aria-label="Instagram">
+                <img src="/icons/brand-instagram.svg" alt="" />
+              </a>
+              <a href="#" aria-label="TikTok">
+                <img src="/icons/brand-tiktok.svg" alt="" />
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <div class="contact-map__embed">
+          <iframe
+            title="Mapa de Maquinarias Luedma"
+            src="https://www.google.com/maps?q=Jr.+Huarochir%C3%AD+560,+Lima,+Per%C3%BA&output=embed"
+            loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade"
+          ></iframe>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="marcas">
+      <div class="container">
+        <h2>Marcas exclusivas en Luedma</h2>
+        <div class="brands-marquee" aria-label="Carrusel de marcas">
+          <div class="brands-marquee__track">
+            {marqueeBrands.map((brand, index) => (
+              <a class="brands-marquee__item" href={brand.path} aria-label={`Marca ${brand.name}`}>
+                <img src={brand.logo} alt={`Logo ${brand.name}`} loading={index < marqueeBrandImages.length ? 'eager' : 'lazy'} />
+              </a>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <Footer />
+  <WhatsAppFloat />
+</BaseLayout>
+

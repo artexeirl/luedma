@@ -1,0 +1,41 @@
+﻿---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import WhatsAppFloat from '../../components/WhatsAppFloat.astro';
+import { siteSettings, staticPages } from '../../data/snapshot';
+
+const page = staticPages.find((item) => item.slug === 'libro-de-reclamaciones');
+---
+
+<BaseLayout
+  seo={{
+    title: page?.seo?.title || `Libro de Reclamaciones | ${siteSettings.siteName}`,
+    description: page?.seo?.description || page?.content || 'Libro de reclamaciones digital.',
+    canonicalPath: '/libro-de-reclamaciones/',
+  }}
+>
+  <Header />
+
+  <main id="contenido" class="page-shell">
+    <div class="container">
+      <Breadcrumbs items={[{ label: 'Inicio', href: '/' }, { label: 'Libro de reclamaciones', href: '/libro-de-reclamaciones/' }]} />
+      <section class="card page-panel">
+        <h1>Libro de reclamaciones</h1>
+        <p>{page?.content}</p>
+        <p>
+          Para registrar un reclamo, escribe al canal de atención y adjunta tus datos de compra.
+        </p>
+        <div class="hero-copy__actions">
+          <a class="btn btn-primary" data-island="whatsapp-cta" data-whatsapp-number={siteSettings.whatsappNumber} data-whatsapp-message="Hola, deseo registrar un reclamo." target="_blank" rel="noreferrer">Canal de atención</a>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <Footer />
+  <WhatsAppFloat />
+</BaseLayout>
+
+

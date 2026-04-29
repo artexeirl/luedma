@@ -1,0 +1,348 @@
+---
+import { categories, products, siteSettings } from '../data/snapshot';
+import type { SearchIslandProps } from '../types/content';
+
+const topCategories = categories.filter((category) => !category.parentSlug).slice(0, 5);
+const buildShopCategoryPath = (slug: string) => `/c/${encodeURIComponent(slug)}/`;
+const topBrands = [
+  { slug: 'bosch', name: 'Bosch', path: '/marca/bosch/' },
+  { slug: 'hilti', name: 'Hilti', path: '/marca/hilti/' },
+  { slug: 'karcher', name: 'Karcher', path: '/marca/karcher/' },
+  { slug: 'makita', name: 'Makita', path: '/marca/makita/' },
+  { slug: 'makute', name: 'Makute', path: '/marca/makute/' },
+  { slug: 'milwaukee', name: 'Milwaukee', path: '/marca/milwaukee/' },
+  { slug: 'ronix', name: 'Ronix', path: '/marca/ronix/' },
+];
+const topCategoryPanels = topCategories
+  .map((category) => ({
+    ...category,
+    shopPath: buildShopCategoryPath(category.slug),
+    displayName: category.name,
+    children: categories
+      .filter((childCategory) => childCategory.parentSlug === category.slug)
+      .map((childCategory) => ({
+        ...childCategory,
+        shopPath: buildShopCategoryPath(childCategory.slug),
+        displayName: childCategory.name,
+      }))
+      .slice()
+      .sort((a, b) => a.displayName.localeCompare(b.displayName, 'es', { sensitivity: 'base' })),
+  }))
+  .sort((a, b) => a.displayName.localeCompare(b.displayName, 'es', { sensitivity: 'base' }));
+const megaMenuBrandLogos = [
+  { name: 'Bosch', image: '/images/brands/bosch.webp', path: '/marca/bosch/' },
+  { name: 'DeWalt', image: '/images/brands/dewalt.webp', path: '/marca/de-walt/' },
+  { name: 'Hilti', image: '/images/brands/hilti.webp', path: '/marca/hilti/' },
+  { name: 'Irwin', image: '/images/brands/irwin.webp', path: '/marca/irwin/' },
+  { name: 'Karcher', image: '/images/brands/karcher.webp', path: '/marca/karcher/' },
+  { name: 'Makute', image: '/images/brands/makute.webp', path: '/marca/makute/' },
+  { name: 'Ronix', image: '/images/brands/ronix.webp', path: '/marca/ronix/' },
+  { name: 'Total', image: '/images/brands/total.webp', path: '/marca/total/' },
+  { name: 'Stanley', image: '/images/brands/stanley.webp', path: '/marca/stanley/' },
+  { name: 'Truper', image: '/images/brands/truper.webp', path: '/marca/truper/' },
+];
+const brandIconBySlug: Record<string, string> = {
+  bosch: '/icons/tools/drill.svg',
+  hilti: '/icons/tools/jackhammer.svg',
+  karcher: '/icons/tools/spray-gun.svg',
+  makita: '/icons/tools/saw.svg',
+  makute: '/icons/tools/jigsaw.svg',
+  milwaukee: '/icons/tools/saw-chainsaw.svg',
+  ronix: '/icons/tools/circular-saw.svg',
+};
+const categoryIconBySlug: Record<string, string> = {
+  'accesorios-de-herramientas': '/icons/tools/tools.svg',
+  'equipos-de-taller-y-construccion': '/icons/tools/toolbox.svg',
+  'herramientas-electricas': '/icons/tools/plug.svg',
+  'herramientas-manuales': '/icons/tools/axe.svg',
+  'seguridad-e-iluminacion': '/icons/tools/light-bulb-idea.svg',
+};
+const searchIndex = products.map((product) => ({
+  slug: product.slug,
+  name: product.name,
+  path: product.path,
+  brand: product.brandSlug,
+}));
+
+const searchProps: SearchIslandProps = {
+  submitPath: '/search/',
+  suggestionsLimit: 6,
+};
+---
+
+<header class="site-header" data-island="mobile-menu">
+  <div class="container site-header__top">
+    <button
+      data-mobile-menu-button
+      class="header-mobile-menu-button header-mobile-menu-button--standalone"
+      type="button"
+      aria-expanded="false"
+      aria-controls="mobile-nav-panel"
+      aria-label="Abrir menú"
+    >
+      <span class="header-tool__icon" aria-hidden="true">
+        <img src="/icons/menu-2.svg" alt="" />
+      </span>
+    </button>
+
+    <a href="/" class="brand" aria-label="Ir al inicio">
+      <img src={siteSettings.logo} width="260" height="78" alt="Logo Maquinarias Luedma" loading="eager" />
+    </a>
+
+    <div class="header-search-shell header-search-shell--desktop" data-island="search" data-island-props={JSON.stringify(searchProps)}>
+      <form data-search-form class="header-search" action="/search/" method="get">
+        <input data-search-input type="search" name="q" placeholder="¿Qué productos estás buscando?" autocomplete="off" />
+        <button type="submit" aria-label="Buscar">
+          <img src="/icons/search.svg" alt="" aria-hidden="true" />
+        </button>
+        <ul data-search-suggestions hidden></ul>
+        <script type="application/json" data-search-index set:html={JSON.stringify(searchIndex)}></script>
+      </form>
+    </div>
+
+    <div class="header-tools">
+      <a class="header-location" href="/contact/" aria-label="Actualizar ubicación de entrega">
+        <span class="header-tool__icon" aria-hidden="true">
+          <img src="/icons/map-pin.svg" alt="" />
+        </span>
+        <span class="header-location__text">
+          <small>Entrega en Lima</small>
+          <strong>Jr. Huarochirí 560</strong>
+        </span>
+      </a>
+
+      <a class="header-account" href="/contact/" aria-label="Iniciar sesión">
+        <span class="header-tool__icon" aria-hidden="true">
+          <img src="/icons/user.svg" alt="" />
+        </span>
+        <span>Iniciar sesión</span>
+      </a>
+
+      <a class="header-cart" href="/c/" aria-label="Ver carrito">
+        <span class="header-tool__icon" aria-hidden="true">
+          <img src="/icons/garden-cart.svg" alt="" />
+        </span>
+        <span class="header-cart__badge">0</span>
+      </a>
+
+    </div>
+  </div>
+
+  <div class="site-header__bottom-wrap">
+    <div class="container site-header__bottom">
+      <button
+        data-mobile-menu-button
+        class="menu-trigger"
+        type="button"
+        aria-expanded="false"
+        aria-controls="mobile-nav-panel mega-categories-panel"
+      >
+        <span class="header-tool__icon menu-trigger__icon" aria-hidden="true">
+          <img src="/icons/category.svg" alt="" />
+        </span>
+        <span>Todas las categorías</span>
+      </button>
+
+      <nav class="header-nav" aria-label="Navegación principal">
+        {topBrands.map((brand) => (
+          <a href={brand.path} class="header-nav__brand">
+            <span class="header-tool__icon header-nav__brand-icon" aria-hidden="true">
+              <img
+                class:list={{
+                  'is-makita-flip': brand.slug === 'makita',
+                  'is-milwaukee-scale': brand.slug === 'milwaukee',
+                }}
+                src={brandIconBySlug[brand.slug] || '/icons/tools/drill.svg'}
+                alt=""
+              />
+            </span>
+            <span>{brand.name}</span>
+          </a>
+        ))}
+      </nav>
+
+      <div class="header-shortcuts">
+        <a href="/contact/" class="header-shortcuts__item">
+          <span class="header-tool__icon" aria-hidden="true">
+            <img src="/icons/phone-call.svg" alt="" />
+          </span>
+          <span>+51 936 829 528</span>
+        </a>
+      </div>
+    </div>
+
+    <div id="mega-categories-panel" class="mega-menu" data-mega-menu-panel aria-hidden="true">
+      <div class="container mega-menu__content">
+        <aside class="mega-menu__categories" aria-label="Categorías principales">
+          {topCategoryPanels.map((category, index) => (
+            <a
+              href={category.shopPath}
+              class:list={{ 'mega-menu__category-trigger': true, 'is-active': index === 0 }}
+              data-mega-category-trigger
+              data-category-slug={category.slug}
+              aria-expanded={index === 0 ? 'true' : 'false'}
+            >
+              <span class="mega-menu__category-label">
+                <span class="header-tool__icon mega-menu__category-icon" aria-hidden="true">
+                  <img src={categoryIconBySlug[category.slug] || '/icons/tools/tools.svg'} alt="" />
+                </span>
+                <span>{category.displayName}</span>
+              </span>
+              <span aria-hidden="true">›</span>
+            </a>
+          ))}
+        </aside>
+
+        <div class="mega-menu__panels">
+          {topCategoryPanels.map((category, index) => (
+            <section
+              class:list={{ 'mega-menu__panel': true, 'is-active': index === 0 }}
+              data-mega-category-panel
+              data-category-slug={category.slug}
+            >
+              <h3>{category.displayName}</h3>
+              <ul class="mega-menu__subcategories">
+                {category.children.map((childCategory) => (
+                  <li>
+                    <a href={childCategory.shopPath}>{childCategory.displayName}</a>
+                  </li>
+                ))}
+              </ul>
+
+              <div class="mega-menu__brands">
+                <div class="mega-menu__brand-grid">
+                  {megaMenuBrandLogos.map((brandLogo) => (
+                    <a href={brandLogo.path} class="mega-menu__brand-item" aria-label={`Ver productos ${brandLogo.name}`}>
+                      <img src={brandLogo.image} alt={brandLogo.name} loading="lazy" />
+                    </a>
+                  ))}
+                </div>
+              </div>
+
+              <a class="mega-menu__more" href={category.shopPath}>Ver más</a>
+            </section>
+          ))}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <aside id="mobile-nav-panel" data-mobile-menu-panel class="mobile-panel" hidden aria-hidden="true">
+    <div class="mobile-panel__head">
+      <div class="mobile-panel__search header-search-shell" data-island="search" data-island-props={JSON.stringify(searchProps)}>
+        <form data-search-form class="header-search header-search--mobile" action="/search/" method="get">
+          <input data-search-input type="search" name="q" placeholder="¿Qué productos estás buscando?" autocomplete="off" />
+          <button type="submit" aria-label="Buscar">
+            <img src="/icons/search.svg" alt="" aria-hidden="true" />
+          </button>
+          <ul data-search-suggestions hidden></ul>
+          <script type="application/json" data-search-index set:html={JSON.stringify(searchIndex)}></script>
+        </form>
+      </div>
+      <button data-mobile-menu-close type="button" aria-label="Cerrar menú">
+        <img src="/icons/x.svg" alt="" aria-hidden="true" />
+      </button>
+    </div>
+
+    <div class="mobile-tabs" role="tablist" aria-label="Navegación móvil">
+      <button
+        type="button"
+        class="mobile-tabs__button is-active"
+        data-mobile-tab-button
+        data-mobile-tab-target="categories"
+        role="tab"
+        aria-selected="true"
+      >
+        Categorías
+      </button>
+      <button
+        type="button"
+        class="mobile-tabs__button"
+        data-mobile-tab-button
+        data-mobile-tab-target="brands"
+        role="tab"
+        aria-selected="false"
+      >
+        Marcas
+      </button>
+    </div>
+
+    <div class="mobile-tabs__panels">
+      <section class="mobile-tabs__panel is-active" data-mobile-tab-panel data-mobile-tab-panel-id="categories" role="tabpanel">
+        <div class="mobile-panel__section">
+          <div class="mobile-accordion">
+            {topCategoryPanels.map((category, index) => (
+              <article class:list={{ 'mobile-accordion__item': true, 'is-open': index === 0 }} data-mobile-accordion-item data-category-slug={category.slug}>
+                <button
+                  type="button"
+                  class="mobile-accordion__trigger"
+                  data-mobile-accordion-trigger
+                  data-category-slug={category.slug}
+                  aria-expanded={index === 0 ? 'true' : 'false'}
+                >
+                  <span class="mobile-accordion__trigger-label">
+                    <span class="header-tool__icon mobile-accordion__category-icon" aria-hidden="true">
+                      <img src={categoryIconBySlug[category.slug] || '/icons/tools/tools.svg'} alt="" />
+                    </span>
+                    <span>{category.displayName}</span>
+                  </span>
+                  <span class="mobile-accordion__chevron" aria-hidden="true">
+                    <img src="/icons/chevron-down.svg" alt="" />
+                  </span>
+                </button>
+                <div class="mobile-accordion__panel" data-mobile-accordion-panel data-category-slug={category.slug}>
+                  <div class="mobile-accordion__panel-inner">
+                    <a class="mobile-accordion__shop-link" href={category.shopPath} data-mobile-menu-close>
+                      Ver todo en {category.displayName}
+                    </a>
+                    <ul>
+                      {category.children.map((childCategory) => (
+                        <li><a href={childCategory.shopPath} data-mobile-menu-close>{childCategory.displayName}</a></li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              </article>
+            ))}
+          </div>
+          <a class="mobile-panel__account" href="/contact/" data-mobile-menu-close>
+            <span class="header-tool__icon" aria-hidden="true">
+              <img src="/icons/user.svg" alt="" />
+            </span>
+            <span>Iniciar sesión</span>
+          </a>
+        </div>
+      </section>
+
+      <section class="mobile-tabs__panel" data-mobile-tab-panel data-mobile-tab-panel-id="brands" role="tabpanel">
+        <div class="mobile-panel__section">
+          <div class="mobile-panel__brands">
+            {topBrands.map((brand) => (
+              <a href={brand.path} class="mobile-panel__brand" data-mobile-menu-close>
+                <span class="header-tool__icon mobile-panel__brand-icon" aria-hidden="true">
+                  <img
+                    class:list={{
+                      'is-makita-flip': brand.slug === 'makita',
+                      'is-milwaukee-scale': brand.slug === 'milwaukee',
+                    }}
+                    src={brandIconBySlug[brand.slug] || '/icons/tools/drill.svg'}
+                    alt=""
+                  />
+                </span>
+                <span>{brand.name}</span>
+              </a>
+            ))}
+          </div>
+          <a class="mobile-panel__view-all" href="/c/" data-mobile-menu-close>Ver todas</a>
+          <a class="mobile-panel__account" href="/contact/" data-mobile-menu-close>
+            <span class="header-tool__icon" aria-hidden="true">
+              <img src="/icons/user.svg" alt="" />
+            </span>
+            <span>Iniciar sesión</span>
+          </a>
+        </div>
+      </section>
+    </div>
+  </aside>
+</header>
+

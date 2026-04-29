@@ -1,0 +1,31 @@
+﻿---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import CatalogSection from '../../components/CatalogSection.astro';
+import WhatsAppFloat from '../../components/WhatsAppFloat.astro';
+import { products } from '../../data/snapshot';
+---
+
+<BaseLayout
+  seo={{
+    title: 'Buscar productos | Maquinarias Luedma',
+    description: 'Búsqueda local en catálogo migrado a Astro.',
+    canonicalPath: '/search/',
+  }}
+>
+  <Header />
+
+  <main id="contenido" class="section">
+    <div class="container">
+      <CatalogSection
+        products={products}
+        title="Búsqueda y catálogo"
+        subtitle="Filtra por texto, marca y orden."
+      />
+    </div>
+  </main>
+
+  <Footer />
+  <WhatsAppFloat />
+</BaseLayout>

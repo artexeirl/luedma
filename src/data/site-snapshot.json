@@ -1,0 +1,526 @@
+{
+  "site": {
+    "siteName": "Maquinarias Luedma",
+    "siteUrl": "https://www.maquinariasluedma.com.pe",
+    "locale": "es-PE",
+    "phone": "+51 936 829 528",
+    "whatsappNumber": "51936829528",
+    "whatsappDefaultMessage": "Hola Maquinarias Luedma. Quiero informacion sobre sus productos.",
+    "location": "Lima, Peru",
+    "social": {
+      "facebook": "https://www.facebook.com/profile.php?id=61580686476857",
+      "instagram": "https://www.instagram.com/maquinariasluedmaperu?igsh=MXNzaGhjcWYwb3owag=="
+    },
+    "logo": "/images/luedma-logo.webp",
+    "favicon": "/favicon.ico",
+    "defaultSeo": {
+      "title": "Venta de Herramientas Eléctricas y Equipos de Construcción | Luedma",
+      "description": "Herramientas electricas, manuales y accesorios para uso profesional.",
+      "image": "/images/hotsale-banner.webp",
+      "canonicalPath": "/"
+    }
+  },
+  "navigation": [
+    {
+      "label": "Inicio",
+      "path": "/"
+    },
+    {
+      "label": "Categorias",
+      "path": "/product-category/herramientas-electricas/",
+      "children": [
+        {
+          "label": "Herramientas Electricas",
+          "path": "/product-category/herramientas-electricas/"
+        },
+        {
+          "label": "Herramientas Manuales",
+          "path": "/product-category/herramientas-manuales/"
+        },
+        {
+          "label": "Accesorios y Consumibles",
+          "path": "/product-category/accesorios-de-herramientas/"
+        },
+        {
+          "label": "Seguridad e Iluminacion",
+          "path": "/product-category/seguridad-e-iluminacion/"
+        }
+      ]
+    },
+    {
+      "label": "Marcas",
+      "path": "/marca/bosch/"
+    },
+    {
+      "label": "Buscar",
+      "path": "/search/"
+    },
+    {
+      "label": "Contacto",
+      "path": "/contact/"
+    }
+  ],
+  "categories": [
+    {
+      "slug": "herramientas-electricas",
+      "name": "Herramientas Electricas",
+      "path": "/product-category/herramientas-electricas/",
+      "summary": "Taladros, amoladoras y equipos electricos para uso profesional.",
+      "heroImage": "/images/hotsale-banner.webp"
+    },
+    {
+      "slug": "amoladoras-y-pulidoras",
+      "name": "Amoladoras y Pulidoras",
+      "path": "/product-category/herramientas-electricas/amoladoras-y-pulidoras/",
+      "parentSlug": "herramientas-electricas"
+    },
+    {
+      "slug": "baterias-y-cargadores",
+      "name": "Baterias y Cargadores",
+      "path": "/product-category/herramientas-electricas/baterias-y-cargadores/",
+      "parentSlug": "herramientas-electricas"
+    },
+    {
+      "slug": "bomba-agua",
+      "name": "Bombas de Agua",
+      "path": "/product-category/herramientas-electricas/bomba-agua/",
+      "parentSlug": "herramientas-electricas"
+    },
+    {
+      "slug": "compresores",
+      "name": "Compresores",
+      "path": "/product-category/herramientas-electricas/compresores/",
+      "parentSlug": "herramientas-electricas"
+    },
+    {
+      "slug": "construccion-y-demolicion",
+      "name": "Construccion y Demolicion",
+      "path": "/product-category/herramientas-electricas/construccion-y-demolicion/",
+      "parentSlug": "herramientas-electricas"
+    },
+    {
+      "slug": "cortadoras-de-cesped",
+      "name": "Cortadoras de Cesped",
+      "path": "/product-category/herramientas-electricas/cortadoras-de-cesped/",
+      "parentSlug": "herramientas-electricas"
+    },
+    {
+      "slug": "equipos-de-limpieza",
+      "name": "Equipos de Limpieza",
+      "path": "/product-category/herramientas-electricas/equipos-de-limpieza/",
+      "parentSlug": "herramientas-electricas"
+    },
+    {
+      "slug": "lijadoras-y-cepillos",
+      "name": "Lijadoras y Cepillos",
+      "path": "/product-category/herramientas-electricas/lijadoras-y-cepillos/",
+      "parentSlug": "herramientas-electricas"
+    },
+    {
+      "slug": "sierras-electricas",
+      "name": "Sierras Electricas",
+      "path": "/product-category/herramientas-electricas/sierras-electricas/",
+      "parentSlug": "herramientas-electricas"
+    },
+    {
+      "slug": "taladros-y-atornilladores",
+      "name": "Taladros y Atornilladores",
+      "path": "/product-category/herramientas-electricas/taladros-y-atornilladores/",
+      "parentSlug": "herramientas-electricas"
+    },
+    {
+      "slug": "herramientas-manuales",
+      "name": "Herramientas Manuales",
+      "path": "/product-category/herramientas-manuales/",
+      "summary": "Alicates, prensas, hachas y herramientas para taller."
+    },
+    {
+      "slug": "abrazadoras",
+      "name": "Abrazaderas",
+      "path": "/product-category/herramientas-manuales/abrazadoras/",
+      "parentSlug": "herramientas-manuales"
+    },
+    {
+      "slug": "alicates-y-prensas",
+      "name": "Alicates y Prensas",
+      "path": "/product-category/herramientas-manuales/alicates-y-prensas/",
+      "parentSlug": "herramientas-manuales"
+    },
+    {
+      "slug": "bloqueo-del-volante",
+      "name": "Bloqueo del Volante",
+      "path": "/product-category/herramientas-manuales/bloqueo-del-volante/",
+      "parentSlug": "herramientas-manuales"
+    },
+    {
+      "slug": "bombas-de-pie",
+      "name": "Bombas de Pie",
+      "path": "/product-category/herramientas-manuales/bombas-de-pie/",
+      "parentSlug": "herramientas-manuales"
+    },
+    {
+      "slug": "brocas-metal",
+      "name": "Brocas para Metal",
+      "path": "/product-category/herramientas-manuales/brocas-metal/",
+      "parentSlug": "herramientas-manuales"
+    },
+    {
+      "slug": "cierrapuertas",
+      "name": "Cierrapuertas",
+      "path": "/product-category/herramientas-manuales/cierrapuertas/",
+      "parentSlug": "herramientas-manuales"
+    },
+    {
+      "slug": "cinceles",
+      "name": "Cinceles",
+      "path": "/product-category/herramientas-manuales/cinceles/",
+      "parentSlug": "herramientas-manuales"
+    },
+    {
+      "slug": "cortadormayolica",
+      "name": "Cortador de Mayolica",
+      "path": "/product-category/herramientas-manuales/cortadormayolica/",
+      "parentSlug": "herramientas-manuales"
+    },
+    {
+      "slug": "hacha",
+      "name": "Hacha",
+      "path": "/product-category/herramientas-manuales/hacha/",
+      "parentSlug": "herramientas-manuales"
+    },
+    {
+      "slug": "accesorios-de-herramientas",
+      "name": "Accesorios y Consumibles",
+      "path": "/product-category/accesorios-de-herramientas/",
+      "summary": "Discos, brocas, hojas de sierra y consumibles."
+    },
+    {
+      "slug": "accesorios-abrasivos",
+      "name": "Accesorios Abrasivos",
+      "path": "/product-category/accesorios-de-herramientas/accesorios-abrasivos/",
+      "parentSlug": "accesorios-de-herramientas"
+    },
+    {
+      "slug": "brocas-y-puntas",
+      "name": "Brocas y Puntas",
+      "path": "/product-category/accesorios-de-herramientas/brocas-y-puntas/",
+      "parentSlug": "accesorios-de-herramientas"
+    },
+    {
+      "slug": "discos",
+      "name": "Discos",
+      "path": "/product-category/accesorios-de-herramientas/discos/",
+      "parentSlug": "accesorios-de-herramientas"
+    },
+    {
+      "slug": "hojas-sierra",
+      "name": "Hojas de Sierra",
+      "path": "/product-category/accesorios-de-herramientas/hojas-sierra/",
+      "parentSlug": "accesorios-de-herramientas"
+    },
+    {
+      "slug": "juego-de-llaves-de-vaso",
+      "name": "Juego de Llaves de Vaso",
+      "path": "/product-category/accesorios-de-herramientas/juego-de-llaves-de-vaso/",
+      "parentSlug": "accesorios-de-herramientas"
+    },
+    {
+      "slug": "sierra-copa",
+      "name": "Sierra Copa",
+      "path": "/product-category/accesorios-de-herramientas/sierra-copa/",
+      "parentSlug": "accesorios-de-herramientas"
+    },
+    {
+      "slug": "equipos-de-taller-y-construccion",
+      "name": "Equipos de Taller y Construccion",
+      "path": "/product-category/equipos-de-taller-y-construccion/"
+    },
+    {
+      "slug": "equipos-de-levantamiento-y-carga",
+      "name": "Equipos de Levantamiento y Carga",
+      "path": "/product-category/equipos-de-taller-y-construccion/equipos-de-levantamiento-y-carga/",
+      "parentSlug": "equipos-de-taller-y-construccion"
+    },
+    {
+      "slug": "equipos-de-medicion",
+      "name": "Equipos de Medicion",
+      "path": "/product-category/equipos-de-taller-y-construccion/equipos-de-medicion/",
+      "parentSlug": "equipos-de-taller-y-construccion"
+    },
+    {
+      "slug": "organizacion-y-almacenamiento",
+      "name": "Organizacion y Almacenamiento",
+      "path": "/product-category/equipos-de-taller-y-construccion/organizacion-y-almacenamiento/",
+      "parentSlug": "equipos-de-taller-y-construccion"
+    },
+    {
+      "slug": "seguridad-e-iluminacion",
+      "name": "Seguridad e Iluminacion",
+      "path": "/product-category/seguridad-e-iluminacion/",
+      "summary": "Iluminacion de trabajo y material de seguridad."
+    },
+    {
+      "slug": "iluminacion-de-trabajo",
+      "name": "Iluminacion de Trabajo",
+      "path": "/product-category/seguridad-e-iluminacion/iluminacion-de-trabajo/",
+      "parentSlug": "seguridad-e-iluminacion"
+    },
+    {
+      "slug": "material-de-seguridad",
+      "name": "Material de Seguridad",
+      "path": "/product-category/seguridad-e-iluminacion/material-de-seguridad/",
+      "parentSlug": "seguridad-e-iluminacion"
+    }
+  ],
+  "brands": [
+    { "slug": "bosch", "name": "Bosch", "path": "/marca/bosch/", "logo": "/images/brands/bosch.webp" },
+    { "slug": "cattini", "name": "Cattini", "path": "/marca/cattini/" },
+    { "slug": "warc", "name": "Warc", "path": "/marca/warc/" },
+    { "slug": "wagner", "name": "Wagner", "path": "/marca/wagner/", "logo": "/images/brands/wagner.jpg" },
+    { "slug": "truper", "name": "Truper", "path": "/marca/truper/", "logo": "/images/brands/truper.webp" },
+    { "slug": "total", "name": "Total", "path": "/marca/total/", "logo": "/images/brands/total.png" },
+    { "slug": "tolsen", "name": "Tolsen", "path": "/marca/tolsen/" },
+    { "slug": "titan", "name": "Titan", "path": "/marca/titan/", "logo": "/images/brands/titan.png" },
+    { "slug": "stanley", "name": "Stanley", "path": "/marca/stanley/", "logo": "/images/brands/stanley.png" },
+    { "slug": "sagola", "name": "Sagola", "path": "/marca/sagola/", "logo": "/images/brands/sagola.png" },
+    { "slug": "ronix", "name": "Ronix", "path": "/marca/ronix/", "logo": "/images/brands/ronix.jpg" },
+    { "slug": "pretul", "name": "Pretul", "path": "/marca/pretul/" },
+    { "slug": "milwaukee", "name": "Milwaukee", "path": "/marca/milwaukee/" },
+    { "slug": "makute", "name": "Makute", "path": "/marca/makute/", "logo": "/images/brands/makute.png" },
+    { "slug": "makita", "name": "Makita", "path": "/marca/makita/" },
+    { "slug": "karcher", "name": "Karcher", "path": "/marca/karcher/", "logo": "/images/brands/karcher.png" },
+    { "slug": "irwin", "name": "Irwin", "path": "/marca/irwin/", "logo": "/images/brands/irwin.png" },
+    { "slug": "husqvarna", "name": "Husqvarna", "path": "/marca/husqvarna/" },
+    { "slug": "hilti", "name": "Hilti", "path": "/marca/hilti/", "logo": "/images/brands/hilti.webp" },
+    { "slug": "gtr", "name": "Gtr", "path": "/marca/gtr/" },
+    { "slug": "emtop", "name": "Emtop", "path": "/marca/emtop/" },
+    { "slug": "de-walt", "name": "De Walt", "path": "/marca/de-walt/", "logo": "/images/brands/dewalt.webp" },
+    { "slug": "bonelly", "name": "Bonelly", "path": "/marca/bonelly/" },
+    { "slug": "black-and-decker", "name": "Black and Decker", "path": "/marca/black-and-decker/" }
+  ],
+  "products": [
+    {
+      "slug": "taladro-percutor-850w-mp",
+      "name": "TALADRO PERCUTOR 850W (MP)",
+      "path": "/product/taladro-percutor-850w-mp/",
+      "excerpt": "Taladro de uso intensivo para perforacion y percusion.",
+      "description": "Producto popular del storefront actual. Version frontend optimizada para carga rapida.",
+      "brandSlug": "bosch",
+      "categorySlug": "taladros-y-atornilladores",
+      "images": ["/images/products/p652.png"],
+      "relatedSlugs": [
+        "taladro-percutor-750w-kit-23acc",
+        "taladro-percutor-industrial-gsb-24-2-1100w",
+        "taladro-percutor-gsb-550re-550w-et34piezas"
+      ],
+      "sourceUrl": "https://www.maquinariasluedma.com.pe/product/taladro-percutor-850w-mp/"
+    },
+    {
+      "slug": "taladro-percutor-750w-kit-23acc",
+      "name": "TALADRO PERCUTOR 750W + KIT 23ACC",
+      "path": "/product/taladro-percutor-750w-kit-23acc/",
+      "excerpt": "Taladro percutor con kit de 23 accesorios.",
+      "description": "Equipo para trabajo en obra y taller con set de accesorios.",
+      "brandSlug": "bosch",
+      "categorySlug": "taladros-y-atornilladores",
+      "images": ["/images/products/p651.png"],
+      "relatedSlugs": [
+        "taladro-percutor-gsb-550re-550w-et34piezas",
+        "taladro-percutor-industrial-gsb-24-2-1100w",
+        "taladro-percutor-850w-mp"
+      ],
+      "sourceUrl": "https://www.maquinariasluedma.com.pe/product/taladro-percutor-750w-kit-23acc/"
+    },
+    {
+      "slug": "taladro-percutor-industrial-gsb-24-2-1100w",
+      "name": "TALADRO PERCUTOR INDUSTRIAL GSB 24-2 1100W",
+      "path": "/product/taladro-percutor-industrial-gsb-24-2-1100w/",
+      "excerpt": "GSB 24-2",
+      "description": "Taladro de alto torque para uso continuo en aplicaciones industriales.",
+      "brandSlug": "bosch",
+      "categorySlug": "taladros-y-atornilladores",
+      "images": ["/images/products/p650.png"],
+      "relatedSlugs": [
+        "taladro-percutor-gsb-550re-550w-et34piezas",
+        "taladro-percutor-750w-kit-23acc",
+        "pulidora-bosch-gpo-14-ce-1400w-con-1-disco"
+      ],
+      "sourceUrl": "https://www.maquinariasluedma.com.pe/product/taladro-percutor-industrial-gsb-24-2-1100w/"
+    },
+    {
+      "slug": "taladro-percutor-gsb-550re-550w-et34piezas",
+      "name": "TALADRO PERCUTOR GSB 550RE 550W + ET34PIEZAS",
+      "path": "/product/taladro-percutor-gsb-550re-550w-et34piezas/",
+      "excerpt": "GSB 550 RE",
+      "description": "Taladro compacto para perforacion y percusion con set de piezas.",
+      "brandSlug": "bosch",
+      "categorySlug": "taladros-y-atornilladores",
+      "images": ["/images/products/p649.png"],
+      "relatedSlugs": [
+        "taladro-percutor-750w-kit-23acc",
+        "taladro-percutor-industrial-gsb-24-2-1100w",
+        "taladro-percutor-850w-mp"
+      ],
+      "sourceUrl": "https://www.maquinariasluedma.com.pe/product/taladro-percutor-gsb-550re-550w-et34piezas/"
+    },
+    {
+      "slug": "pulidora-bosch-gpo-14-ce-1400w-con-1-disco",
+      "name": "PULIDORA BOSCH GPO 14 CE 1400W CON 1 DISCO",
+      "path": "/product/pulidora-bosch-gpo-14-ce-1400w-con-1-disco/",
+      "excerpt": "GPO 14 CE",
+      "description": "Pulidora profesional con motor de 1400W para acabados de precision.",
+      "brandSlug": "bosch",
+      "categorySlug": "amoladoras-y-pulidoras",
+      "images": ["/images/products/p648.png"],
+      "relatedSlugs": [
+        "pistola-de-calor-1800w",
+        "taladro-percutor-gsb-550re-550w-et34piezas",
+        "taladro-percutor-industrial-gsb-24-2-1100w"
+      ],
+      "sourceUrl": "https://www.maquinariasluedma.com.pe/product/pulidora-bosch-gpo-14-ce-1400w-con-1-disco/"
+    },
+    {
+      "slug": "pistola-de-calor-1800w",
+      "name": "PISTOLA DE CALOR 1800W",
+      "path": "/product/pistola-de-calor-1800w/",
+      "excerpt": "Pistola termica para mantenimiento y montaje.",
+      "description": "Equipo para aplicaciones de calor controlado en taller y obra.",
+      "brandSlug": "bosch",
+      "categorySlug": "herramientas-electricas",
+      "images": ["/images/products/p647.png"],
+      "relatedSlugs": [
+        "pulidora-bosch-gpo-14-ce-1400w-con-1-disco",
+        "taladro-percutor-gsb-550re-550w-et34piezas",
+        "taladro-percutor-850w-mp"
+      ],
+      "sourceUrl": "https://www.maquinariasluedma.com.pe/product/pistola-de-calor-1800w/"
+    }
+  ],
+  "pages": [
+    {
+      "slug": "contact",
+      "name": "Contacto",
+      "path": "/contact/",
+      "content": "Contacta a Maquinarias Luedma para cotizaciones, pedidos por volumen y soporte comercial.",
+      "seo": {
+        "title": "Contacto | Maquinarias Luedma",
+        "description": "Canales oficiales de contacto de Maquinarias Luedma."
+      }
+    },
+    {
+      "slug": "about-us",
+      "name": "Sobre Nosotros",
+      "path": "/about-us/",
+      "content": "Maquinarias Luedma comercializa herramientas y soluciones para trabajo profesional e industrial.",
+      "seo": {
+        "title": "Sobre Nosotros | Maquinarias Luedma",
+        "description": "Conoce a Maquinarias Luedma y su propuesta comercial."
+      }
+    },
+    {
+      "slug": "libro-de-reclamaciones",
+      "name": "Libro de Reclamaciones",
+      "path": "/libro-de-reclamaciones/",
+      "content": "Canal para registrar reclamos y solicitudes de atencion del cliente.",
+      "seo": {
+        "title": "Libro de Reclamaciones | Maquinarias Luedma",
+        "description": "Canal oficial de reclamos de Maquinarias Luedma."
+      }
+    }
+  ],
+  "featuredProductSlugs": [
+    "taladro-percutor-850w-mp",
+    "taladro-percutor-750w-kit-23acc",
+    "taladro-percutor-industrial-gsb-24-2-1100w",
+    "taladro-percutor-gsb-550re-550w-et34piezas",
+    "pulidora-bosch-gpo-14-ce-1400w-con-1-disco",
+    "pistola-de-calor-1800w"
+  ],
+  "featuredBrandSlugs": [
+    "bosch",
+    "hilti",
+    "karcher",
+    "makita",
+    "makute",
+    "milwaukee",
+    "ronix",
+    "stanley",
+    "truper",
+    "wagner",
+    "de-walt",
+    "total"
+  ],
+  "inventory": {
+    "generatedAt": "2026-04-25T00:00:00Z",
+    "source": "frozen-local-baseline",
+    "urls": [
+      "/",
+      "/about-us/",
+      "/contact/",
+      "/product/taladro-percutor-850w-mp/",
+      "/product/taladro-percutor-750w-kit-23acc/",
+      "/product/taladro-percutor-industrial-gsb-24-2-1100w/",
+      "/product/taladro-percutor-gsb-550re-550w-et34piezas/",
+      "/product/pulidora-bosch-gpo-14-ce-1400w-con-1-disco/",
+      "/product/pistola-de-calor-1800w/",
+      "/product-category/herramientas-electricas/",
+      "/product-category/herramientas-electricas/amoladoras-y-pulidoras/",
+      "/product-category/herramientas-electricas/baterias-y-cargadores/",
+      "/product-category/herramientas-electricas/bomba-agua/",
+      "/product-category/herramientas-electricas/compresores/",
+      "/product-category/herramientas-electricas/construccion-y-demolicion/",
+      "/product-category/herramientas-electricas/cortadoras-de-cesped/",
+      "/product-category/herramientas-electricas/equipos-de-limpieza/",
+      "/product-category/herramientas-electricas/lijadoras-y-cepillos/",
+      "/product-category/herramientas-electricas/sierras-electricas/",
+      "/product-category/herramientas-manuales/",
+      "/product-category/herramientas-manuales/abrazadoras/",
+      "/product-category/herramientas-manuales/alicates-y-prensas/",
+      "/product-category/herramientas-manuales/bloqueo-del-volante/",
+      "/product-category/herramientas-manuales/bombas-de-pie/",
+      "/product-category/herramientas-manuales/brocas-metal/",
+      "/product-category/herramientas-manuales/cierrapuertas/",
+      "/product-category/herramientas-manuales/cinceles/",
+      "/product-category/herramientas-manuales/cortadormayolica/",
+      "/product-category/herramientas-manuales/hacha/",
+      "/product-category/accesorios-de-herramientas/",
+      "/product-category/accesorios-de-herramientas/accesorios-abrasivos/",
+      "/product-category/accesorios-de-herramientas/brocas-y-puntas/",
+      "/product-category/accesorios-de-herramientas/discos/",
+      "/product-category/accesorios-de-herramientas/hojas-sierra/",
+      "/product-category/accesorios-de-herramientas/juego-de-llaves-de-vaso/",
+      "/product-category/accesorios-de-herramientas/sierra-copa/",
+      "/product-category/equipos-de-taller-y-construccion/",
+      "/product-category/equipos-de-taller-y-construccion/equipos-de-levantamiento-y-carga/",
+      "/product-category/equipos-de-taller-y-construccion/equipos-de-medicion/",
+      "/product-category/equipos-de-taller-y-construccion/organizacion-y-almacenamiento/",
+      "/product-category/seguridad-e-iluminacion/",
+      "/product-category/seguridad-e-iluminacion/iluminacion-de-trabajo/",
+      "/product-category/seguridad-e-iluminacion/material-de-seguridad/",
+      "/marca/bosch/",
+      "/marca/cattini/",
+      "/marca/warc/",
+      "/marca/wagner/",
+      "/marca/truper/",
+      "/marca/total/",
+      "/marca/tolsen/",
+      "/marca/titan/",
+      "/marca/stanley/",
+      "/marca/sagola/",
+      "/marca/ronix/",
+      "/marca/pretul/",
+      "/marca/milwaukee/",
+      "/marca/makute/",
+      "/marca/makita/",
+      "/marca/karcher/",
+      "/marca/irwin/",
+      "/marca/husqvarna/",
+      "/marca/hilti/",
+      "/marca/gtr/",
+      "/marca/emtop/",
+      "/marca/de-walt/",
+      "/marca/bonelly/",
+      "/marca/black-and-decker/"
+    ]
+  }
+}

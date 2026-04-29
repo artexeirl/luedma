@@ -1,0 +1,70 @@
+﻿---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import CatalogSection from '../../components/CatalogSection.astro';
+import WhatsAppFloat from '../../components/WhatsAppFloat.astro';
+import { categories, products, siteSettings } from '../../data/snapshot';
+import { categoryParamFromPath } from '../../utils/urls';
+import type { Category, Product } from '../../types/content';
+
+function collectCategorySlugs(target: Category): string[] {
+  const slugs = new Set<string>([target.slug]);
+  let changed = true;
+
+  while (changed) {
+    changed = false;
+    categories.forEach((candidate) => {
+      if (candidate.parentSlug && slugs.has(candidate.parentSlug) && !slugs.has(candidate.slug)) {
+        slugs.add(candidate.slug);
+        changed = true;
+      }
+    });
+  }
+
+  return [...slugs];
+}
+
+export function getStaticPaths() {
+  return categories.map((category) => ({
+    params: { slug: categoryParamFromPath(category.path) },
+    props: { category },
+  }));
+}
+
+const { category } = Astro.props as { category: Category };
+const acceptedSlugs = collectCategorySlugs(category);
+const categoryProducts = products.filter((product: Product) => acceptedSlugs.includes(product.categorySlug));
+
+const breadcrumbs = [
+  { label: 'Inicio', href: '/' },
+  { label: 'Categorías', href: '/search/' },
+  { label: category.name, href: category.path },
+];
+---
+
+<BaseLayout
+  seo={{
+    title: `${category.name} | ${siteSettings.siteName}`,
+    description: category.summary || `Catálogo de ${category.name}.`,
+    canonicalPath: category.path,
+  }}
+>
+  <Header />
+
+  <main id="contenido" class="section">
+    <div class="container">
+      <Breadcrumbs items={breadcrumbs} />
+      <CatalogSection
+        products={categoryProducts}
+        title={category.name}
+        subtitle={category.summary || 'Productos asociados a esta categoría.'}
+      />
+    </div>
+  </main>
+
+  <Footer />
+  <WhatsAppFloat />
+</BaseLayout>
+

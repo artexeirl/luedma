@@ -1,0 +1,7 @@
+# Legacy routes to Astro canonical routes
+/index.php/product-category/* /product-category/:splat 301
+/index.php/product/* /product/:splat 301
+/index.php/marca/* /marca/:splat 301
+/?page_id=82 /search/ 301
+/catalogo /c/ 301
+/catalogo/* /c/:splat 301

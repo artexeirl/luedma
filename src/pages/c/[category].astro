@@ -1,0 +1,43 @@
+﻿---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import CatalogSection from '../../components/CatalogSection.astro';
+import WhatsAppFloat from '../../components/WhatsAppFloat.astro';
+import { categories, products, getCategoryBySlug } from '../../data/snapshot';
+
+export function getStaticPaths() {
+  return categories.map((category) => ({ params: { category: category.slug } }));
+}
+
+const { category } = Astro.params;
+const selectedCategory = category ? getCategoryBySlug(category) : undefined;
+
+if (!selectedCategory) {
+  return Astro.redirect('/c/');
+}
+---
+
+<BaseLayout
+  seo={{
+    title: `${selectedCategory.name} | Maquinarias Luedma`,
+    description: `Productos en ${selectedCategory.name}.`,
+    canonicalPath: `/c/${selectedCategory.slug}/`,
+  }}
+>
+  <Header />
+
+  <main id="contenido" class="section">
+    <div class="container">
+      <CatalogSection
+        products={products}
+        title="Catálogo"
+        subtitle={`Mostrando productos de ${selectedCategory.name}.`}
+        initialCategory={selectedCategory.slug}
+      />
+    </div>
+  </main>
+
+  <Footer />
+  <WhatsAppFloat />
+</BaseLayout>

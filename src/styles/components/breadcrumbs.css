@@ -1,0 +1,21 @@
+.breadcrumbs {
+  margin: 18px 0 var(--space-3);
+  color: var(--muted);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  font-size: 0.86rem;
+  overflow-wrap: anywhere;
+}
+
+.breadcrumbs strong {
+  color: var(--text);
+}
+
+@media (max-width: 760px) {
+  .breadcrumbs {
+    margin-top: 10px;
+    font-size: 0.8rem;
+    gap: 6px;
+  }
+}

@@ -1,0 +1,70 @@
+---
+import type { Product } from '../types/content';
+import { getBrandBySlug, getCategoryBySlug } from '../data/snapshot';
+
+type Props = {
+  product: Product;
+};
+
+const { product } = Astro.props as Props;
+const brand = getBrandBySlug(product.brandSlug);
+const categoryTrail: string[] = [product.categorySlug];
+let currentCategory = getCategoryBySlug(product.categorySlug);
+while (currentCategory?.parentSlug) {
+  categoryTrail.unshift(currentCategory.parentSlug);
+  currentCategory = getCategoryBySlug(currentCategory.parentSlug);
+}
+const categoryRoot = categoryTrail[0] || product.categorySlug;
+const cardImage =
+  product.images[0] && product.images[0].includes('cdn.sanity.io')
+    ? `${product.images[0]}?w=400&h=400&fit=crop&auto=format`
+    : product.images[0];
+---
+
+<article
+  class="product-card showcase-card"
+  data-product-card
+  data-name={product.name}
+  data-brand={product.brandSlug}
+  data-category={product.categorySlug}
+  data-category-root={categoryRoot}
+  data-category-trail={categoryTrail.join(',')}
+>
+  <svg class="card-cut-border" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+    <polygon class="card-cut-border__shape" points="0,0 97,0 100,3 100,100 3,100 0,97"></polygon>
+  </svg>
+  <a href={product.path} class="showcase-card__image-link product-card__image-link">
+    <img
+      class="product-card__image showcase-card__image"
+      src={cardImage}
+      alt={product.name}
+      width="400"
+      height="400"
+      loading="lazy"
+      decoding="async"
+    />
+  </a>
+
+  <div class="showcase-card__meta">
+    <p class="showcase-card__brand">{brand?.name ?? product.brandSlug}</p>
+    {product.isNew && <span class="showcase-card__badge">NUEVO</span>}
+  </div>
+
+  <h3 class="showcase-card__name">
+    <a href={product.path}>{product.name}</a>
+  </h3>
+  <p class="showcase-card__delivery">{(product.stock || 0) > 0 ? 'Stock disponible' : 'Sin stock'}</p>
+
+  <div class="showcase-card__footer">
+    <div class="showcase-card__price-wrap">
+      {typeof product.compareAtPrice === 'number' && (
+        <span class="showcase-card__old-price">S/ {product.compareAtPrice.toFixed(2)}</span>
+      )}
+      <p class="showcase-card__price">
+        {typeof product.price === 'number' ? `S/ ${product.price.toFixed(2)}` : 'Consultar'}
+      </p>
+    </div>
+    <a class="btn btn-primary showcase-card__cta" href={product.path}>Ver detalles</a>
+  </div>
+</article>
+

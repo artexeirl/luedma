@@ -1,0 +1,51 @@
+﻿---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import CatalogSection from '../../components/CatalogSection.astro';
+import WhatsAppFloat from '../../components/WhatsAppFloat.astro';
+import { brands, products, siteSettings } from '../../data/snapshot';
+import type { Brand, Product } from '../../types/content';
+
+export function getStaticPaths() {
+  return brands.map((brand) => ({
+    params: { slug: brand.slug },
+    props: { brand },
+  }));
+}
+
+const { brand } = Astro.props as { brand: Brand };
+const brandProducts = products.filter((product: Product) => product.brandSlug === brand.slug);
+const breadcrumbs = [
+  { label: 'Inicio', href: '/' },
+  { label: 'Marcas', href: '/#marcas' },
+  { label: brand.name, href: brand.path },
+];
+---
+
+<BaseLayout
+  seo={{
+    title: `${brand.name} | ${siteSettings.siteName}`,
+    description: brand.summary || `Productos de ${brand.name}.`,
+    canonicalPath: brand.path,
+    image: brand.logo,
+  }}
+>
+  <Header />
+
+  <main id="contenido" class="section">
+    <div class="container">
+      <Breadcrumbs items={breadcrumbs} />
+      <CatalogSection
+        products={brandProducts}
+        title={`Marca: ${brand.name}`}
+        subtitle={brand.summary || 'Productos disponibles para esta marca.'}
+        initialBrand={brand.slug}
+      />
+    </div>
+  </main>
+
+  <Footer />
+  <WhatsAppFloat />
+</BaseLayout>

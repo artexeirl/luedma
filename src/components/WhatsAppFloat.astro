@@ -1,0 +1,38 @@
+---
+import { siteSettings } from '../data/snapshot';
+---
+
+<div class="floating-ctas">
+  <div class="meta-float">
+    <button class="meta-float__trigger" type="button" aria-label="Abrir redes sociales">
+      <span class="meta-float__icon" aria-hidden="true">
+        <img src="/icons/brand-meta.svg" alt="" />
+      </span>
+    </button>
+
+    <div class="meta-float__socials" aria-label="Redes sociales" data-social-panel>
+      {siteSettings.social.facebook && (
+        <a class="meta-float__social-btn" href={siteSettings.social.facebook} target="_blank" rel="noreferrer" aria-label="Facebook" role="button">
+          <img src="/icons/brand-facebook.svg" alt="" />
+        </a>
+      )}
+      {siteSettings.social.instagram && (
+        <a class="meta-float__social-btn" href={siteSettings.social.instagram} target="_blank" rel="noreferrer" aria-label="Instagram" role="button">
+          <img src="/icons/brand-instagram.svg" alt="" />
+        </a>
+      )}
+      <a class="meta-float__social-btn" href="https://www.tiktok.com/" target="_blank" rel="noreferrer" aria-label="TikTok" role="button">
+        <img src="/icons/brand-tiktok.svg" alt="" />
+      </a>
+    </div>
+  </div>
+
+  <div class="whatsapp-float" data-island="whatsapp-cta" data-whatsapp-number={siteSettings.whatsappNumber} data-whatsapp-message={siteSettings.whatsappDefaultMessage}>
+    <a data-whatsapp-link target="_blank" rel="noreferrer" aria-label="Contactar por WhatsApp">
+      <span class="whatsapp-float__text">¿Tienes alguna duda? Escríbenos</span>
+      <span class="whatsapp-float__icon" aria-hidden="true">
+        <img src="/icons/brand-whatsapp.svg" alt="" />
+      </span>
+    </a>
+  </div>
+</div>

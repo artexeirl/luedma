@@ -1,0 +1,161 @@
+---
+import ProductCard from './ProductCard.astro';
+import type { FilterIslandProps, Product } from '../types/content';
+import { brands, categories } from '../data/snapshot';
+
+type Props = {
+  products: Product[];
+  title?: string;
+  subtitle?: string;
+  pageSize?: number;
+  initialCategory?: string;
+  initialBrand?: string;
+};
+
+const {
+  products,
+  title = 'Tienda de productos',
+  subtitle = 'Explora el catálogo completo con filtros avanzados y paginación inteligente.',
+  pageSize = 12,
+  initialCategory = '',
+  initialBrand = '',
+} = Astro.props as Props;
+
+const filterProps: FilterIslandProps = { pageSize, initialCategory, initialBrand };
+const brandOptions = brands
+  .filter((brand) => products.some((item) => item.brandSlug === brand.slug))
+  .sort((a, b) => a.name.localeCompare(b.name, 'es', { sensitivity: 'base' }));
+
+const topCategories = categories
+  .filter((category) => !category.parentSlug)
+  .sort((a, b) => a.name.localeCompare(b.name, 'es', { sensitivity: 'base' }));
+const childrenByParent = new Map(
+  topCategories.map((parentCategory) => [
+    parentCategory.slug,
+    categories
+      .filter((category) => category.parentSlug === parentCategory.slug)
+      .sort((a, b) => a.name.localeCompare(b.name, 'es', { sensitivity: 'base' })),
+  ]),
+);
+---
+
+<section class="catalog-section" data-island="catalog-controls" data-island-props={JSON.stringify(filterProps)}>
+  <header class="catalog-section__head">
+    <p class="catalog-section__eyebrow">Tienda</p>
+    <h2>{title}</h2>
+    <p>{subtitle}</p>
+  </header>
+
+  <div class="catalog-shell">
+    <div class="catalog-filters-drawer" data-filter-drawer>
+      <button type="button" class="catalog-filters-drawer__backdrop" data-filter-close aria-label="Cerrar filtros"></button>
+      <aside class="catalog-filters">
+        <div class="catalog-filters__mobile-head">
+          <h3>Filtros</h3>
+          <button type="button" class="catalog-filters__mobile-close" data-filter-close aria-label="Cerrar filtros">
+            <img src="/icons/x.svg" alt="" aria-hidden="true" />
+          </button>
+        </div>
+      <div class="catalog-filters__group">
+        <div class="catalog-filters__group-title">Categorías</div>
+        <div class="catalog-accordion" data-filter-category-accordion>
+          {topCategories.map((parentCategory, index) => (
+            <article class:list={{ 'catalog-accordion__item': true, 'is-open': index === 0 }} data-filter-category-item>
+              <button
+                type="button"
+                class="catalog-accordion__trigger"
+                data-filter-category-trigger
+                aria-expanded={index === 0 ? 'true' : 'false'}
+              >
+                <span>{parentCategory.name}</span>
+                <span class="catalog-accordion__chevron" aria-hidden="true">
+                  <img src="/icons/chevron-down.svg" alt="" />
+                </span>
+              </button>
+              <div class="catalog-accordion__panel">
+                <div class="catalog-accordion__panel-inner">
+                  {childrenByParent.get(parentCategory.slug)?.map((childCategory) => (
+                    <button
+                      type="button"
+                      class="catalog-option catalog-option--child"
+                      data-filter-category-option
+                      data-value={childCategory.slug}
+                      data-href={`/c/${encodeURIComponent(childCategory.slug)}/`}
+                    >
+                      {childCategory.name}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </article>
+          ))}
+        </div>
+      </div>
+
+      <div class="catalog-filters__group">
+        <div class="catalog-filters__group-title">Marcas</div>
+        <div class="catalog-brands" data-filter-brand-list>
+          {brandOptions.map((brand) => (
+            <button type="button" class="catalog-brand-option" data-filter-brand-option data-value={brand.slug}>
+              <span class="catalog-brand-option__box" aria-hidden="true"></span>
+              <span>{brand.name}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div class="catalog-filters__actions">
+        <button type="button" class="btn btn-primary" data-filter-reset>Limpiar filtros</button>
+      </div>
+
+      <select data-filter-category hidden aria-hidden="true" tabindex="-1">
+        <option value="">Todas las categorías</option>
+        {topCategories.map((parentCategory) => (
+          <>
+            <option value={parentCategory.slug}>{parentCategory.name}</option>
+            {childrenByParent.get(parentCategory.slug)?.map((childCategory) => (
+              <option value={childCategory.slug}>{childCategory.name}</option>
+            ))}
+          </>
+        ))}
+      </select>
+
+      <select data-filter-brand hidden aria-hidden="true" tabindex="-1">
+        <option value="">Todas las marcas</option>
+        {brandOptions.map((brand) => (
+          <option value={brand.slug}>{brand.name}</option>
+        ))}
+      </select>
+      </aside>
+    </div>
+
+    <div class="catalog-results">
+      <div class="catalog-results__bar">
+        <button type="button" class="catalog-mobile-filters-trigger" data-filter-open>
+          <img src="/icons/filter.svg" alt="" aria-hidden="true" />
+          <span>Filtros</span>
+        </button>
+        <p class="catalog-summary" data-filter-summary></p>
+        <label class="catalog-results__sort">
+          <span>Ordenar por</span>
+          <select data-filter-sort>
+            <option value="name-asc">Nombre A-Z</option>
+            <option value="name-desc">Nombre Z-A</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="product-grid" data-catalog-grid>
+        {products.map((product) => (
+          <ProductCard product={product} />
+        ))}
+      </div>
+
+      <nav class="catalog-pagination" data-pagination hidden aria-label="Paginación de productos">
+        <button type="button" class="btn btn-outline" data-page-prev>Anterior</button>
+        <div class="catalog-pagination__numbers" data-page-numbers></div>
+        <button type="button" class="btn btn-outline" data-page-next>Siguiente</button>
+      </nav>
+    </div>
+  </div>
+</section>

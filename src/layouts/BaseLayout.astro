@@ -1,0 +1,92 @@
+﻿---
+import '../styles/global.css';
+import { routeIndex, siteSettings } from '../data/snapshot';
+import type { SeoMeta } from '../types/content';
+import { buildCanonical, getSeoForPath } from '../utils/seo';
+
+type Props = {
+  seo?: Partial<SeoMeta>;
+  schemas?: object[];
+};
+
+const { seo, schemas = [] } = Astro.props as Props;
+const routeSeo = getSeoForPath(Astro.url.pathname, routeIndex, siteSettings.defaultSeo);
+
+const meta: SeoMeta = {
+  ...routeSeo,
+  ...seo,
+  title: seo?.title || routeSeo.title,
+  description: seo?.description || routeSeo.description,
+  image: seo?.image || routeSeo.image || siteSettings.defaultSeo.image,
+  canonicalPath: seo?.canonicalPath || routeSeo.canonicalPath || Astro.url.pathname,
+};
+
+const canonical = buildCanonical(siteSettings.siteUrl, meta.canonicalPath || '/');
+
+const orgSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: siteSettings.siteName,
+  url: siteSettings.siteUrl,
+  logo: buildCanonical(siteSettings.siteUrl, siteSettings.logo),
+  contactPoint: {
+    '@type': 'ContactPoint',
+    telephone: siteSettings.phone,
+    contactType: 'customer support',
+    areaServed: 'PE',
+    availableLanguage: ['es'],
+  },
+};
+---
+
+<!doctype html>
+<html lang="es" class="preload">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+    <meta name="description" content={meta.description} />
+    <meta name="theme-color" content="#ffffff" />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content={siteSettings.locale} />
+    <meta property="og:site_name" content={siteSettings.siteName} />
+    <meta property="og:title" content={meta.title} />
+    <meta property="og:description" content={meta.description} />
+    {meta.image && <meta property="og:image" content={buildCanonical(siteSettings.siteUrl, meta.image)} />}
+    <meta property="og:url" content={canonical} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={meta.title} />
+    <meta name="twitter:description" content={meta.description} />
+    {meta.image && <meta name="twitter:image" content={buildCanonical(siteSettings.siteUrl, meta.image)} />}
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" href={siteSettings.favicon} />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <style>
+      html.preload body { visibility: hidden; }
+    </style>
+    <script is:inline>
+      (() => {
+        const reveal = () => document.documentElement.classList.remove('preload');
+        if (document.readyState === 'complete') {
+          requestAnimationFrame(reveal);
+        } else {
+          window.addEventListener('load', () => requestAnimationFrame(reveal), { once: true });
+        }
+      })();
+    </script>
+    <title>{meta.title}</title>
+    <script type="application/ld+json" set:html={JSON.stringify(orgSchema)}></script>
+    {schemas.map((schema) => <script type="application/ld+json" set:html={JSON.stringify(schema)}></script>)}
+  </head>
+  <body>
+    <a class="skip-link" href="#contenido">Saltar al contenido</a>
+    <slot />
+    <script>
+      import { startIslands } from '../scripts/islands/bootstrap';
+
+      void startIslands();
+    </script>
+  </body>
+</html>

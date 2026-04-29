@@ -1,0 +1,168 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import WhatsAppFloat from '../../components/WhatsAppFloat.astro';
+import { getBrandBySlug, getCategoryBySlug, getProductsBySlugs, getProductBySlug, products, siteSettings } from '../../data/snapshot';
+import { buildBreadcrumbSchema, buildProductSchema, buildCanonical } from '../../utils/seo';
+import type { GalleryIslandProps } from '../../types/content';
+
+const slugParam = Astro.params.slug;
+const product = slugParam ? getProductBySlug(slugParam) : undefined;
+if (!product) return Astro.redirect('/404/');
+
+const brand = getBrandBySlug(product.brandSlug);
+const category = getCategoryBySlug(product.categorySlug);
+const inStock = (product.stock || 0) > 0;
+const mainImage = product.images[0] || '/images/products/p1.png';
+const hasSource = Boolean(product.sourceUrl && product.sourceUrl.trim().length > 0);
+const relatedRaw = getProductsBySlugs(product.relatedSlugs);
+const fallbackRelated = products.filter((item) => item.slug !== product.slug).slice(0, 12);
+const relatedItems = (relatedRaw.length > 0 ? relatedRaw : fallbackRelated).slice(0, 12).map((item) => ({
+  ...item,
+  brandName: getBrandBySlug(item.brandSlug)?.name || item.brandSlug,
+  stockText: (item.stock || 0) > 0 ? 'Stock disponible' : 'Sin stock',
+  thumb: item.images?.[0]?.includes('cdn.sanity.io') ? `${item.images[0]}?w=400&h=400&fit=crop&auto=format` : item.images?.[0],
+}));
+const relatedPages = Array.from({ length: Math.ceil(relatedItems.length / 4) }, (_, i) => relatedItems.slice(i * 4, i * 4 + 4));
+
+const breadcrumbItems = [
+  { label: 'Inicio', href: '/' },
+  { label: category?.name || 'Categoría', href: category?.path || '/c/' },
+  { label: product.name, href: product.path },
+];
+
+const productSchema = buildProductSchema({
+  name: product.name,
+  description: product.description,
+  image: mainImage,
+  brand: brand?.name,
+  url: buildCanonical(siteSettings.siteUrl, product.path),
+});
+
+const breadcrumbSchema = buildBreadcrumbSchema(
+  breadcrumbItems.map((item) => ({ name: item.label, url: buildCanonical(siteSettings.siteUrl, item.href) })),
+);
+
+const galleryProps: GalleryIslandProps = { activeIndex: 0 };
+---
+
+<BaseLayout
+  seo={{
+    title: `${product.name} | ${siteSettings.siteName}`,
+    description: product.excerpt,
+    canonicalPath: product.path,
+    image: mainImage,
+  }}
+  schemas={[productSchema, breadcrumbSchema]}
+>
+  <Header />
+  <main id="contenido" class="product-page">
+    <div class="container">
+      <Breadcrumbs items={breadcrumbItems} />
+
+      <section class="product-layout">
+        <article class="product-gallery-panel">
+          <div class="product-gallery" data-island="product-gallery" data-island-props={JSON.stringify(galleryProps)}>
+            <div class="product-gallery__main">
+              <img data-gallery-main src={mainImage} alt={product.name} width="1200" height="1200" loading="eager" />
+            </div>
+            <div class="product-gallery__thumbs">
+              {(product.images.length > 0 ? product.images : [mainImage]).map((image, index) => (
+                <button data-gallery-thumb data-src={image} data-alt={`${product.name} imagen ${index + 1}`} type="button" class={index === 0 ? 'is-active' : ''}>
+                  <img src={image} alt={`Miniatura ${index + 1}`} loading="lazy" width="120" height="120" />
+                </button>
+              ))}
+            </div>
+          </div>
+        </article>
+
+        <article class="product-info-panel">
+          <div class="product-info-panel__head">
+            <p class="product-info-panel__meta">{brand?.name || 'Marca'} · {category?.name || 'Categoría'}</p>
+            <div class="product-info-panel__chips">
+              {product.isNew && <span class="product-chip">NUEVO</span>}
+              <span class:list={{ 'product-chip': true, 'is-ok': inStock, 'is-off': !inStock }}>{inStock ? 'Stock disponible' : 'Sin stock'}</span>
+            </div>
+          </div>
+
+          <h1>{product.name}</h1>
+          <p class="product-info-panel__excerpt">{product.sku || 'SKU no especificado'}</p>
+
+          <div class="product-pricing">
+            {typeof product.compareAtPrice === 'number' && <span class="product-pricing__old">S/ {product.compareAtPrice.toFixed(2)}</span>}
+            <p class="product-pricing__current">{typeof product.price === 'number' ? `S/ ${product.price.toFixed(2)}` : 'Consultar precio'}</p>
+          </div>
+
+          <div class="product-description">
+            <p>{product.description}</p>
+          </div>
+
+          <div class="product-actions">
+            <a class="btn btn-primary" data-island="whatsapp-cta" data-whatsapp-number={siteSettings.whatsappNumber} data-whatsapp-message={`Hola Maquinarias Luedma, quiero cotizar ${product.name}.`} target="_blank" rel="noreferrer">
+              <img src="/icons/brand-whatsapp.svg" alt="" aria-hidden="true" />
+              Solicitar por WhatsApp
+            </a>
+            {hasSource && <a class="btn btn-outline" href={product.sourceUrl} target="_blank" rel="noreferrer">Referencia original</a>}
+          </div>
+
+          <div class="product-share">
+            <span>Compartir por:</span>
+            <a href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(buildCanonical(siteSettings.siteUrl, product.path))}`} target="_blank" rel="noreferrer" aria-label="Compartir en Facebook">
+              <img src="/icons/brand-facebook.svg" alt="" aria-hidden="true" />
+            </a>
+            <a href={`https://wa.me/?text=${encodeURIComponent(`${product.name} - ${buildCanonical(siteSettings.siteUrl, product.path)}`)}`} target="_blank" rel="noreferrer" aria-label="Compartir en WhatsApp">
+              <img src="/icons/brand-whatsapp.svg" alt="" aria-hidden="true" />
+            </a>
+          </div>
+        </article>
+      </section>
+
+      <section class="section product-related featured-products" data-island="featured-products-carousel">
+        <h2>Productos relacionados</h2>
+        <div class="featured-products__carousel" data-featured-carousel>
+          <button class="featured-products__arrow featured-products__arrow--prev" type="button" data-featured-prev aria-label="Ver productos anteriores">
+            <img src="/icons/chevron-left.svg" alt="" aria-hidden="true" />
+          </button>
+          <div class="featured-products__viewport">
+            <div class="featured-products__track" data-featured-track>
+              {relatedPages.map((page, pageIndex) => (
+                <div class="featured-products__page" data-featured-page={pageIndex}>
+                  {page.map((item) => (
+                    <article class="showcase-card">
+                      <svg class="card-cut-border" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+                        <polygon class="card-cut-border__shape" points="0,0 97,0 100,3 100,100 3,100 0,97"></polygon>
+                      </svg>
+                      <a href={item.path || '/c/'} class="showcase-card__image-link" aria-label={`Ver producto ${item.name}`}>
+                        <img src={item.thumb || '/images/products/p1.png'} alt={`Imagen de ${item.name}`} loading="lazy" />
+                      </a>
+                      <div class="showcase-card__meta">
+                        <p class="showcase-card__brand">{item.brandName}</p>
+                        {item.isNew && <span class="showcase-card__badge">NUEVO</span>}
+                      </div>
+                      <h3 class="showcase-card__name">{item.name}</h3>
+                      <p class="showcase-card__delivery">{item.stockText}</p>
+                      <div class="showcase-card__footer">
+                        <div class="showcase-card__price-wrap">
+                          {typeof item.compareAtPrice === 'number' && <span class="showcase-card__old-price">S/ {item.compareAtPrice.toFixed(2)}</span>}
+                          <p class="showcase-card__price">{typeof item.price === 'number' ? `S/ ${item.price.toFixed(2)}` : 'Consultar'}</p>
+                        </div>
+                        <a class="btn btn-primary showcase-card__cta" href={item.path || '/c/'}>Ver detalles</a>
+                      </div>
+                    </article>
+                  ))}
+                </div>
+              ))}
+            </div>
+          </div>
+          <button class="featured-products__arrow featured-products__arrow--next" type="button" data-featured-next aria-label="Ver más productos">
+            <img src="/icons/chevron-right.svg" alt="" aria-hidden="true" />
+          </button>
+        </div>
+      </section>
+    </div>
+  </main>
+  <Footer />
+  <WhatsAppFloat />
+</BaseLayout>

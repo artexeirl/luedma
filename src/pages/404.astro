@@ -1,0 +1,23 @@
+﻿---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+---
+
+<BaseLayout seo={{ title: '404 | Maquinarias Luedma', description: 'Página no encontrada.', noindex: true }}>
+  <Header />
+
+  <main id="contenido" class="section">
+    <div class="container card page-panel page-panel--center">
+      <h1>Página no encontrada</h1>
+      <p>La URL solicitada no existe en esta migración. Usa el buscador o vuelve al inicio.</p>
+      <div class="hero-copy__actions hero-copy__actions--center">
+        <a class="btn btn-primary" href="/">Ir al inicio</a>
+        <a class="btn btn-outline" href="/search/">Buscar productos</a>
+      </div>
+    </div>
+  </main>
+
+  <Footer />
+</BaseLayout>
+
