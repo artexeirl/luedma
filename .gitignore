@@ -11,14 +11,29 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
+*.log
+*.err
 
 
 # environment variables
 .env
 .env.production
+.env.local
+.env.*.local
 
 # macOS-specific files
 .DS_Store
 
 # jetbrains setting folder
 .idea/
+
+# editor / local tooling
+.vscode/
+
+# sanity local runtime artifacts
+.sanity/runtime/
+
+# local backup/design/source files (not for production repo)
+NO-SUBIR/
+well-known.zip
+temp-delete-products.mjs
