@@ -54,8 +54,11 @@ type CmsHomeData = {
   trustStrip?: Array<{ icon?: string; title?: string; text?: string }>;
 };
 
-const homeCms = hasSanityConfig
-  ? await sanityFetch<CmsHomeData>(`*[_type == "homePage"][0]{
+let homeCms: CmsHomeData | null = null;
+
+if (hasSanityConfig) {
+  try {
+    homeCms = await sanityFetch<CmsHomeData>(`*[_type == "homePage"][0]{
       heroSlides[0...5]{
         alt,
         imageDesktop{asset->{url}},
@@ -85,11 +88,14 @@ const homeCms = hasSanityConfig
         image{asset->{url}},
         link{href}
       }
-    }`)
-  : null;
+    }`);
+  } catch {
+    homeCms = null;
+  }
+}
 const isExternalHref = (href?: string) => Boolean(href && /^(https?:)?\/\//.test(href));
 const cmsShowcaseEntries =
-  homeCms?.featuredProductsByBrand?.map((entry, entryIndex) => {
+  homeCms?.featuredProductsByBrand?.filter((entry): entry is NonNullable<typeof entry> => Boolean(entry)).map((entry, entryIndex) => {
     const brandLabel = entry.brand?.name?.trim();
     const brandSlug = entry.brand?.slug?.trim();
     if (!brandLabel || !brandSlug || !entry.products || entry.products.length === 0) {
@@ -97,15 +103,18 @@ const cmsShowcaseEntries =
     }
 
     const key = `${brandSlug}-${entryIndex}`;
-    const items = entry.products.slice(0, 8).map((product) => ({
-      slug: product.slug,
-      brand: brandLabel,
-      name: product.name || 'Producto',
-      sku: product.sku || undefined,
-      badge: product.isNew ? 'NUEVO' : undefined,
-      image: toCardThumb(product.images?.[0]?.asset?.url),
-      path: product.slug ? `/product/${product.slug}/` : '/tienda/',
-    }));
+    const items = entry.products
+      .filter((product): product is NonNullable<typeof product> => Boolean(product))
+      .slice(0, 8)
+      .map((product) => ({
+        slug: product.slug,
+        brand: brandLabel,
+        name: product.name || 'Producto',
+        sku: product.sku || undefined,
+        badge: product.isNew ? 'NUEVO' : undefined,
+        image: toCardThumb(product.images?.[0]?.asset?.url),
+        path: product.slug ? `/product/${product.slug}/` : '/tienda/',
+      }));
 
     return { key, label: brandLabel, items };
   }).filter((entry): entry is { key: string; label: string; items: ShowcaseItem[] } => Boolean(entry)) || [];
@@ -158,12 +167,15 @@ const marqueeBrands = uniqueMarqueeBrandImages.length > 1
   : uniqueMarqueeBrandImages;
 const heroSlides =
   homeCms?.heroSlides && homeCms.heroSlides.length > 0
-    ? homeCms.heroSlides.slice(0, 5).map((item, index) => ({
-        desktop: item.imageDesktop?.asset?.url || '/images/banners/banner-principal-1.webp',
-        mobile: item.imageMobile?.asset?.url || '/images/banners/movil/banner-principal-movil.webp',
-        alt: item.alt || `Banner principal ${index + 1}`,
-        href: item.link?.href?.trim() || undefined,
-      }))
+    ? homeCms.heroSlides
+        .filter((item): item is NonNullable<typeof item> => Boolean(item))
+        .slice(0, 5)
+        .map((item, index) => ({
+          desktop: item.imageDesktop?.asset?.url || '/images/banners/banner-principal-1.webp',
+          mobile: item.imageMobile?.asset?.url || '/images/banners/movil/banner-principal-movil.webp',
+          alt: item.alt || `Banner principal ${index + 1}`,
+          href: item.link?.href?.trim() || undefined,
+        }))
     : [
         {
           desktop: '/images/banners/banner-principal-1.webp',
@@ -187,6 +199,7 @@ const heroSlides =
 const offersBanners =
   homeCms?.promoBanners && homeCms.promoBanners.length > 0
     ? homeCms.promoBanners
+        .filter((item): item is NonNullable<typeof item> => Boolean(item))
         .slice(0, 2)
         .map((item, index) => ({
           image: item.image?.asset?.url || `/images/banners/banner-tool-${index + 1}.webp`,
@@ -216,15 +229,17 @@ const showcasePreviewImages = [
   '/images/products/p7.jpg',
 ];
 const featuredProductsFromCms =
-  homeCms?.featuredProductsCarousel?.map((product) => ({
-    slug: product.slug,
-    brand: product.brand?.name || 'Marca',
-    name: product.name || 'Producto',
-    sku: product.sku || undefined,
-    badge: product.isNew ? 'NUEVO' : undefined,
-    image: toCardThumb(product.images?.[0]?.asset?.url),
-    path: product.slug ? `/product/${product.slug}/` : '/tienda/',
-  })) || [];
+  homeCms?.featuredProductsCarousel
+    ?.filter((product): product is NonNullable<typeof product> => Boolean(product))
+    .map((product) => ({
+      slug: product.slug,
+      brand: product.brand?.name || 'Marca',
+      name: product.name || 'Producto',
+      sku: product.sku || undefined,
+      badge: product.isNew ? 'NUEVO' : undefined,
+      image: toCardThumb(product.images?.[0]?.asset?.url),
+      path: product.slug ? `/product/${product.slug}/` : '/tienda/',
+    })) || [];
 const featuredProducts: ShowcaseItem[] =
   featuredProductsFromCms.length > 0 ? featuredProductsFromCms.slice(0, 12) : Object.values(effectiveShowcaseIndex).flat().slice(0, 12);
 const featuredPages = Array.from({ length: Math.ceil(featuredProducts.length / 4) }, (_, pageIndex) =>
