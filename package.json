@@ -15,7 +15,8 @@
     "test:watch": "vitest",
     "studio:dev": "sanity dev",
     "studio:build": "sanity build",
-    "studio:deploy": "sanity deploy"
+    "studio:deploy": "sanity deploy",
+    "sync:wp-products": "sanity exec scripts/sync-wp-products-to-sanity.mjs --with-user-token --replace"
   },
   "dependencies": {
     "@sanity/client": "^7.10.0",
@@ -25,10 +26,11 @@
     "styled-components": "^6.4.1"
   },
   "devDependencies": {
-    "@astrojs/check": "^0.9.8",
+    "@astrojs/check": "^0.9.2",
     "@astrojs/node": "^10.0.6",
-    "@sanity/vision": "^4.11.0",
-    "sanity": "^4.11.0",
+    "@astrojs/vercel": "^10.0.6",
+    "@sanity/vision": "^5.23.0",
+    "sanity": "^5.23.0",
     "typescript": "^5.9.3",
     "vitest": "^4.0.7"
   }
