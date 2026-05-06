@@ -2,6 +2,7 @@
 import '../styles/pages/contacto.css';
 import '../styles/pages/faq.css';
 import '../styles/pages/product-detail.css';
+import SpeedInsights from '@vercel/speed-insights/astro';
 import { routeIndex, siteSettings } from '../data/snapshot';
 import type { SeoMeta } from '../types/content';
 import { buildCanonical, getSeoForPath } from '../utils/seo';
@@ -187,6 +188,7 @@ const orgSchema = {
   <body>
     <a class="skip-link" href="#contenido">Saltar al contenido</a>
     <slot />
+    <SpeedInsights />
     <script>
       import { startIslands } from '../scripts/islands/bootstrap';
 

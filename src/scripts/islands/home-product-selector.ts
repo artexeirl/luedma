@@ -3,8 +3,7 @@
 type ShowcaseItem = {
   brand: string;
   name: string;
-  price: string;
-  oldPrice?: string;
+  sku?: string;
   badge?: string;
   image?: string;
   path?: string;
@@ -66,27 +65,16 @@ function buildCard(item: ShowcaseItem): HTMLElement {
   const footer = document.createElement('div');
   footer.className = 'showcase-card__footer';
 
-  const priceWrap = document.createElement('div');
-  priceWrap.className = 'showcase-card__price-wrap';
-
-  if (item.oldPrice) {
-    const oldPrice = document.createElement('span');
-    oldPrice.className = 'showcase-card__old-price';
-    oldPrice.textContent = item.oldPrice;
-    priceWrap.append(oldPrice);
-  }
-
-  const price = document.createElement('p');
-  price.className = 'showcase-card__price';
-  price.textContent = item.price;
-  priceWrap.append(price);
+  const sku = document.createElement('p');
+  sku.className = 'showcase-card__sku';
+  sku.textContent = `SKU: ${item.sku || 'No especificado'}`;
 
   const cta = document.createElement('a');
   cta.className = 'btn btn-primary showcase-card__cta';
   cta.href = item.path || '/tienda/';
   cta.textContent = 'Ver detalles';
 
-  footer.append(priceWrap, cta);
+  footer.append(sku, cta);
   article.append(imageLink, meta, name, footer);
   return article;
 }

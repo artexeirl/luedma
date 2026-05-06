@@ -4,7 +4,15 @@ import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
 import Breadcrumbs from '../../components/Breadcrumbs.astro';
 import WhatsAppFloat from '../../components/WhatsAppFloat.astro';
-import { getBrandBySlug, getCategoryBySlug, getProductsBySlugs, getProductBySlug, products, siteSettings } from '../../data/snapshot';
+import {
+  fetchSanityProductDetailBySlug,
+  getBrandBySlug,
+  getCategoryBySlug,
+  getProductsBySlugs,
+  getProductBySlug,
+  products,
+  siteSettings,
+} from '../../data/snapshot';
 import { buildBreadcrumbSchema, buildProductSchema, buildCanonical } from '../../utils/seo';
 import type { Category, GalleryIslandProps } from '../../types/content';
 
@@ -12,7 +20,8 @@ type PortableBlock = { _type?: string; listItem?: string; children?: Array<{ tex
 type TechRow = { label: string; value: string };
 
 const slugParam = Astro.params.slug;
-const product = slugParam ? getProductBySlug(slugParam) : undefined;
+const baseProduct = slugParam ? getProductBySlug(slugParam) : undefined;
+const product = slugParam ? (await fetchSanityProductDetailBySlug(slugParam)) || baseProduct : undefined;
 if (!product) return Astro.redirect('/404/');
 
 const brand = getBrandBySlug(product.brandSlug);
@@ -20,7 +29,16 @@ const category = getCategoryBySlug(product.categorySlug);
 const mainImage = product.images[0] || '/images/products/p1.png';
 const hasSource = Boolean(product.sourceUrl && product.sourceUrl.trim().length > 0);
 const relatedRaw = getProductsBySlugs(product.relatedSlugs);
-const fallbackRelated = products.filter((item) => item.slug !== product.slug).slice(0, 12);
+const fallbackRelated = products
+  .filter((item) => item.slug !== product.slug)
+  .sort((a, b) => {
+    const score = (item: typeof a) =>
+      (item.brandSlug === product.brandSlug ? 3 : 0) +
+      (item.categorySlug === product.categorySlug ? 2 : 0) +
+      (item.isNew ? 1 : 0);
+    return score(b) - score(a);
+  })
+  .slice(0, 12);
 const relatedItems = (relatedRaw.length > 0 ? relatedRaw : fallbackRelated).slice(0, 12).map((item) => ({
   ...item,
   brandName: getBrandBySlug(item.brandSlug)?.name || item.brandSlug,
@@ -191,8 +209,17 @@ const technicalRows = parseTechnicalRows(technicalSheetRawHtml);
           <p class="product-info-panel__excerpt">SKU: {product.sku || 'No especificado'}</p>
 
           <div class="product-pricing">
-            {typeof product.compareAtPrice === 'number' && <span class="product-pricing__old">S/ {product.compareAtPrice.toFixed(2)}</span>}
-            <p class="product-pricing__current">{typeof product.price === 'number' ? `S/ ${product.price.toFixed(2)}` : 'Consultar precio'}</p>
+            <a
+              class="btn btn-primary product-pricing__cta"
+              data-island="whatsapp-cta"
+              data-whatsapp-number={siteSettings.whatsappNumber}
+              data-whatsapp-message={`Hola Maquinarias Luedma, quiero cotizar ${product.name}. SKU: ${product.sku || 'No especificado'}.`}
+              target="_blank"
+              rel="noreferrer"
+            >
+              <img src="/icons/brand-whatsapp.svg" alt="" aria-hidden="true" />
+              COTIZAR POR WHATSAPP
+            </a>
           </div>
 
           <div class="product-description">
@@ -200,10 +227,6 @@ const technicalRows = parseTechnicalRows(technicalSheetRawHtml);
           </div>
 
           <div class="product-actions">
-            <a class="btn btn-primary" data-island="whatsapp-cta" data-whatsapp-number={siteSettings.whatsappNumber} data-whatsapp-message={`Hola Maquinarias Luedma, quiero cotizar ${product.name}.`} target="_blank" rel="noreferrer">
-              <img src="/icons/brand-whatsapp.svg" alt="" aria-hidden="true" />
-              SOLICITAR POR WHATSAPP
-            </a>
             {hasSource && <a class="btn btn-outline" href={product.sourceUrl} target="_blank" rel="noreferrer">Referencia original</a>}
           </div>
 
@@ -277,10 +300,7 @@ const technicalRows = parseTechnicalRows(technicalSheetRawHtml);
                       </div>
                       <h3 class="showcase-card__name">{item.name}</h3>
                       <div class="showcase-card__footer">
-                        <div class="showcase-card__price-wrap">
-                          {typeof item.compareAtPrice === 'number' && <span class="showcase-card__old-price">S/ {item.compareAtPrice.toFixed(2)}</span>}
-                          <p class="showcase-card__price">{typeof item.price === 'number' ? `S/ ${item.price.toFixed(2)}` : 'Consultar'}</p>
-                        </div>
+                        <p class="showcase-card__sku">SKU: {item.sku || 'No especificado'}</p>
                         <a class="btn btn-primary showcase-card__cta" href={item.path || '/tienda/'}>Ver detalles</a>
                       </div>
                     </article>

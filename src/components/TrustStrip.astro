@@ -1,27 +1,11 @@
-﻿---
+---
 import '../styles/components/trust-strip.css';
-import { hasSanityConfig, sanityFetch } from '../lib/sanity.client';
 
-type CmsHomeData = {
-  trustStrip?: Array<{ icon?: string; title?: string; text?: string }>;
-};
-
-const homeCms = hasSanityConfig
-  ? await sanityFetch<CmsHomeData>(`*[_type == "homePage"][0]{ trustStrip[]{icon, title, text} }`)
-  : null;
-
-const trustHighlights =
-  homeCms?.trustStrip && homeCms.trustStrip.length > 0
-    ? homeCms.trustStrip.map((item) => ({
-        icon: item.icon || '/icons/package.svg',
-        title: item.title || 'Beneficio',
-        description: item.text || '',
-      }))
-    : [
-        { icon: '/icons/package.svg', title: 'Envío express', description: 'Llevamos tus productos a tu casa' },
-        { icon: '/icons/credit-card-shield.svg', title: 'Compras seguras', description: 'Tus compras son 100% protegidas' },
-        { icon: '/icons/support.svg', title: 'Equipo especializado', description: 'Te ayudamos en lo que necesites' },
-      ];
+const trustHighlights = [
+  { icon: '/icons/package.svg', title: 'Envío express', description: 'Llevamos tus productos a tu casa' },
+  { icon: '/icons/credit-card-shield.svg', title: 'Compras seguras', description: 'Tus compras son 100% protegidas' },
+  { icon: '/icons/support.svg', title: 'Equipo especializado', description: 'Te ayudamos en lo que necesites' },
+];
 ---
 
 <section class="trust-strip" data-island="trust-strip" aria-label="Beneficios de compra">
@@ -43,4 +27,3 @@ const trustHighlights =
     </div>
   </div>
 </section>
-

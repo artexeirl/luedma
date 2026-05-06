@@ -60,14 +60,7 @@ const cardImage =
   </h3>
 
   <div class="showcase-card__footer">
-    <div class="showcase-card__price-wrap">
-      {typeof product.compareAtPrice === 'number' && (
-        <span class="showcase-card__old-price">S/ {product.compareAtPrice.toFixed(2)}</span>
-      )}
-      <p class="showcase-card__price">
-        {typeof product.price === 'number' ? `S/ ${product.price.toFixed(2)}` : 'Consultar'}
-      </p>
-    </div>
+    <p class="showcase-card__sku">SKU: {product.sku || 'No especificado'}</p>
     <a class="btn btn-primary showcase-card__cta" href={product.path}>Ver detalles</a>
   </div>
 </article>

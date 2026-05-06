@@ -1,4 +1,5 @@
 import {defineArrayMember, defineField, defineType} from 'sanity';
+import {normalizeBrandSlug} from '../brandCanonical';
 import {ROOT_CATEGORIES, SUBCATEGORY_OPTIONS} from '../productCategories';
 
 function subcategoryField(rootSlug: string, fieldName: string, title: string) {
@@ -37,13 +38,39 @@ export const productType = defineType({
       type: 'reference',
       to: [{type: 'brand'}],
       options: {disableNew: true},
-      validation: (r) => r.required(),
+      validation: (r) =>
+        r.required().custom(async (value, context) => {
+          const ref = typeof value === 'object' && value && '_ref' in value ? String(value._ref || '') : '';
+          if (!ref) return true;
+
+          const publishedId = ref.replace(/^drafts\./, '');
+          const client = context.getClient({apiVersion: '2025-01-01'});
+          const brand = await client.fetch<{slug?: string; name?: string} | null>(
+            `*[_type == "brand" && _id == $id][0]{name, "slug": slug.current}`,
+            {id: publishedId},
+          );
+
+          if (!brand) {
+            return 'La marca referenciada no esta publicada. Publica la marca antes de usarla en productos.';
+          }
+
+          if (!brand.slug) {
+            return 'La marca referenciada no tiene slug.';
+          }
+
+          const canonicalSlug = normalizeBrandSlug(brand.slug);
+          if (brand.slug !== canonicalSlug) {
+            return `La marca referenciada usa un slug no canonico ("${brand.slug}"). Debe ser "${canonicalSlug}".`;
+          }
+
+          return true;
+        }),
     }),
     defineField({
       name: 'categoryRoot',
       title: 'Categoria principal',
       type: 'string',
-      options: {list: ROOT_CATEGORIES, layout: 'dropdown'},
+      options: {list: [...ROOT_CATEGORIES], layout: 'dropdown'},
       validation: (r) => r.required(),
     }),
     subcategoryField('accesorios-de-herramientas', 'subcategoryAccesorios', 'Subcategoria'),
@@ -119,6 +146,41 @@ export const productType = defineType({
         }),
       ],
       validation: (r) => r.required().min(1),
+    }),
+    defineField({
+      name: 'relatedProducts',
+      title: 'Productos relacionados',
+      description: 'Opcional. Si no eliges productos, la web mostrará relacionados automáticos.',
+      type: 'array',
+      of: [
+        defineArrayMember({
+          type: 'reference',
+          to: [{type: 'product'}],
+          options: {
+            disableNew: true,
+            filter: ({document, parent}) => {
+              const selfId =
+                typeof document?._id === 'string' && document._id.length > 0
+                  ? document._id.replace(/^drafts\./, '')
+                  : '';
+              const selectedProductIds = Array.isArray(parent)
+                ? parent
+                    .map((item) => (item && typeof item === 'object' ? (item as {_ref?: string})._ref : undefined))
+                    .filter((id): id is string => typeof id === 'string' && id.length > 0)
+                    .map((id) => id.replace(/^drafts\./, ''))
+                : [];
+
+              return {
+                filter: '_type == "product" && !(_id in $excludedIds) && slug.current != null',
+                params: {
+                  excludedIds: selfId ? [selfId, ...selectedProductIds] : selectedProductIds,
+                },
+              };
+            },
+          },
+        }),
+      ],
+      validation: (r) => r.unique().max(12),
     }),
     defineField({name: 'featured', title: 'Producto destacado', type: 'boolean', initialValue: false}),
     defineField({name: 'seo', title: 'SEO', type: 'seo'}),

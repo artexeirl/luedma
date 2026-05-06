@@ -1,4 +1,5 @@
-﻿import {getCliClient} from 'sanity/cli';
+import {getCliClient} from 'sanity/cli';
+import {canonicalBrandId, normalizeBrandSlug} from './lib/brand-slugs.mjs';
 
 const WP_API_BASE = 'https://www.maquinariasluedma.com.pe/wp-json/wc/store/v1/products';
 const PER_PAGE = 100;
@@ -62,6 +63,39 @@ function slugify(input) {
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '');
+}
+
+function normalizeImportedBrandSlug(input) {
+  return normalizeBrandSlug(slugify(input));
+}
+
+function choosePreferredBrandDoc(current, candidate) {
+  if (!current) return candidate;
+  if (current._id === canonicalBrandId(current.slug)) return current;
+  if (candidate._id === canonicalBrandId(candidate.slug)) return candidate;
+  if (!current._id.startsWith('drafts.') && candidate._id.startsWith('drafts.')) return current;
+  if (current._id.startsWith('drafts.') && !candidate._id.startsWith('drafts.')) return candidate;
+  return current;
+}
+
+function buildBrandIndex(brands) {
+  const byCanonicalSlug = new Map();
+  const duplicates = new Map();
+
+  for (const brand of brands) {
+    const canonicalSlug = normalizeImportedBrandSlug(brand.slug || brand.name);
+    if (!canonicalSlug) continue;
+
+    const enriched = {...brand, canonicalSlug};
+    const previous = byCanonicalSlug.get(canonicalSlug);
+    if (previous) {
+      duplicates.set(canonicalSlug, [...(duplicates.get(canonicalSlug) || [previous]), enriched]);
+    }
+
+    byCanonicalSlug.set(canonicalSlug, choosePreferredBrandDoc(previous, enriched));
+  }
+
+  return {byCanonicalSlug, duplicates};
 }
 
 function decodeHtml(input) {
@@ -150,18 +184,24 @@ async function fetchAllWpProducts() {
 }
 
 async function ensureBrands(client, wpProducts) {
-  const existing = await client.fetch(`*[_type == "brand"]{_id, "slug": slug.current, name}`);
-  const bySlug = new Map(existing.map((item) => [item.slug, item]));
+  const existing = await client.fetch(`*[_type == "brand" && !(_id in path("drafts.**"))]{_id, "slug": slug.current, name}`);
+  const {byCanonicalSlug, duplicates} = buildBrandIndex(existing);
+
+  duplicates.forEach((items, canonicalSlug) => {
+    const ids = items.map((item) => item._id).join(', ');
+    console.warn(`Advertencia: multiples marcas comparten el slug canonico "${canonicalSlug}": ${ids}`);
+  });
 
   for (const product of wpProducts) {
     const brandRaw = product.brands?.[0] || product.attributes?.find((a) => a?.taxonomy === 'pa_marca')?.terms?.[0];
     const brandName = String(brandRaw?.name || '').trim();
     if (!brandName) continue;
-    const brandSlug = slugify(brandRaw?.slug || brandName);
-    if (!brandSlug || bySlug.has(brandSlug)) continue;
+
+    const brandSlug = normalizeImportedBrandSlug(brandRaw?.slug || brandName);
+    if (!brandSlug || byCanonicalSlug.has(brandSlug)) continue;
 
     const brandDoc = {
-      _id: `brand.${brandSlug}`,
+      _id: canonicalBrandId(brandSlug),
       _type: 'brand',
       name: brandName,
       slug: {_type: 'slug', current: brandSlug},
@@ -172,10 +212,10 @@ async function ensureBrands(client, wpProducts) {
     };
 
     await client.createIfNotExists(brandDoc);
-    bySlug.set(brandSlug, {_id: brandDoc._id, slug: brandSlug, name: brandName});
+    byCanonicalSlug.set(brandSlug, {_id: brandDoc._id, slug: brandSlug, name: brandName, canonicalSlug: brandSlug});
   }
 
-  return bySlug;
+  return byCanonicalSlug;
 }
 
 async function uploadMainImage(client, product, imageCache) {
@@ -243,9 +283,10 @@ async function run() {
     }
 
     const brandRaw = wp.brands?.[0] || wp.attributes?.find((a) => a?.taxonomy === 'pa_marca')?.terms?.[0];
-    const brandSlug = slugify(brandRaw?.slug || brandRaw?.name || '');
+    const brandSlug = normalizeImportedBrandSlug(brandRaw?.slug || brandRaw?.name || '');
     const brand = brandMap.get(brandSlug);
     if (!brand) {
+      console.warn(`Producto omitido ${slugCurrent}: no se encontro marca canonica para "${brandRaw?.name || brandRaw?.slug || ''}"`);
       skipped += 1;
       continue;
     }
@@ -325,4 +366,3 @@ run().catch((error) => {
   console.error(error);
   process.exit(1);
 });
-

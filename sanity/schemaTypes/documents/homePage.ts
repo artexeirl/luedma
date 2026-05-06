@@ -5,6 +5,21 @@ const validateWebp = (value: {asset?: {_ref?: string}} | undefined) => {
   return value.asset._ref.endsWith('-webp') ? true : 'La imagen debe estar en formato WEBP (.webp).';
 };
 
+const getValueAtPath = (root: unknown, path: Array<string | {_key: string}>): unknown => {
+  let current: unknown = root;
+  for (const segment of path) {
+    if (typeof segment === 'string') {
+      if (!current || typeof current !== 'object') return undefined;
+      current = (current as Record<string, unknown>)[segment];
+      continue;
+    }
+
+    if (!Array.isArray(current)) return undefined;
+    current = current.find((item) => item && typeof item === 'object' && (item as {_key?: string})._key === segment._key);
+  }
+  return current;
+};
+
 export const homePageType = defineType({
   name: 'homePage',
   title: 'Página de Inicio',
@@ -22,7 +37,7 @@ export const homePageType = defineType({
       name: 'heroSlides',
       title: 'Banners principales',
       description:
-        'Debes cargar de 1 a 5 banners. Formato obligatorio: WEBP. Tamaño requerido desktop: 2560x1024 px. Tamaño requerido móvil: 1000x1000 px.',
+        'Subir de 1 a 5 banners. Formato obligatorio: WEBP. Tamaño requerido desktop: 2560 x 1024px. Tamaño requerido móvil: 1000 x 1000px.',
       type: 'array',
       validation: (r) => r.required().min(1).max(5),
       of: [
@@ -49,6 +64,12 @@ export const homePageType = defineType({
               type: 'string',
               validation: (r) => r.required().min(5),
             }),
+            defineField({
+              name: 'link',
+              title: 'Enlace del banner',
+              description: 'Opcional. Ejemplo: /tienda/ o https://dominio.com',
+              type: 'link',
+            }),
           ],
           preview: {
             select: {title: 'alt', media: 'imageDesktop'},
@@ -59,8 +80,9 @@ export const homePageType = defineType({
     defineField({
       name: 'featuredProductsByBrand',
       title: 'Productos destacados por marca',
-      description: 'Configura aquí el selector por marca de la sección de productos destacados de Inicio.',
+      description: 'Configura aquí el selector por marca de la sección de productos destacados de la página Inicio.',
       type: 'array',
+      validation: (r) => r.required().min(1).max(5),
       of: [
         defineArrayMember({
           type: 'object',
@@ -77,8 +99,43 @@ export const homePageType = defineType({
               name: 'products',
               title: 'Productos',
               type: 'array',
-              of: [defineArrayMember({type: 'reference', to: [{type: 'product'}], options: {disableNew: true}})],
-              validation: (r) => r.required().min(1).max(12),
+              of: [
+                defineArrayMember({
+                  type: 'reference',
+                  to: [{type: 'product'}],
+                  options: {
+                    disableNew: true,
+                    filter: ({document, parentPath}) => {
+                      const blockPath = (parentPath || []).slice(0, -1) as Array<string | {_key: string}>;
+                      const blockValue = getValueAtPath(document, blockPath) as
+                        | {brand?: {_ref?: string}; products?: Array<{_ref?: string}>}
+                        | undefined;
+                      const brandRef = blockValue?.brand?._ref;
+                      const selectedProductRefs = (blockValue?.products || [])
+                        .map((item) => item?._ref)
+                        .filter((ref): ref is string => typeof ref === 'string' && ref.length > 0);
+
+                      if (!brandRef) {
+                        return {
+                          filter: '_type == "product" && false',
+                        };
+                      }
+
+                      const publishedBrandId = brandRef.replace(/^drafts\./, '');
+                      return {
+                        filter:
+                          '_type == "product" && brand._ref in [$draftBrandId, $publishedBrandId] && !(_id in $excludedProductIds)',
+                        params: {
+                          draftBrandId: `drafts.${publishedBrandId}`,
+                          publishedBrandId,
+                          excludedProductIds: selectedProductRefs,
+                        },
+                      };
+                    },
+                  },
+                }),
+              ],
+              validation: (r) => r.required().min(1).max(8),
             }),
           ],
           preview: {
@@ -101,9 +158,9 @@ export const homePageType = defineType({
       name: 'promoBanners',
       title: 'Banners promocionales',
       description:
-        'Puedes cargar de 1 a 3 banners. Formato obligatorio: WEBP. Tamaño requerido: 1024x983 px.',
+        'Subir exactamente 2 banners. Formato obligatorio: WEBP. Tamaño requerido: 1000 x 1000px.',
       type: 'array',
-      validation: (r) => r.required().min(1).max(3),
+      validation: (r) => r.required().min(2).max(2),
       of: [
         defineArrayMember({
           type: 'object',
@@ -121,9 +178,44 @@ export const homePageType = defineType({
               type: 'string',
               validation: (r) => r.required().min(5),
             }),
+            defineField({
+              name: 'link',
+              title: 'Enlace del banner',
+              description: 'Opcional. Ejemplo: /tienda/ o https://dominio.com',
+              type: 'link',
+            }),
           ],
           preview: {
             select: {title: 'alt', media: 'image'},
+          },
+        }),
+      ],
+    }),
+    defineField({
+      name: 'featuredProductsCarousel',
+      title: 'Productos destacados (carrusel)',
+      description:
+        'Selecciona entre 4 y 12 productos para la sección "Productos destacados" del Home. Este bloque es independiente del selector por marca.',
+      type: 'array',
+      validation: (r) => r.required().min(4).max(12).unique(),
+      of: [
+        defineArrayMember({
+          type: 'reference',
+          to: [{type: 'product'}],
+          options: {
+            disableNew: true,
+            filter: ({parent}) => {
+              const selectedProductIds = Array.isArray(parent)
+                ? parent
+                    .map((item) => (item && typeof item === 'object' ? (item as {_ref?: string})._ref : undefined))
+                    .filter((id): id is string => typeof id === 'string' && id.length > 0)
+                : [];
+
+              return {
+                filter: '_type == "product" && !(_id in $selectedProductIds)',
+                params: {selectedProductIds},
+              };
+            },
           },
         }),
       ],

@@ -4,62 +4,52 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import WhatsAppFloat from '../components/WhatsAppFloat.astro';
-import { brands, products as catalogProducts } from '../data/snapshot';
+import { brands } from '../data/snapshot';
 import { hasSanityConfig, sanityFetch } from '../lib/sanity.client';
 
 type ShowcaseItem = {
   slug?: string;
   brand: string;
   name: string;
-  price: string;
-  oldPrice?: string;
+  sku?: string;
   badge?: string;
   image?: string;
   path?: string;
 };
-
-const SHOWCASE_BRAND_TABS = [
-  { key: 'makita', label: 'Makita', slugs: ['makita'] },
-  { key: 'bosch', label: 'Bosch', slugs: ['bosch'] },
-  { key: 'DeWalt', label: 'DeWalt', slugs: ['dewalt', 'de-walt'] },
-  { key: 'ronix', label: 'Ronix', slugs: ['ronix'] },
-  { key: 'milwaukee', label: 'Milwaukee', slugs: ['milwaukee'] },
-] as const;
-
-const formatCurrency = (value?: number) => (typeof value === 'number' ? `S/ ${value.toFixed(2)}` : 'Consultar');
 const buildShopBrandFilterPath = (slug: string) => `/tienda/m/${encodeURIComponent(slug)}/`;
 const toCardThumb = (src?: string) => {
   if (!src) return src;
   return src.includes('cdn.sanity.io') ? `${src}?w=400&h=400&fit=crop&auto=format` : src;
 };
-const effectiveShowcaseIndex = SHOWCASE_BRAND_TABS.reduce<Record<string, ShowcaseItem[]>>((acc, tab) => {
-  const tabProducts = catalogProducts
-    .filter((product) => tab.slugs.includes(product.brandSlug as (typeof tab.slugs)[number]))
-    .slice(0, 8)
-    .map((product) => {
-      const brand = brands.find((b) => b.slug === product.brandSlug);
-      return {
-        slug: product.slug,
-        brand: brand?.name || tab.label,
-        name: product.name,
-        price: formatCurrency(product.price),
-        oldPrice: product.compareAtPrice ? formatCurrency(product.compareAtPrice) : undefined,
-        badge: product.isNew ? 'NUEVO' : undefined,
-        image: toCardThumb(product.images?.[0]),
-        path: product.path || '/tienda/',
-      } as ShowcaseItem;
-    });
-  acc[tab.key] = tabProducts;
-  return acc;
-}, {});
-
-const defaultKey = SHOWCASE_BRAND_TABS[0].key;
-const defaultItems = effectiveShowcaseIndex[defaultKey] || [];
 type CmsHomeData = {
   heroSlides?: Array<{
     alt?: string;
     imageDesktop?: { asset?: { url?: string } };
     imageMobile?: { asset?: { url?: string } };
+    link?: { href?: string };
+  }>;
+  featuredProductsByBrand?: Array<{
+    brand?: { name?: string; slug?: string };
+    products?: Array<{
+      name?: string;
+      slug?: string;
+      sku?: string;
+      isNew?: boolean;
+      images?: Array<{ asset?: { url?: string } }>;
+    }>;
+  }>;
+  featuredProductsCarousel?: Array<{
+    name?: string;
+    slug?: string;
+    sku?: string;
+    isNew?: boolean;
+    brand?: { name?: string };
+    images?: Array<{ asset?: { url?: string } }>;
+  }>;
+  promoBanners?: Array<{
+    alt?: string;
+    image?: { asset?: { url?: string } };
+    link?: { href?: string };
   }>;
   trustStrip?: Array<{ icon?: string; title?: string; text?: string }>;
 };
@@ -69,10 +59,72 @@ const homeCms = hasSanityConfig
       heroSlides[0...5]{
         alt,
         imageDesktop{asset->{url}},
-        imageMobile{asset->{url}}
+        imageMobile{asset->{url}},
+        link{href}
+      },
+      featuredProductsByBrand[0...5]{
+        brand->{name, "slug": slug.current},
+        products[0...8]->{
+          name,
+          "slug": slug.current,
+          sku,
+          isNew,
+          images[]{asset->{url}}
+        }
+      },
+      featuredProductsCarousel[0...12]->{
+        name,
+        "slug": slug.current,
+        sku,
+        isNew,
+        brand->{name},
+        images[]{asset->{url}}
+      },
+      promoBanners[0...2]{
+        alt,
+        image{asset->{url}},
+        link{href}
       }
     }`)
   : null;
+const isExternalHref = (href?: string) => Boolean(href && /^(https?:)?\/\//.test(href));
+const cmsShowcaseEntries =
+  homeCms?.featuredProductsByBrand?.map((entry, entryIndex) => {
+    const brandLabel = entry.brand?.name?.trim();
+    const brandSlug = entry.brand?.slug?.trim();
+    if (!brandLabel || !brandSlug || !entry.products || entry.products.length === 0) {
+      return null;
+    }
+
+    const key = `${brandSlug}-${entryIndex}`;
+    const items = entry.products.slice(0, 8).map((product) => ({
+      slug: product.slug,
+      brand: brandLabel,
+      name: product.name || 'Producto',
+      sku: product.sku || undefined,
+      badge: product.isNew ? 'NUEVO' : undefined,
+      image: toCardThumb(product.images?.[0]?.asset?.url),
+      path: product.slug ? `/product/${product.slug}/` : '/tienda/',
+    }));
+
+    return { key, label: brandLabel, items };
+  }).filter((entry): entry is { key: string; label: string; items: ShowcaseItem[] } => Boolean(entry)) || [];
+
+const SHOWCASE_BRAND_TABS =
+  cmsShowcaseEntries.length > 0
+    ? cmsShowcaseEntries.map(({ key, label }) => ({ key, label }))
+    : [{ key: 'fallback', label: 'Destacados' }];
+const effectiveShowcaseIndex =
+  cmsShowcaseEntries.length > 0
+    ? cmsShowcaseEntries.reduce<Record<string, ShowcaseItem[]>>((acc, entry) => {
+        acc[entry.key] = entry.items;
+        return acc;
+      }, {})
+    : {
+        fallback: [],
+      };
+const defaultKey = SHOWCASE_BRAND_TABS[0].key;
+const defaultItems = effectiveShowcaseIndex[defaultKey] || [];
 
 const marqueeBrandImagesFromCms = brands
   .filter((brand) => Boolean(brand.logo))
@@ -110,22 +162,47 @@ const heroSlides =
         desktop: item.imageDesktop?.asset?.url || '/images/banners/banner-principal-1.webp',
         mobile: item.imageMobile?.asset?.url || '/images/banners/movil/banner-principal-movil.webp',
         alt: item.alt || `Banner principal ${index + 1}`,
+        href: item.link?.href?.trim() || undefined,
       }))
     : [
         {
           desktop: '/images/banners/banner-principal-1.webp',
           mobile: '/images/banners/movil/banner-principal-movil.webp',
           alt: 'Banner principal 1',
+          href: undefined,
         },
         {
           desktop: '/images/banners/banner-principal-1.webp',
           mobile: '/images/banners/movil/banner-principal-movil.webp',
           alt: 'Banner principal 2',
+          href: undefined,
         },
         {
           desktop: '/images/banners/banner-principal-1.webp',
           mobile: '/images/banners/movil/banner-principal-movil.webp',
           alt: 'Banner principal 3',
+          href: undefined,
+        },
+      ];
+const offersBanners =
+  homeCms?.promoBanners && homeCms.promoBanners.length > 0
+    ? homeCms.promoBanners
+        .slice(0, 2)
+        .map((item, index) => ({
+          image: item.image?.asset?.url || `/images/banners/banner-tool-${index + 1}.webp`,
+          alt: item.alt || `Banner promocional ${index + 1}`,
+          href: item.link?.href?.trim() || undefined,
+        }))
+    : [
+        {
+          image: '/images/banners/banner-tool-1.webp',
+          alt: 'Banner herramienta destacado',
+          href: undefined,
+        },
+        {
+          image: '/images/banners/banner-tool-2.webp',
+          alt: 'Banner herramienta promocional',
+          href: undefined,
         },
       ];
 const showcasePreviewImages = [
@@ -138,7 +215,18 @@ const showcasePreviewImages = [
   '/images/products/p4.jpg',
   '/images/products/p7.jpg',
 ];
-const featuredProducts: ShowcaseItem[] = Object.values(effectiveShowcaseIndex).flat().slice(0, 12);
+const featuredProductsFromCms =
+  homeCms?.featuredProductsCarousel?.map((product) => ({
+    slug: product.slug,
+    brand: product.brand?.name || 'Marca',
+    name: product.name || 'Producto',
+    sku: product.sku || undefined,
+    badge: product.isNew ? 'NUEVO' : undefined,
+    image: toCardThumb(product.images?.[0]?.asset?.url),
+    path: product.slug ? `/product/${product.slug}/` : '/tienda/',
+  })) || [];
+const featuredProducts: ShowcaseItem[] =
+  featuredProductsFromCms.length > 0 ? featuredProductsFromCms.slice(0, 12) : Object.values(effectiveShowcaseIndex).flat().slice(0, 12);
 const featuredPages = Array.from({ length: Math.ceil(featuredProducts.length / 4) }, (_, pageIndex) =>
   featuredProducts.slice(pageIndex * 4, pageIndex * 4 + 4)
 );
@@ -153,17 +241,38 @@ const featuredPages = Array.from({ length: Math.ceil(featuredProducts.length / 4
         <div class="hero-carousel__track" data-hero-track>
           {heroSlides.map((slide, index) => (
             <article class="hero-carousel__slide">
-              <picture>
-                <source media="(max-width: 760px)" srcset={slide.mobile} />
-                <img
-                  src={slide.desktop}
-                  alt={slide.alt}
-                  width="1920"
-                  height="640"
-                  loading={index === 0 ? 'eager' : 'lazy'}
-                  decoding="async"
-                />
-              </picture>
+              {slide.href ? (
+                <a
+                  href={slide.href}
+                  aria-label={slide.alt}
+                  target={isExternalHref(slide.href) ? '_blank' : undefined}
+                  rel={isExternalHref(slide.href) ? 'noreferrer' : undefined}
+                >
+                  <picture>
+                    <source media="(max-width: 760px)" srcset={slide.mobile} />
+                    <img
+                      src={slide.desktop}
+                      alt={slide.alt}
+                      width="1920"
+                      height="640"
+                      loading={index === 0 ? 'eager' : 'lazy'}
+                      decoding="async"
+                    />
+                  </picture>
+                </a>
+              ) : (
+                <picture>
+                  <source media="(max-width: 760px)" srcset={slide.mobile} />
+                  <img
+                    src={slide.desktop}
+                    alt={slide.alt}
+                    width="1920"
+                    height="640"
+                    loading={index === 0 ? 'eager' : 'lazy'}
+                    decoding="async"
+                  />
+                </picture>
+              )}
             </article>
           ))}
         </div>
@@ -217,10 +326,7 @@ const featuredPages = Array.from({ length: Math.ceil(featuredProducts.length / 4
                 <h3 class="showcase-card__name">{item.name}</h3>
 
                 <div class="showcase-card__footer">
-                  <div class="showcase-card__price-wrap">
-                    {item.oldPrice && <span class="showcase-card__old-price">{item.oldPrice}</span>}
-                    <p class="showcase-card__price">{item.price}</p>
-                  </div>
+                  <p class="showcase-card__sku">SKU: {item.sku || 'No especificado'}</p>
                   <a class="btn btn-primary showcase-card__cta" href={item.path || '/tienda/'}>Ver detalles</a>
                 </div>
               </article>
@@ -235,12 +341,22 @@ const featuredPages = Array.from({ length: Math.ceil(featuredProducts.length / 4
     <section class="section offers-strip" aria-label="Ofertas destacadas">
       <div class="container">
         <div class="offers-strip__row">
-          <article class="offers-strip__item">
-            <img src="/images/banners/banner-tool-1.webp" alt="Banner herramienta destacado" loading="lazy" decoding="async" />
-          </article>
-          <article class="offers-strip__item">
-            <img src="/images/banners/banner-tool-2.webp" alt="Banner herramienta promocional" loading="lazy" decoding="async" />
-          </article>
+          {offersBanners.map((banner) => (
+            <article class="offers-strip__item">
+              {banner.href ? (
+                <a
+                  href={banner.href}
+                  aria-label={banner.alt}
+                  target={isExternalHref(banner.href) ? '_blank' : undefined}
+                  rel={isExternalHref(banner.href) ? 'noreferrer' : undefined}
+                >
+                  <img src={banner.image} alt={banner.alt} loading="lazy" decoding="async" />
+                </a>
+              ) : (
+                <img src={banner.image} alt={banner.alt} loading="lazy" decoding="async" />
+              )}
+            </article>
+          ))}
         </div>
       </div>
     </section>
@@ -279,10 +395,7 @@ const featuredPages = Array.from({ length: Math.ceil(featuredProducts.length / 4
                       <h3 class="showcase-card__name">{item.name}</h3>
 
                       <div class="showcase-card__footer">
-                        <div class="showcase-card__price-wrap">
-                          {item.oldPrice && <span class="showcase-card__old-price">{item.oldPrice}</span>}
-                          <p class="showcase-card__price">{item.price}</p>
-                        </div>
+                        <p class="showcase-card__sku">SKU: {item.sku || 'No especificado'}</p>
                         <a class="btn btn-primary showcase-card__cta" href={item.path || '/tienda/'}>Ver detalles</a>
                       </div>
                     </article>

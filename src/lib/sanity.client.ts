@@ -10,7 +10,7 @@ export const sanityClient = createClient({
   projectId: projectId || 'missing-project-id',
   dataset,
   apiVersion,
-  useCdn: false,
+  useCdn: true,
   token: import.meta.env.SANITY_READ_TOKEN,
   perspective: 'published',
 });

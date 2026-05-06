@@ -94,6 +94,16 @@ const structure: StructureResolver = (S) =>
                     .filter('_type == "product" && !defined(categoryRoot)')
                     .defaultOrdering([{field: 'name', direction: 'asc'}]),
                 ),
+              S.listItem()
+                .title('Con marca invalida')
+                .id('products-invalid-brand')
+                .child(
+                  S.documentList()
+                    .title('Productos con marca invalida')
+                    .schemaType('product')
+                    .filter('_type == "product" && (!defined(brand) || !defined(brand->slug.current))')
+                    .defaultOrdering([{field: '_updatedAt', direction: 'desc'}]),
+                ),
             ]),
         ),
       S.listItem()

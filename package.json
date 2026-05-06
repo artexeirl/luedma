@@ -16,10 +16,13 @@
     "studio:dev": "sanity dev",
     "studio:build": "sanity build",
     "studio:deploy": "sanity deploy",
+    "sanity:audit-brands": "sanity exec scripts/audit-sanity-brand-integrity.mjs --with-user-token",
+    "sanity:repair-brands": "sanity exec scripts/repair-sanity-brand-references.mjs --with-user-token",
     "sync:wp-products": "sanity exec scripts/sync-wp-products-to-sanity.mjs --with-user-token --replace"
   },
   "dependencies": {
     "@sanity/client": "^7.10.0",
+    "@vercel/speed-insights": "^2.0.0",
     "astro": "^6.1.9",
     "react": "^19.2.5",
     "react-dom": "^19.2.5",

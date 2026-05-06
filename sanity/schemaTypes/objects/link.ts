@@ -5,7 +5,7 @@ export const linkType = defineType({
   title: 'Enlace',
   type: 'object',
   fields: [
-    defineField({name: 'label', title: 'Texto', type: 'string', validation: (r) => r.required()}),
+    defineField({name: 'label', title: 'Texto', type: 'string'}),
     defineField({name: 'href', title: 'URL', type: 'string', validation: (r) => r.required()}),
   ],
 });

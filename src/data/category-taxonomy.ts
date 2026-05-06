@@ -28,7 +28,7 @@ export const ELECTRIC_SUBCATEGORY_NAME_BY_SLUG = Object.fromEntries(
   ELECTRIC_SUBCATEGORY_DEFINITIONS.map((item) => [item.slug, item.name]),
 ) as Record<string, string>;
 
-const ELECTRIC_SUBCATEGORY_SLUG_SET = new Set(ELECTRIC_SUBCATEGORY_DEFINITIONS.map((item) => item.slug));
+const ELECTRIC_SUBCATEGORY_SLUG_SET = new Set<string>(ELECTRIC_SUBCATEGORY_DEFINITIONS.map((item) => item.slug));
 
 export function resolveElectricSubcategorySlug(slug?: string): string | undefined {
   if (!slug) return undefined;
