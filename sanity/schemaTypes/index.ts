@@ -1,4 +1,5 @@
 ﻿import {brandType} from './documents/brand';
+import {categoryType} from './documents/category';
 import {homePageType} from './documents/homePage';
 import {productType} from './documents/product';
 import {siteSettingsType} from './documents/siteSettings';
@@ -9,6 +10,7 @@ export const schemaTypes = [
   linkType,
   seoType,
   brandType,
+  categoryType,
   productType,
   homePageType,
   siteSettingsType,

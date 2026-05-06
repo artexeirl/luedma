@@ -1,0 +1,44 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import Header from '../../../components/Header.astro';
+import Footer from '../../../components/Footer.astro';
+import CatalogSection from '../../../components/CatalogSection.astro';
+import WhatsAppFloat from '../../../components/WhatsAppFloat.astro';
+import { brands, products, siteSettings, getBrandBySlug } from '../../../data/snapshot';
+import type { Product } from '../../../types/content';
+
+const slug = Astro.params.slug || '';
+const brand = getBrandBySlug(slug);
+
+if (!brand) {
+  return Astro.redirect('/tienda/');
+}
+
+const brandProducts = products.filter((product: Product) => product.brandSlug === brand.slug);
+---
+
+<BaseLayout
+  seo={{
+    title: `${brand.name} | ${siteSettings.siteName}`,
+    description: brand.summary || `Productos de ${brand.name}.`,
+    canonicalPath: `/tienda/m/${encodeURIComponent(brand.slug)}/`,
+    image: brand.logo,
+  }}
+>
+  <Header />
+
+  <main id="contenido" class="section">
+    <div class="container">
+      <CatalogSection
+        products={brandProducts}
+        title={`Marca: ${brand.name}`}
+        subtitle={brand.summary || 'Productos disponibles para esta marca.'}
+        initialBrand={brand.slug}
+        initialBrandLabel={brand.name}
+      />
+    </div>
+  </main>
+
+  <Footer />
+  <WhatsAppFloat />
+</BaseLayout>

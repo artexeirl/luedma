@@ -61,12 +61,19 @@ export interface Product {
   name: string;
   path: string;
   sku?: string;
+  createdAt?: string;
+  updatedAt?: string;
   price?: number;
   compareAtPrice?: number;
   stock?: number;
   isNew?: boolean;
   excerpt: string;
   description: string;
+  shortDescription?: string;
+  technicalSheet?: string;
+  shortDescriptionBlocks?: unknown[];
+  descriptionBlocks?: unknown[];
+  technicalSheetBlocks?: unknown[];
   brandSlug: string;
   categorySlug: string;
   images: string[];
@@ -120,6 +127,7 @@ export interface FilterIslandProps {
   pageSize: number;
   initialCategory?: string;
   initialBrand?: string;
+  initialQuery?: string;
 }
 
 export interface GalleryIslandProps {
@@ -129,6 +137,6 @@ export interface GalleryIslandProps {
 export interface CatalogFilterEventDetail {
   query: string;
   brand: string;
-  sort: 'name-asc' | 'name-desc';
+  sort: 'name-asc' | 'name-desc' | 'date-desc' | 'date-asc' | '';
   visibleCount: number;
 }

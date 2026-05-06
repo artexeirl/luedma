@@ -3,7 +3,9 @@ import { mountOnce, queryIslandRoots } from './runtime';
 function mountMobileMenu(root: HTMLElement): void {
   const menuButtons = Array.from(root.querySelectorAll<HTMLButtonElement>('[data-mobile-menu-button]'));
   const desktopCategoriesButton = root.querySelector<HTMLButtonElement>('.menu-trigger');
+  const desktopBottomWrap = root.querySelector<HTMLElement>('.site-header__bottom-wrap');
   const mobilePanel = root.querySelector<HTMLElement>('[data-mobile-menu-panel]');
+  const megaMenuBackdrop = root.querySelector<HTMLElement>('[data-mega-menu-backdrop]');
   const closeButtons = root.querySelectorAll<HTMLElement>('[data-mobile-menu-close]');
   const mobileTabButtons = root.querySelectorAll<HTMLButtonElement>('[data-mobile-tab-button]');
   const mobileTabPanels = root.querySelectorAll<HTMLElement>('[data-mobile-tab-panel]');
@@ -13,6 +15,7 @@ function mountMobileMenu(root: HTMLElement): void {
   const megaCategoryTriggers = root.querySelectorAll<HTMLElement>('[data-mega-category-trigger]');
   const megaCategoryPanels = root.querySelectorAll<HTMLElement>('[data-mega-category-panel]');
   const desktopQuery = window.matchMedia('(min-width: 961px)');
+  const mobileHeaderQuery = window.matchMedia('(max-width: 760px)');
 
   if (menuButtons.length === 0 || !mobilePanel) {
     return;
@@ -23,7 +26,18 @@ function mountMobileMenu(root: HTMLElement): void {
     document.body.appendChild(mobilePanel);
   }
 
+  // Move the mega menu backdrop out of the header so it layers correctly over page content
+  // without being affected by the header's stacking context.
+  if (megaMenuBackdrop && megaMenuBackdrop.parentElement !== document.body) {
+    document.body.appendChild(megaMenuBackdrop);
+  }
+
   const isDesktop = () => desktopQuery.matches;
+  let lastScrollY = window.scrollY;
+  let mobileHeaderOffset = 0;
+  let mobileHeaderHeight = root.getBoundingClientRect().height;
+  let ticking = false;
+  let closeMegaMenuTimer: number | null = null;
 
   const setMobileTab = (panelId: string) => {
     mobileTabButtons.forEach((button) => {
@@ -50,7 +64,60 @@ function mountMobileMenu(root: HTMLElement): void {
     });
   };
 
+  const syncMobileHeader = () => {
+    mobileHeaderHeight = root.getBoundingClientRect().height;
+    mobileHeaderOffset = Math.min(Math.max(mobileHeaderOffset, 0), mobileHeaderHeight);
+    root.style.top = `${mobileHeaderOffset * -1}px`;
+  };
+
+  const showMobileHeader = () => {
+    mobileHeaderOffset = 0;
+    root.style.top = '0px';
+  };
+
+  const updateMobileHeaderOnScroll = () => {
+    ticking = false;
+
+    if (!mobileHeaderQuery.matches) {
+      showMobileHeader();
+      root.style.top = '';
+      lastScrollY = window.scrollY;
+      return;
+    }
+
+    if (document.body.classList.contains('menu-open')) {
+      showMobileHeader();
+      lastScrollY = window.scrollY;
+      return;
+    }
+
+    const currentScrollY = Math.max(window.scrollY, 0);
+    const delta = currentScrollY - lastScrollY;
+    mobileHeaderHeight = root.getBoundingClientRect().height;
+
+    if (currentScrollY <= 0) {
+      showMobileHeader();
+      lastScrollY = currentScrollY;
+      return;
+    }
+
+    mobileHeaderOffset = Math.min(Math.max(mobileHeaderOffset + delta, 0), mobileHeaderHeight);
+    root.style.setProperty('--mobile-header-offset', `${mobileHeaderOffset}px`);
+    syncMegaBackdropPosition();
+    lastScrollY = currentScrollY;
+  };
+
+  const onScroll = () => {
+    if (ticking) {
+      return;
+    }
+
+    ticking = true;
+    requestAnimationFrame(updateMobileHeaderOnScroll);
+  };
+
   const openMobile = () => {
+    showMobileHeader();
     mobilePanel.hidden = false;
     mobilePanel.setAttribute('aria-hidden', 'false');
     requestAnimationFrame(() => {
@@ -90,6 +157,61 @@ function mountMobileMenu(root: HTMLElement): void {
       const isActive = panel.dataset.categorySlug === slug;
       panel.classList.toggle('is-active', isActive);
     });
+
+    syncMegaMenuHeight();
+  };
+
+  const setMegaBackdropVisible = (visible: boolean) => {
+    if (!megaMenuBackdrop) {
+      return;
+    }
+
+    if (visible) {
+      megaMenuBackdrop.hidden = false;
+      requestAnimationFrame(() => megaMenuBackdrop.classList.add('is-visible'));
+      return;
+    }
+
+    megaMenuBackdrop.classList.remove('is-visible');
+    window.setTimeout(() => {
+      if (!megaMenuBackdrop?.classList.contains('is-visible')) {
+        megaMenuBackdrop.hidden = true;
+      }
+    }, 220);
+  };
+
+  const syncMegaBackdropPosition = () => {
+    if (!megaMenuBackdrop) {
+      return;
+    }
+
+    const headerBottom = Math.max(0, root.getBoundingClientRect().bottom);
+    megaMenuBackdrop.style.setProperty('--mega-menu-backdrop-top', `${headerBottom}px`);
+  };
+
+  const syncMegaMenuHeight = () => {
+    if (!megaMenuPanel) {
+      return;
+    }
+
+    const content = megaMenuPanel.firstElementChild as HTMLElement | null;
+    const nextHeight = content?.scrollHeight || megaMenuPanel.scrollHeight || 0;
+    megaMenuPanel.style.setProperty('--mega-menu-height', `${nextHeight}px`);
+  };
+
+  const cancelMegaMenuClose = () => {
+    if (closeMegaMenuTimer !== null) {
+      window.clearTimeout(closeMegaMenuTimer);
+      closeMegaMenuTimer = null;
+    }
+  };
+
+  const scheduleMegaMenuClose = () => {
+    cancelMegaMenuClose();
+    closeMegaMenuTimer = window.setTimeout(() => {
+      closeMegaMenu();
+      closeMegaMenuTimer = null;
+    }, 80);
   };
 
   const openMegaMenu = (setInitialCategory = false) => {
@@ -102,21 +224,22 @@ function mountMobileMenu(root: HTMLElement): void {
     if (desktopCategoriesButton) {
       desktopCategoriesButton.setAttribute('aria-expanded', 'true');
     }
+    syncMegaBackdropPosition();
+    setMegaBackdropVisible(true);
 
-    if (!setInitialCategory) {
-      return;
+    if (setInitialCategory) {
+      const activeSlug = root.querySelector<HTMLElement>('[data-mega-category-trigger].is-active')?.dataset.categorySlug;
+      if (activeSlug) {
+        setActiveMegaCategory(activeSlug);
+      } else {
+        const firstSlug = megaCategoryTriggers[0]?.dataset.categorySlug;
+        if (firstSlug) {
+          setActiveMegaCategory(firstSlug);
+        }
+      }
     }
 
-    const activeSlug = root.querySelector<HTMLElement>('[data-mega-category-trigger].is-active')?.dataset.categorySlug;
-    if (activeSlug) {
-      setActiveMegaCategory(activeSlug);
-      return;
-    }
-
-    const firstSlug = megaCategoryTriggers[0]?.dataset.categorySlug;
-    if (firstSlug) {
-      setActiveMegaCategory(firstSlug);
-    }
+    requestAnimationFrame(syncMegaMenuHeight);
   };
 
   const closeMegaMenu = () => {
@@ -129,22 +252,16 @@ function mountMobileMenu(root: HTMLElement): void {
     if (desktopCategoriesButton) {
       desktopCategoriesButton.setAttribute('aria-expanded', 'false');
     }
+    setMegaBackdropVisible(false);
   };
 
   menuButtons.forEach((button) => {
-    button.addEventListener('click', () => {
+    button.addEventListener('click', (event) => {
       const isDesktopCategoriesTrigger = button.classList.contains('menu-trigger');
 
       if (isDesktop() && isDesktopCategoriesTrigger) {
-        if (!megaMenuPanel) {
-          return;
-        }
-
-        if (megaMenuPanel.classList.contains('is-open')) {
-          closeMegaMenu();
-        } else {
-          openMegaMenu(true);
-        }
+        // El menu-trigger ahora es un <a href="/c/">, la navegación la maneja el link.
+        // Solo cerramos el megamenú si estaba abierto (para mobile).
         return;
       }
 
@@ -182,6 +299,7 @@ function mountMobileMenu(root: HTMLElement): void {
 
   megaCategoryTriggers.forEach((trigger) => {
     const activate = () => {
+      cancelMegaMenuClose();
       const slug = trigger.dataset.categorySlug;
       if (!slug) {
         return;
@@ -195,8 +313,39 @@ function mountMobileMenu(root: HTMLElement): void {
 
     trigger.addEventListener('mouseenter', activate);
     trigger.addEventListener('focus', activate);
-    trigger.addEventListener('click', activate);
   });
+
+  desktopCategoriesButton?.addEventListener('mouseenter', () => {
+    if (!isDesktop()) {
+      return;
+    }
+    cancelMegaMenuClose();
+    openMegaMenu(true);
+  });
+
+  desktopBottomWrap?.addEventListener('mouseenter', () => {
+    if (!isDesktop()) {
+      return;
+    }
+    cancelMegaMenuClose();
+  });
+
+  desktopBottomWrap?.addEventListener('mouseleave', () => {
+    if (!isDesktop()) {
+      return;
+    }
+    scheduleMegaMenuClose();
+  });
+
+  megaMenuPanel?.addEventListener('mouseenter', cancelMegaMenuClose);
+  megaMenuPanel?.addEventListener('mouseleave', () => {
+    if (!isDesktop()) {
+      return;
+    }
+    scheduleMegaMenuClose();
+  });
+
+  megaMenuBackdrop?.addEventListener('click', closeMegaMenu);
 
   document.addEventListener('pointerdown', (event) => {
     const target = event.target as Node;
@@ -207,9 +356,33 @@ function mountMobileMenu(root: HTMLElement): void {
   });
 
   desktopQuery.addEventListener('change', () => {
+    cancelMegaMenuClose();
     closeMobile();
     closeMegaMenu();
   });
+
+  mobileHeaderQuery.addEventListener('change', () => {
+    showMobileHeader();
+    lastScrollY = window.scrollY;
+    syncMobileHeader();
+    syncMegaBackdropPosition();
+  });
+
+  window.addEventListener('scroll', () => {
+    onScroll();
+    // Keep backdrop position in sync while mega menu is open (header height may change on scroll)
+    if (megaMenuPanel?.classList.contains('is-open')) {
+      syncMegaBackdropPosition();
+    }
+  }, { passive: true });
+  window.addEventListener('resize', () => {
+    syncMobileHeader();
+    syncMegaBackdropPosition();
+    syncMegaMenuHeight();
+  }, { passive: true });
+  syncMobileHeader();
+  syncMegaBackdropPosition();
+  syncMegaMenuHeight();
 
   root.addEventListener('keydown', (event) => {
     if (event.key === 'Escape') {

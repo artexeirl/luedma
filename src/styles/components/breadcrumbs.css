@@ -6,6 +6,12 @@
   gap: var(--space-2);
   font-size: 0.86rem;
   overflow-wrap: anywhere;
+  text-transform: uppercase;
+}
+
+.breadcrumbs a,
+.breadcrumbs strong {
+  text-transform: uppercase;
 }
 
 .breadcrumbs strong {

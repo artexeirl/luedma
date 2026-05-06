@@ -1,4 +1,4 @@
-{
+﻿{
   "site": {
     "siteName": "Maquinarias Luedma",
     "siteUrl": "https://www.maquinariasluedma.com.pe",
@@ -11,10 +11,10 @@
       "facebook": "https://www.facebook.com/profile.php?id=61580686476857",
       "instagram": "https://www.instagram.com/maquinariasluedmaperu?igsh=MXNzaGhjcWYwb3owag=="
     },
-    "logo": "/images/luedma-logo.webp",
+    "logo": "/images/LOGO-LUEDMA.webp",
     "favicon": "/favicon.ico",
     "defaultSeo": {
-      "title": "Venta de Herramientas Eléctricas y Equipos de Construcción | Luedma",
+      "title": "Venta de Herramientas Eléctricas y Equipos de Taller | Luedma",
       "description": "Herramientas electricas, manuales y accesorios para uso profesional.",
       "image": "/images/hotsale-banner.webp",
       "canonicalPath": "/"
@@ -26,11 +26,11 @@
       "path": "/"
     },
     {
-      "label": "Categorias",
+      "label": "Categorías",
       "path": "/product-category/herramientas-electricas/",
       "children": [
         {
-          "label": "Herramientas Electricas",
+          "label": "Herramientas Eléctricas",
           "path": "/product-category/herramientas-electricas/"
         },
         {
@@ -38,18 +38,18 @@
           "path": "/product-category/herramientas-manuales/"
         },
         {
-          "label": "Accesorios y Consumibles",
+          "label": "Accesorios de Herramientas",
           "path": "/product-category/accesorios-de-herramientas/"
         },
         {
-          "label": "Seguridad e Iluminacion",
+          "label": "Seguridad e Iluminación",
           "path": "/product-category/seguridad-e-iluminacion/"
         }
       ]
     },
     {
       "label": "Marcas",
-      "path": "/marca/bosch/"
+      "path": "/m/bosch/"
     },
     {
       "label": "Buscar",
@@ -63,15 +63,15 @@
   "categories": [
     {
       "slug": "herramientas-electricas",
-      "name": "Herramientas Electricas",
+      "name": "Herramientas Eléctricas",
       "path": "/product-category/herramientas-electricas/",
       "summary": "Taladros, amoladoras y equipos electricos para uso profesional.",
       "heroImage": "/images/hotsale-banner.webp"
     },
     {
-      "slug": "amoladoras-y-pulidoras",
-      "name": "Amoladoras y Pulidoras",
-      "path": "/product-category/herramientas-electricas/amoladoras-y-pulidoras/",
+      "slug": "amoladoras-y-esmeriles",
+      "name": "Amoladoras y Esmeriles",
+      "path": "/product-category/herramientas-electricas/amoladoras-y-esmeriles/",
       "parentSlug": "herramientas-electricas"
     },
     {
@@ -81,45 +81,39 @@
       "parentSlug": "herramientas-electricas"
     },
     {
-      "slug": "bomba-agua",
-      "name": "Bombas de Agua",
-      "path": "/product-category/herramientas-electricas/bomba-agua/",
-      "parentSlug": "herramientas-electricas"
-    },
-    {
-      "slug": "compresores",
-      "name": "Compresores",
-      "path": "/product-category/herramientas-electricas/compresores/",
-      "parentSlug": "herramientas-electricas"
-    },
-    {
-      "slug": "construccion-y-demolicion",
-      "name": "Construccion y Demolicion",
-      "path": "/product-category/herramientas-electricas/construccion-y-demolicion/",
-      "parentSlug": "herramientas-electricas"
-    },
-    {
-      "slug": "cortadoras-de-cesped",
-      "name": "Cortadoras de Cesped",
-      "path": "/product-category/herramientas-electricas/cortadoras-de-cesped/",
-      "parentSlug": "herramientas-electricas"
-    },
-    {
-      "slug": "equipos-de-limpieza",
-      "name": "Equipos de Limpieza",
-      "path": "/product-category/herramientas-electricas/equipos-de-limpieza/",
-      "parentSlug": "herramientas-electricas"
-    },
-    {
       "slug": "lijadoras-y-cepillos",
       "name": "Lijadoras y Cepillos",
       "path": "/product-category/herramientas-electricas/lijadoras-y-cepillos/",
       "parentSlug": "herramientas-electricas"
     },
     {
-      "slug": "sierras-electricas",
-      "name": "Sierras Electricas",
-      "path": "/product-category/herramientas-electricas/sierras-electricas/",
+      "slug": "pistolas-de-calor",
+      "name": "Pistolas de Calor",
+      "path": "/product-category/herramientas-electricas/pistolas-de-calor/",
+      "parentSlug": "herramientas-electricas"
+    },
+    {
+      "slug": "rotomartillos-y-demolicion",
+      "name": "Rotomartillos y Demolicion",
+      "path": "/product-category/herramientas-electricas/rotomartillos-y-demolicion/",
+      "parentSlug": "herramientas-electricas"
+    },
+    {
+      "slug": "ruteadoras-fresadoras-rebajadoras",
+      "name": "Ruteadoras, Fresadoras, Rebajadoras",
+      "path": "/product-category/herramientas-electricas/ruteadoras-fresadoras-rebajadoras/",
+      "parentSlug": "herramientas-electricas"
+    },
+    {
+      "slug": "sierras-y-tronzadoras",
+      "name": "Sierras y Tronzadoras",
+      "path": "/product-category/herramientas-electricas/sierras-y-tronzadoras/",
+      "parentSlug": "herramientas-electricas"
+    },
+    {
+      "slug": "sopladoras-y-aspiradoras",
+      "name": "Sopladoras y Aspiradoras",
+      "path": "/product-category/herramientas-electricas/sopladoras-y-aspiradoras/",
       "parentSlug": "herramientas-electricas"
     },
     {
@@ -190,7 +184,7 @@
     },
     {
       "slug": "accesorios-de-herramientas",
-      "name": "Accesorios y Consumibles",
+      "name": "Accesorios de Herramientas",
       "path": "/product-category/accesorios-de-herramientas/",
       "summary": "Discos, brocas, hojas de sierra y consumibles."
     },
@@ -231,31 +225,31 @@
       "parentSlug": "accesorios-de-herramientas"
     },
     {
-      "slug": "equipos-de-taller-y-construccion",
-      "name": "Equipos de Taller y Construccion",
-      "path": "/product-category/equipos-de-taller-y-construccion/"
+      "slug": "equipos-de-taller",
+      "name": "Equipos de Taller",
+      "path": "/product-category/equipos-de-taller/"
     },
     {
       "slug": "equipos-de-levantamiento-y-carga",
       "name": "Equipos de Levantamiento y Carga",
-      "path": "/product-category/equipos-de-taller-y-construccion/equipos-de-levantamiento-y-carga/",
-      "parentSlug": "equipos-de-taller-y-construccion"
+      "path": "/product-category/equipos-de-taller/equipos-de-levantamiento-y-carga/",
+      "parentSlug": "equipos-de-taller"
     },
     {
       "slug": "equipos-de-medicion",
       "name": "Equipos de Medicion",
-      "path": "/product-category/equipos-de-taller-y-construccion/equipos-de-medicion/",
-      "parentSlug": "equipos-de-taller-y-construccion"
+      "path": "/product-category/equipos-de-taller/equipos-de-medicion/",
+      "parentSlug": "equipos-de-taller"
     },
     {
       "slug": "organizacion-y-almacenamiento",
       "name": "Organizacion y Almacenamiento",
-      "path": "/product-category/equipos-de-taller-y-construccion/organizacion-y-almacenamiento/",
-      "parentSlug": "equipos-de-taller-y-construccion"
+      "path": "/product-category/equipos-de-taller/organizacion-y-almacenamiento/",
+      "parentSlug": "equipos-de-taller"
     },
     {
       "slug": "seguridad-e-iluminacion",
-      "name": "Seguridad e Iluminacion",
+      "name": "Seguridad e Iluminación",
       "path": "/product-category/seguridad-e-iluminacion/",
       "summary": "Iluminacion de trabajo y material de seguridad."
     },
@@ -273,30 +267,30 @@
     }
   ],
   "brands": [
-    { "slug": "bosch", "name": "Bosch", "path": "/marca/bosch/", "logo": "/images/brands/bosch.webp" },
-    { "slug": "cattini", "name": "Cattini", "path": "/marca/cattini/" },
-    { "slug": "warc", "name": "Warc", "path": "/marca/warc/" },
-    { "slug": "wagner", "name": "Wagner", "path": "/marca/wagner/", "logo": "/images/brands/wagner.jpg" },
-    { "slug": "truper", "name": "Truper", "path": "/marca/truper/", "logo": "/images/brands/truper.webp" },
-    { "slug": "total", "name": "Total", "path": "/marca/total/", "logo": "/images/brands/total.png" },
-    { "slug": "tolsen", "name": "Tolsen", "path": "/marca/tolsen/" },
-    { "slug": "titan", "name": "Titan", "path": "/marca/titan/", "logo": "/images/brands/titan.png" },
-    { "slug": "stanley", "name": "Stanley", "path": "/marca/stanley/", "logo": "/images/brands/stanley.png" },
-    { "slug": "sagola", "name": "Sagola", "path": "/marca/sagola/", "logo": "/images/brands/sagola.png" },
-    { "slug": "ronix", "name": "Ronix", "path": "/marca/ronix/", "logo": "/images/brands/ronix.jpg" },
-    { "slug": "pretul", "name": "Pretul", "path": "/marca/pretul/" },
-    { "slug": "milwaukee", "name": "Milwaukee", "path": "/marca/milwaukee/" },
-    { "slug": "makute", "name": "Makute", "path": "/marca/makute/", "logo": "/images/brands/makute.png" },
-    { "slug": "makita", "name": "Makita", "path": "/marca/makita/" },
-    { "slug": "karcher", "name": "Karcher", "path": "/marca/karcher/", "logo": "/images/brands/karcher.png" },
-    { "slug": "irwin", "name": "Irwin", "path": "/marca/irwin/", "logo": "/images/brands/irwin.png" },
-    { "slug": "husqvarna", "name": "Husqvarna", "path": "/marca/husqvarna/" },
-    { "slug": "hilti", "name": "Hilti", "path": "/marca/hilti/", "logo": "/images/brands/hilti.webp" },
-    { "slug": "gtr", "name": "Gtr", "path": "/marca/gtr/" },
-    { "slug": "emtop", "name": "Emtop", "path": "/marca/emtop/" },
-    { "slug": "de-walt", "name": "De Walt", "path": "/marca/de-walt/", "logo": "/images/brands/dewalt.webp" },
-    { "slug": "bonelly", "name": "Bonelly", "path": "/marca/bonelly/" },
-    { "slug": "black-and-decker", "name": "Black and Decker", "path": "/marca/black-and-decker/" }
+    { "slug": "bosch", "name": "Bosch", "path": "/m/bosch/", "logo": "/images/brands/bosch.webp" },
+    { "slug": "cattini", "name": "Cattini", "path": "/m/cattini/" },
+    { "slug": "warc", "name": "Warc", "path": "/m/warc/" },
+    { "slug": "wagner", "name": "Wagner", "path": "/m/wagner/", "logo": "/images/brands/wagner.jpg" },
+    { "slug": "truper", "name": "Truper", "path": "/m/truper/", "logo": "/images/brands/truper.webp" },
+    { "slug": "total", "name": "Total", "path": "/m/total/", "logo": "/images/brands/total.png" },
+    { "slug": "tolsen", "name": "Tolsen", "path": "/m/tolsen/" },
+    { "slug": "titan", "name": "Titan", "path": "/m/titan/", "logo": "/images/brands/titan.png" },
+    { "slug": "stanley", "name": "Stanley", "path": "/m/stanley/", "logo": "/images/brands/stanley.png" },
+    { "slug": "sagola", "name": "Sagola", "path": "/m/sagola/", "logo": "/images/brands/sagola.png" },
+    { "slug": "ronix", "name": "Ronix", "path": "/m/ronix/", "logo": "/images/brands/ronix.jpg" },
+    { "slug": "pretul", "name": "Pretul", "path": "/m/pretul/" },
+    { "slug": "milwaukee", "name": "Milwaukee", "path": "/m/milwaukee/" },
+    { "slug": "makute", "name": "Makute", "path": "/m/makute/", "logo": "/images/brands/makute.png" },
+    { "slug": "makita", "name": "Makita", "path": "/m/makita/" },
+    { "slug": "karcher", "name": "Karcher", "path": "/m/karcher/", "logo": "/images/brands/karcher.png" },
+    { "slug": "irwin", "name": "Irwin", "path": "/m/irwin/", "logo": "/images/brands/irwin.png" },
+    { "slug": "husqvarna", "name": "Husqvarna", "path": "/m/husqvarna/" },
+    { "slug": "hilti", "name": "Hilti", "path": "/m/hilti/", "logo": "/images/brands/hilti.webp" },
+    { "slug": "gtr", "name": "Gtr", "path": "/m/gtr/" },
+    { "slug": "emtop", "name": "Emtop", "path": "/m/emtop/" },
+    { "slug": "de-walt", "name": "De Walt", "path": "/m/de-walt/", "logo": "/images/brands/dewalt.webp" },
+    { "slug": "bonelly", "name": "Bonelly", "path": "/m/bonelly/" },
+    { "slug": "black-and-decker", "name": "Black and Decker", "path": "/m/black-and-decker/" }
   ],
   "products": [
     {
@@ -370,7 +364,7 @@
       "excerpt": "GPO 14 CE",
       "description": "Pulidora profesional con motor de 1400W para acabados de precision.",
       "brandSlug": "bosch",
-      "categorySlug": "amoladoras-y-pulidoras",
+      "categorySlug": "amoladoras-y-esmeriles",
       "images": ["/images/products/p648.png"],
       "relatedSlugs": [
         "pistola-de-calor-1800w",
@@ -386,7 +380,7 @@
       "excerpt": "Pistola termica para mantenimiento y montaje.",
       "description": "Equipo para aplicaciones de calor controlado en taller y obra.",
       "brandSlug": "bosch",
-      "categorySlug": "herramientas-electricas",
+      "categorySlug": "pistolas-de-calor",
       "images": ["/images/products/p647.png"],
       "relatedSlugs": [
         "pulidora-bosch-gpo-14-ce-1400w-con-1-disco",
@@ -464,15 +458,15 @@
       "/product/pulidora-bosch-gpo-14-ce-1400w-con-1-disco/",
       "/product/pistola-de-calor-1800w/",
       "/product-category/herramientas-electricas/",
-      "/product-category/herramientas-electricas/amoladoras-y-pulidoras/",
+      "/product-category/herramientas-electricas/amoladoras-y-esmeriles/",
       "/product-category/herramientas-electricas/baterias-y-cargadores/",
-      "/product-category/herramientas-electricas/bomba-agua/",
-      "/product-category/herramientas-electricas/compresores/",
-      "/product-category/herramientas-electricas/construccion-y-demolicion/",
-      "/product-category/herramientas-electricas/cortadoras-de-cesped/",
-      "/product-category/herramientas-electricas/equipos-de-limpieza/",
       "/product-category/herramientas-electricas/lijadoras-y-cepillos/",
-      "/product-category/herramientas-electricas/sierras-electricas/",
+      "/product-category/herramientas-electricas/pistolas-de-calor/",
+      "/product-category/herramientas-electricas/rotomartillos-y-demolicion/",
+      "/product-category/herramientas-electricas/ruteadoras-fresadoras-rebajadoras/",
+      "/product-category/herramientas-electricas/sierras-y-tronzadoras/",
+      "/product-category/herramientas-electricas/sopladoras-y-aspiradoras/",
+      "/product-category/herramientas-electricas/taladros-y-atornilladores/",
       "/product-category/herramientas-manuales/",
       "/product-category/herramientas-manuales/abrazadoras/",
       "/product-category/herramientas-manuales/alicates-y-prensas/",
@@ -490,37 +484,40 @@
       "/product-category/accesorios-de-herramientas/hojas-sierra/",
       "/product-category/accesorios-de-herramientas/juego-de-llaves-de-vaso/",
       "/product-category/accesorios-de-herramientas/sierra-copa/",
-      "/product-category/equipos-de-taller-y-construccion/",
-      "/product-category/equipos-de-taller-y-construccion/equipos-de-levantamiento-y-carga/",
-      "/product-category/equipos-de-taller-y-construccion/equipos-de-medicion/",
-      "/product-category/equipos-de-taller-y-construccion/organizacion-y-almacenamiento/",
+      "/product-category/equipos-de-taller/",
+      "/product-category/equipos-de-taller/equipos-de-levantamiento-y-carga/",
+      "/product-category/equipos-de-taller/equipos-de-medicion/",
+      "/product-category/equipos-de-taller/organizacion-y-almacenamiento/",
       "/product-category/seguridad-e-iluminacion/",
       "/product-category/seguridad-e-iluminacion/iluminacion-de-trabajo/",
       "/product-category/seguridad-e-iluminacion/material-de-seguridad/",
-      "/marca/bosch/",
-      "/marca/cattini/",
-      "/marca/warc/",
-      "/marca/wagner/",
-      "/marca/truper/",
-      "/marca/total/",
-      "/marca/tolsen/",
-      "/marca/titan/",
-      "/marca/stanley/",
-      "/marca/sagola/",
-      "/marca/ronix/",
-      "/marca/pretul/",
-      "/marca/milwaukee/",
-      "/marca/makute/",
-      "/marca/makita/",
-      "/marca/karcher/",
-      "/marca/irwin/",
-      "/marca/husqvarna/",
-      "/marca/hilti/",
-      "/marca/gtr/",
-      "/marca/emtop/",
-      "/marca/de-walt/",
-      "/marca/bonelly/",
-      "/marca/black-and-decker/"
+      "/m/bosch/",
+      "/m/cattini/",
+      "/m/warc/",
+      "/m/wagner/",
+      "/m/truper/",
+      "/m/total/",
+      "/m/tolsen/",
+      "/m/titan/",
+      "/m/stanley/",
+      "/m/sagola/",
+      "/m/ronix/",
+      "/m/pretul/",
+      "/m/milwaukee/",
+      "/m/makute/",
+      "/m/makita/",
+      "/m/karcher/",
+      "/m/irwin/",
+      "/m/husqvarna/",
+      "/m/hilti/",
+      "/m/gtr/",
+      "/m/emtop/",
+      "/m/de-walt/",
+      "/m/bonelly/",
+      "/m/black-and-decker/"
     ]
   }
 }
+
+
+

@@ -1,0 +1,85 @@
+﻿---
+import '../../styles/pages/nosotros.css';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import WhatsAppFloat from '../../components/WhatsAppFloat.astro';
+import { siteSettings } from '../../data/snapshot';
+---
+
+<BaseLayout
+  seo={{
+    title: `Nosotros | ${siteSettings.siteName}`,
+    description: 'Conoce a Maquinarias Luedma, nuestra misión y visión.',
+    canonicalPath: '/nosotros/',
+  }}
+>
+  <Header />
+
+  <main id="contenido" class="about-page">
+    <section class="about-hero">
+      <div class="container about-hero__inner">
+        <nav class="about-hero__breadcrumb" aria-label="Breadcrumb">
+          <a href="/">Inicio</a>
+          <span aria-hidden="true">/</span>
+          <strong>Nosotros</strong>
+        </nav>
+        <h1>Nosotros</h1>
+      </div>
+    </section>
+
+    <section class="about-section">
+      <div class="container">
+        <article class="about-card about-card--who">
+          <img src="/images/nosotros-img.webp" alt="Equipo de Maquinarias Luedma" loading="lazy" decoding="async" />
+          <div>
+            <h2>¿Quiénes somos?</h2>
+            <p>
+              Especialistas en herramientas y equipos para trabajo profesional.
+            </p>
+            <p>
+              En Maquinarias Luedma impulsamos proyectos de industria, construcción y hogar con un catálogo
+              técnico de marcas reconocidas, asesoría comercial y atención cercana. Nuestro enfoque combina
+              disponibilidad de producto, orientación experta y tiempos de respuesta ágiles para que cada cliente
+              encuentre la solución correcta según su necesidad real.
+            </p>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="about-section about-section--tight">
+      <div class="container about-grid">
+        <article class="about-card about-card--watermark about-card--mission">
+          <h3>Misión</h3>
+          <p>
+            Ofrecer soluciones confiables para cada trabajo. Brindar herramientas, accesorios y equipos con
+            respaldo técnico, atención transparente y entrega eficiente para apoyar el rendimiento diario de
+            nuestros clientes.
+          </p>
+          <p>
+            Buscamos construir relaciones de largo plazo con cada empresa y profesional, aportando asesoría
+            comercial basada en experiencia de campo, propuestas de valor claras y un servicio postventa que
+            acompañe cada proyecto desde la compra hasta su ejecución.
+          </p>
+        </article>
+
+        <article class="about-card about-card--watermark about-card--vision">
+          <h3>Visión</h3>
+          <p>
+            Ser referente en Perú en venta técnica de herramientas. Consolidarnos como una empresa líder por
+            calidad de servicio, surtido de marcas y experiencia de compra omnicanal enfocada en resultados.
+          </p>
+          <p>
+            Aspiramos a fortalecer nuestra presencia nacional con procesos modernos, operaciones ágiles y una
+            plataforma digital sólida que permita a nuestros clientes cotizar, comparar y elegir con confianza,
+            manteniendo siempre estándares altos de calidad y cumplimiento.
+          </p>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+  <WhatsAppFloat />
+</BaseLayout>

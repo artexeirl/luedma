@@ -2,29 +2,11 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
-import Breadcrumbs from '../../components/Breadcrumbs.astro';
 import CatalogSection from '../../components/CatalogSection.astro';
 import WhatsAppFloat from '../../components/WhatsAppFloat.astro';
-import { categories, products, siteSettings } from '../../data/snapshot';
+import { categories, products, siteSettings, getCategoryBySlug } from '../../data/snapshot';
 import { categoryParamFromPath } from '../../utils/urls';
-import type { Category, Product } from '../../types/content';
-
-function collectCategorySlugs(target: Category): string[] {
-  const slugs = new Set<string>([target.slug]);
-  let changed = true;
-
-  while (changed) {
-    changed = false;
-    categories.forEach((candidate) => {
-      if (candidate.parentSlug && slugs.has(candidate.parentSlug) && !slugs.has(candidate.slug)) {
-        slugs.add(candidate.slug);
-        changed = true;
-      }
-    });
-  }
-
-  return [...slugs];
-}
+import type { Category } from '../../types/content';
 
 export function getStaticPaths() {
   return categories.map((category) => ({
@@ -33,15 +15,23 @@ export function getStaticPaths() {
   }));
 }
 
-const { category } = Astro.props as { category: Category };
-const acceptedSlugs = collectCategorySlugs(category);
-const categoryProducts = products.filter((product: Product) => acceptedSlugs.includes(product.categorySlug));
+const { category: propCategory } = Astro.props as { category?: Category };
+const slugParam = Astro.params.slug as string | undefined;
 
-const breadcrumbs = [
-  { label: 'Inicio', href: '/' },
-  { label: 'Categorías', href: '/search/' },
-  { label: category.name, href: category.path },
-];
+function resolveCategoryFromSlug(slug: string): Category | undefined {
+  const parts = slug.split('/').filter(Boolean);
+  const categorySlug = parts[parts.length - 1];
+  const category = getCategoryBySlug(categorySlug);
+  if (!category) return undefined;
+  if (category.parentSlug && parts.length > 1 && parts[parts.length - 2] !== category.parentSlug) return undefined;
+  return category;
+}
+
+const category = propCategory ?? (slugParam ? resolveCategoryFromSlug(slugParam) : undefined);
+
+if (!category) {
+  return Astro.redirect('/404/');
+}
 ---
 
 <BaseLayout
@@ -55,11 +45,9 @@ const breadcrumbs = [
 
   <main id="contenido" class="section">
     <div class="container">
-      <Breadcrumbs items={breadcrumbs} />
       <CatalogSection
-        products={categoryProducts}
-        title={category.name}
-        subtitle={category.summary || 'Productos asociados a esta categoría.'}
+        products={products}
+        initialCategory={category.slug}
       />
     </div>
   </main>
@@ -67,4 +55,3 @@ const breadcrumbs = [
   <Footer />
   <WhatsAppFloat />
 </BaseLayout>
-

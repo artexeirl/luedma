@@ -1,11 +1,6 @@
 .site-footer {
   padding: var(--space-8) 0 var(--space-4);
-  background:
-    linear-gradient(
-      to bottom,
-      color-mix(in srgb, var(--surface) 96%, var(--color-bg-soft) 4%) 0%,
-      var(--surface) 100%
-    );
+  background: #e9edf3;
 }
 
 .footer-shell {
@@ -42,7 +37,7 @@
 .footer-brand p {
   margin: 0;
   color: var(--muted);
-  font-size: 0.98rem;
+  font-size: 0.9rem;
   line-height: 1.55;
   max-width: 42ch;
 }
@@ -61,6 +56,7 @@
   gap: var(--space-2);
   color: var(--muted);
   overflow-wrap: anywhere;
+  font-size: 0.9rem;
 }
 
 .footer-contact-list img {
@@ -93,6 +89,12 @@
   font-size: 0.95rem;
   line-height: 1.4;
   transition: color 0.2s ease;
+}
+
+.footer-column span {
+  color: var(--muted);
+  font-size: 0.95rem;
+  line-height: 1.4;
 }
 
 .footer-column a:hover {

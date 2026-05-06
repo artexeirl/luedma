@@ -1,10 +1,10 @@
----
+ï»¿---
+import '../styles/components/footer.css';
 import TrustStrip from './TrustStrip.astro';
-import { brands, categories, siteSettings } from '../data/snapshot';
+import { categories, siteSettings } from '../data/snapshot';
 
 const topCategories = categories.filter((category) => !category.parentSlug).slice(0, 5);
-const featuredBrands = brands.slice(0, 6);
-const buildShopCategoryPath = (slug: string) => `/c/${encodeURIComponent(slug)}/`;
+const buildShopCategoryPath = (slug: string) => `/tienda/c/${encodeURIComponent(slug)}/`;
 ---
 
 <TrustStrip />
@@ -16,13 +16,13 @@ const buildShopCategoryPath = (slug: string) => `/c/${encodeURIComponent(slug)}/
           <img src={siteSettings.logo} alt={`Logo ${siteSettings.siteName}`} loading="lazy" />
         </a>
         <p>
-          Herramientas y equipos para trabajo profesional, industria y hogar, con despacho rápido en Lima.
+          Herramientas y equipos para trabajo profesional, industria y hogar, con despacho rÃ¡pido en Lima.
         </p>
 
         <ul class="footer-contact-list">
           <li>
             <img src="/icons/map-pin.svg" alt="" aria-hidden="true" />
-            <span>Las Malvinas Jr. Huarochirí 560, Lima, Perú</span>
+            <span>Las Malvinas Jr. HuarochirÃ­ 560, Lima, PerÃº</span>
           </li>
           <li>
             <img src="/icons/phone-call.svg" alt="" aria-hidden="true" />
@@ -36,7 +36,17 @@ const buildShopCategoryPath = (slug: string) => `/c/${encodeURIComponent(slug)}/
       </article>
 
       <article class="footer-column">
-        <h3>Categorías</h3>
+        <h3>Empresa</h3>
+        <ul>
+          <li><a href="/nosotros/">Sobre nosotros</a></li>
+          <li><a href="/tienda/">Productos</a></li>
+          <li><a href="/faq/">Preguntas Frecuentes</a></li>
+          <li><a href="/contacto/">Contacto</a></li>
+        </ul>
+      </article>
+
+      <article class="footer-column">
+        <h3>CategorÃ­as</h3>
         <ul>
           {topCategories.map((category) => (
             <li><a href={buildShopCategoryPath(category.slug)}>{category.name}</a></li>
@@ -45,27 +55,18 @@ const buildShopCategoryPath = (slug: string) => `/c/${encodeURIComponent(slug)}/
       </article>
 
       <article class="footer-column">
-        <h3>Marcas destacadas</h3>
+        <h3>PolÃ­ticas</h3>
         <ul>
-          {featuredBrands.map((brand) => (
-            <li><a href={brand.path}>{brand.name}</a></li>
-          ))}
-        </ul>
-      </article>
-
-      <article class="footer-column">
-        <h3>Información</h3>
-        <ul>
-          <li><a href="/about-us/">Sobre nosotros</a></li>
-          <li><a href="/contact/">Contacto</a></li>
-          <li><a href="/libro-de-reclamaciones/">Libro de reclamaciones</a></li>
-          <li><a href="/c/">Catálogo completo</a></li>
+          <li><span>TÃ©rminos y Condiciones</span></li>
+          <li><span>Cambios y Devoluciones</span></li>
+          <li><span>Pago Seguro</span></li>
+          <li><span>Condiciones de EnvÃ­o</span></li>
         </ul>
       </article>
     </div>
 
     <div class="footer-bottom">
-      <small>{new Date().getFullYear()} {siteSettings.siteName}. Todos los derechos reservados.</small>
+      <small>Â© 2026 Maquinarias Luedma. DiseÃ±ado y desarrollado por Artex.</small>
 
       <div class="footer-socials" aria-label="Redes sociales">
         {siteSettings.social.facebook && (
@@ -85,5 +86,3 @@ const buildShopCategoryPath = (slug: string) => `/c/${encodeURIComponent(slug)}/
     </div>
   </div>
 </footer>
-
-

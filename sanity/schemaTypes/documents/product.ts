@@ -1,55 +1,5 @@
-﻿import {defineArrayMember, defineField, defineType} from 'sanity';
-
-const ROOT_CATEGORIES = [
-  {title: 'Accesorios de Herramientas', value: 'accesorios-de-herramientas'},
-  {title: 'Equipos de Construcción', value: 'equipos-de-taller-y-construccion'},
-  {title: 'Herramientas Eléctricas', value: 'herramientas-electricas'},
-  {title: 'Herramientas Manuales', value: 'herramientas-manuales'},
-  {title: 'Seguridad e Iluminación', value: 'seguridad-e-iluminacion'},
-];
-
-const SUBCATEGORY_OPTIONS: Record<string, Array<{title: string; value: string}>> = {
-  'accesorios-de-herramientas': [
-    {title: 'Accesorios Abrasivos', value: 'accesorios-abrasivos'},
-    {title: 'Brocas y Puntas', value: 'brocas-y-puntas'},
-    {title: 'Discos', value: 'discos'},
-    {title: 'Hojas de Sierra', value: 'hojas-sierra'},
-    {title: 'Juego de Llaves de Vaso', value: 'juego-de-llaves-de-vaso'},
-    {title: 'Sierra Copa', value: 'sierra-copa'},
-  ],
-  'equipos-de-taller-y-construccion': [
-    {title: 'Equipos de Levantamiento y Carga', value: 'equipos-de-levantamiento-y-carga'},
-    {title: 'Equipos de Medición', value: 'equipos-de-medicion'},
-    {title: 'Organización y Almacenamiento', value: 'organizacion-y-almacenamiento'},
-  ],
-  'herramientas-electricas': [
-    {title: 'Amoladoras y Pulidoras', value: 'amoladoras-y-pulidoras'},
-    {title: 'Baterías y Cargadores', value: 'baterias-y-cargadores'},
-    {title: 'Bombas de Agua', value: 'bomba-agua'},
-    {title: 'Compresores', value: 'compresores'},
-    {title: 'Construcción y Demolición', value: 'construccion-y-demolicion'},
-    {title: 'Cortadoras de Césped', value: 'cortadoras-de-cesped'},
-    {title: 'Equipos de Limpieza', value: 'equipos-de-limpieza'},
-    {title: 'Lijadoras y Cepillos', value: 'lijadoras-y-cepillos'},
-    {title: 'Sierras Eléctricas', value: 'sierras-electricas'},
-    {title: 'Taladros y Atornilladores', value: 'taladros-y-atornilladores'},
-  ],
-  'herramientas-manuales': [
-    {title: 'Abrazadoras', value: 'abrazadoras'},
-    {title: 'Alicates y Prensas', value: 'alicates-y-prensas'},
-    {title: 'Bloqueo del Volante', value: 'bloqueo-del-volante'},
-    {title: 'Bombas de Pie', value: 'bombas-de-pie'},
-    {title: 'Brocas para Metal', value: 'brocas-metal'},
-    {title: 'Cierrapuertas', value: 'cierrapuertas'},
-    {title: 'Cinceles', value: 'cinceles'},
-    {title: 'Cortador de Mayólica', value: 'cortadormayolica'},
-    {title: 'Hacha', value: 'hacha'},
-  ],
-  'seguridad-e-iluminacion': [
-    {title: 'Iluminación de Trabajo', value: 'iluminacion-de-trabajo'},
-    {title: 'Material de Seguridad', value: 'material-de-seguridad'},
-  ],
-};
+import {defineArrayMember, defineField, defineType} from 'sanity';
+import {ROOT_CATEGORIES, SUBCATEGORY_OPTIONS} from '../productCategories';
 
 function subcategoryField(rootSlug: string, fieldName: string, title: string) {
   return defineField({
@@ -62,7 +12,7 @@ function subcategoryField(rootSlug: string, fieldName: string, title: string) {
       r.custom((value, context) => {
         const categoryRoot = (context.document as {categoryRoot?: string} | undefined)?.categoryRoot;
         if (categoryRoot !== rootSlug) return true;
-        return value ? true : 'Selecciona una subcategoría.';
+        return value ? true : 'Selecciona una subcategoria.';
       }),
   });
 }
@@ -91,20 +41,31 @@ export const productType = defineType({
     }),
     defineField({
       name: 'categoryRoot',
-      title: 'Categoría principal',
+      title: 'Categoria principal',
       type: 'string',
       options: {list: ROOT_CATEGORIES, layout: 'dropdown'},
       validation: (r) => r.required(),
     }),
-    subcategoryField('accesorios-de-herramientas', 'subcategoryAccesorios', 'Subcategoría'),
-    subcategoryField('equipos-de-taller-y-construccion', 'subcategoryConstruccion', 'Subcategoría'),
-    subcategoryField('herramientas-electricas', 'subcategoryElectricas', 'Subcategoría'),
-    subcategoryField('herramientas-manuales', 'subcategoryManuales', 'Subcategoría'),
-    subcategoryField('seguridad-e-iluminacion', 'subcategorySeguridad', 'Subcategoría'),
-    defineField({name: 'shortDescription', title: 'Descripción corta', type: 'text', rows: 3}),
+    subcategoryField('accesorios-de-herramientas', 'subcategoryAccesorios', 'Subcategoria'),
+    subcategoryField('equipos-de-taller', 'subcategoryConstruccion', 'Subcategoria'),
+    subcategoryField('herramientas-electricas', 'subcategoryElectricas', 'Subcategoria'),
+    subcategoryField('herramientas-manuales', 'subcategoryManuales', 'Subcategoria'),
+    subcategoryField('seguridad-e-iluminacion', 'subcategorySeguridad', 'Subcategoria'),
+    defineField({
+      name: 'shortDescription',
+      title: 'Descripcion corta',
+      type: 'array',
+      of: [defineArrayMember({type: 'block'})],
+    }),
     defineField({
       name: 'description',
-      title: 'Descripción completa',
+      title: 'Descripcion completa',
+      type: 'array',
+      of: [defineArrayMember({type: 'block'})],
+    }),
+    defineField({
+      name: 'technicalSheet',
+      title: 'Información técnica',
       type: 'array',
       of: [defineArrayMember({type: 'block'})],
     }),
@@ -141,7 +102,7 @@ export const productType = defineType({
     }),
     defineField({
       name: 'images',
-      title: 'Imágenes',
+      title: 'Imagenes',
       type: 'array',
       of: [
         defineArrayMember({
@@ -179,7 +140,7 @@ export const productType = defineType({
       const subcategory = subA || subC || subE || subM || subS || categoryRoot;
       return {
         title,
-        subtitle: `${subtitle || 'Sin SKU'} · ${subcategory || 'Sin categoría'} · ${
+        subtitle: `${subtitle || 'Sin SKU'} · ${subcategory || 'Sin categoria'} · ${
           typeof stock === 'number' && stock > 0 ? 'Stock disponible' : 'Sin stock'
         }`,
         media,

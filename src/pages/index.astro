@@ -1,4 +1,5 @@
----
+Ôªø---
+import '../styles/pages/home.css';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
@@ -13,20 +14,20 @@ type ShowcaseItem = {
   price: string;
   oldPrice?: string;
   badge?: string;
-  stockText?: string;
   image?: string;
   path?: string;
 };
 
 const SHOWCASE_BRAND_TABS = [
-  { key: 'ronix', label: 'Ronix', slugs: ['ronix'] },
   { key: 'makita', label: 'Makita', slugs: ['makita'] },
   { key: 'bosch', label: 'Bosch', slugs: ['bosch'] },
-  { key: 'milwaukee', label: 'Milwaukee', slugs: ['milwaukee'] },
   { key: 'DeWalt', label: 'DeWalt', slugs: ['dewalt', 'de-walt'] },
+  { key: 'ronix', label: 'Ronix', slugs: ['ronix'] },
+  { key: 'milwaukee', label: 'Milwaukee', slugs: ['milwaukee'] },
 ] as const;
 
 const formatCurrency = (value?: number) => (typeof value === 'number' ? `S/ ${value.toFixed(2)}` : 'Consultar');
+const buildShopBrandFilterPath = (slug: string) => `/tienda/m/${encodeURIComponent(slug)}/`;
 const toCardThumb = (src?: string) => {
   if (!src) return src;
   return src.includes('cdn.sanity.io') ? `${src}?w=400&h=400&fit=crop&auto=format` : src;
@@ -43,10 +44,9 @@ const effectiveShowcaseIndex = SHOWCASE_BRAND_TABS.reduce<Record<string, Showcas
         name: product.name,
         price: formatCurrency(product.price),
         oldPrice: product.compareAtPrice ? formatCurrency(product.compareAtPrice) : undefined,
-        stockText: (product.stock || 0) > 0 ? 'Stock disponible' : 'Sin stock',
         badge: product.isNew ? 'NUEVO' : undefined,
         image: toCardThumb(product.images?.[0]),
-        path: product.path || '/c/',
+        path: product.path || '/tienda/',
       } as ShowcaseItem;
     });
   acc[tab.key] = tabProducts;
@@ -66,7 +66,7 @@ type CmsHomeData = {
 
 const homeCms = hasSanityConfig
   ? await sanityFetch<CmsHomeData>(`*[_type == "homePage"][0]{
-      heroSlides[]{
+      heroSlides[0...5]{
         alt,
         imageDesktop{asset->{url}},
         imageMobile{asset->{url}}
@@ -81,24 +81,24 @@ const marqueeBrandImagesFromCms = brands
     name: brand.name,
     slug: brand.slug,
     logo: brand.logo as string,
-    path: brand.path,
+    path: buildShopBrandFilterPath(brand.slug),
   }));
 const marqueeBrandImages =
   marqueeBrandImagesFromCms.length > 0
     ? marqueeBrandImagesFromCms
     : [
-        { name: 'bosch', slug: 'bosch', logo: '/images/brands/bosch.webp', path: '/marca/bosch/' },
-        { name: 'DeWalt', slug: 'de-walt', logo: '/images/brands/dewalt.webp', path: '/marca/de-walt/' },
-        { name: 'hilti', slug: 'hilti', logo: '/images/brands/hilti.webp', path: '/marca/hilti/' },
-        { name: 'irwin', slug: 'irwin', logo: '/images/brands/irwin.webp', path: '/marca/irwin/' },
-        { name: 'karcher', slug: 'karcher', logo: '/images/brands/karcher.webp', path: '/marca/karcher/' },
-        { name: 'makute', slug: 'makute', logo: '/images/brands/makute.webp', path: '/marca/makute/' },
-        { name: 'ronix', slug: 'ronix', logo: '/images/brands/ronix.webp', path: '/marca/ronix/' },
-        { name: 'sagola', slug: 'sagola', logo: '/images/brands/sagola.webp', path: '/marca/sagola/' },
-        { name: 'stanley', slug: 'stanley', logo: '/images/brands/stanley.webp', path: '/marca/stanley/' },
-        { name: 'total', slug: 'total', logo: '/images/brands/total.webp', path: '/marca/total/' },
-        { name: 'truper', slug: 'truper', logo: '/images/brands/truper.webp', path: '/marca/truper/' },
-        { name: 'wagner', slug: 'wagner', logo: '/images/brands/wagner.webp', path: '/marca/wagner/' },
+        { name: 'bosch', slug: 'bosch', logo: '/images/brands/bosch.webp', path: buildShopBrandFilterPath('bosch') },
+        { name: 'DeWalt', slug: 'dewalt', logo: '/images/brands/dewalt.webp', path: buildShopBrandFilterPath('dewalt') },
+        { name: 'hilti', slug: 'hilti', logo: '/images/brands/hilti.webp', path: buildShopBrandFilterPath('hilti') },
+        { name: 'irwin', slug: 'irwin', logo: '/images/brands/irwin.webp', path: buildShopBrandFilterPath('irwin') },
+        { name: 'karcher', slug: 'karcher', logo: '/images/brands/karcher.webp', path: buildShopBrandFilterPath('karcher') },
+        { name: 'makute', slug: 'makute', logo: '/images/brands/makute.webp', path: buildShopBrandFilterPath('makute') },
+        { name: 'ronix', slug: 'ronix', logo: '/images/brands/ronix.webp', path: buildShopBrandFilterPath('ronix') },
+        { name: 'sagola', slug: 'sagola', logo: '/images/brands/sagola.webp', path: buildShopBrandFilterPath('sagola') },
+        { name: 'stanley', slug: 'stanley', logo: '/images/brands/stanley.webp', path: buildShopBrandFilterPath('stanley') },
+        { name: 'total', slug: 'total', logo: '/images/brands/total.webp', path: buildShopBrandFilterPath('total') },
+        { name: 'truper', slug: 'truper', logo: '/images/brands/truper.webp', path: buildShopBrandFilterPath('truper') },
+        { name: 'wagner', slug: 'wagner', logo: '/images/brands/wagner.webp', path: buildShopBrandFilterPath('wagner') },
       ];
 const uniqueMarqueeBrandImages = Array.from(new Map(marqueeBrandImages.map((brand) => [brand.slug, brand])).values());
 const marqueeBrands = uniqueMarqueeBrandImages.length > 1
@@ -106,7 +106,7 @@ const marqueeBrands = uniqueMarqueeBrandImages.length > 1
   : uniqueMarqueeBrandImages;
 const heroSlides =
   homeCms?.heroSlides && homeCms.heroSlides.length > 0
-    ? homeCms.heroSlides.map((item, index) => ({
+    ? homeCms.heroSlides.slice(0, 5).map((item, index) => ({
         desktop: item.imageDesktop?.asset?.url || '/images/banners/banner-principal-1.webp',
         mobile: item.imageMobile?.asset?.url || '/images/banners/movil/banner-principal-movil.webp',
         alt: item.alt || `Banner principal ${index + 1}`,
@@ -187,7 +187,7 @@ const featuredPages = Array.from({ length: Math.ceil(featuredProducts.length / 4
 
     <section class="section home-showcase" data-island="home-product-selector">
       <div class="container">
-        <h1 class="home-showcase__title">Los mejores equipos en taladros y otras herramientas en Lima con envÌo r·pido</h1>
+        <h1 class="home-showcase__title">Los mejores equipos en taladros y otras herramientas en Lima con env√≠o r√°pido</h1>
 
         <div class="home-showcase__tabs" role="tablist" aria-label="Selector de productos por marca">
           {SHOWCASE_BRAND_TABS.map((tab, index) => (
@@ -201,10 +201,7 @@ const featuredPages = Array.from({ length: Math.ceil(featuredProducts.length / 4
           <div class="showcase-grid is-current" data-showcase-grid data-showcase-panel={defaultKey}>
             {defaultItems.map((item) => (
               <article class="showcase-card">
-                <svg class="card-cut-border" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true" focusable="false">
-                  <polygon class="card-cut-border__shape" points="0,0 97,0 100,3 100,100 3,100 0,97"></polygon>
-                </svg>
-                <a href={item.path || '/c/'} class="showcase-card__image-link" aria-label={`Ver producto ${item.name}`}>
+                <a href={item.path || '/tienda/'} class="showcase-card__image-link" aria-label={`Ver producto ${item.name}`}>
                   <img
                     src={item.image || showcasePreviewImages[Math.floor(Math.random() * showcasePreviewImages.length)]}
                     alt={`Imagen de ${item.name}`}
@@ -218,14 +215,13 @@ const featuredPages = Array.from({ length: Math.ceil(featuredProducts.length / 4
                 </div>
 
                 <h3 class="showcase-card__name">{item.name}</h3>
-                <p class="showcase-card__delivery">{item.stockText || 'Sin stock'}</p>
 
                 <div class="showcase-card__footer">
                   <div class="showcase-card__price-wrap">
                     {item.oldPrice && <span class="showcase-card__old-price">{item.oldPrice}</span>}
                     <p class="showcase-card__price">{item.price}</p>
                   </div>
-                  <a class="btn btn-primary showcase-card__cta" href={item.path || '/c/'}>Ver detalles</a>
+                  <a class="btn btn-primary showcase-card__cta" href={item.path || '/tienda/'}>Ver detalles</a>
                 </div>
               </article>
             ))}
@@ -239,11 +235,12 @@ const featuredPages = Array.from({ length: Math.ceil(featuredProducts.length / 4
     <section class="section offers-strip" aria-label="Ofertas destacadas">
       <div class="container">
         <div class="offers-strip__row">
-          <article class="offers-strip__item offers-strip__item--left">
+          <article class="offers-strip__item">
             <img src="/images/banners/banner-tool-1.webp" alt="Banner herramienta destacado" loading="lazy" decoding="async" />
           </article>
-          <article class="offers-strip__item offers-strip__item--top"></article>
-          <article class="offers-strip__item offers-strip__item--bottom"></article>
+          <article class="offers-strip__item">
+            <img src="/images/banners/banner-tool-2.webp" alt="Banner herramienta promocional" loading="lazy" decoding="async" />
+          </article>
         </div>
       </div>
     </section>
@@ -252,7 +249,7 @@ const featuredPages = Array.from({ length: Math.ceil(featuredProducts.length / 4
       <div class="container">
         <div class="featured-products__head">
           <h2>Productos destacados</h2>
-          <a class="btn btn-outline featured-products__cta" href="/c/">Ver productos</a>
+          <a class="btn btn-outline featured-products__cta" href="/tienda/">Ver productos</a>
         </div>
 
         <div class="featured-products__carousel" data-featured-carousel>
@@ -266,10 +263,7 @@ const featuredPages = Array.from({ length: Math.ceil(featuredProducts.length / 4
                 <div class="featured-products__page" data-featured-page={pageIndex}>
                   {page.map((item, itemIndex) => (
                     <article class="showcase-card">
-                      <svg class="card-cut-border" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true" focusable="false">
-                        <polygon class="card-cut-border__shape" points="0,0 97,0 100,3 100,100 3,100 0,97"></polygon>
-                      </svg>
-                      <a href={item.path || '/c/'} class="showcase-card__image-link" aria-label={`Ver producto ${item.name}`}>
+                      <a href={item.path || '/tienda/'} class="showcase-card__image-link" aria-label={`Ver producto ${item.name}`}>
                         <img
                           src={item.image || showcasePreviewImages[(pageIndex * 4 + itemIndex) % showcasePreviewImages.length]}
                           alt={`Imagen de ${item.name}`}
@@ -283,14 +277,13 @@ const featuredPages = Array.from({ length: Math.ceil(featuredProducts.length / 4
                       </div>
 
                       <h3 class="showcase-card__name">{item.name}</h3>
-                      <p class="showcase-card__delivery">{item.stockText || 'Sin stock'}</p>
 
                       <div class="showcase-card__footer">
                         <div class="showcase-card__price-wrap">
                           {item.oldPrice && <span class="showcase-card__old-price">{item.oldPrice}</span>}
                           <p class="showcase-card__price">{item.price}</p>
                         </div>
-                        <a class="btn btn-primary showcase-card__cta" href={item.path || '/c/'}>Ver detalles</a>
+                        <a class="btn btn-primary showcase-card__cta" href={item.path || '/tienda/'}>Ver detalles</a>
                       </div>
                     </article>
                   ))}
@@ -299,31 +292,31 @@ const featuredPages = Array.from({ length: Math.ceil(featuredProducts.length / 4
             </div>
           </div>
 
-          <button class="featured-products__arrow featured-products__arrow--next" type="button" data-featured-next aria-label="Ver m·s productos">
+          <button class="featured-products__arrow featured-products__arrow--next" type="button" data-featured-next aria-label="Ver m√°s productos">
             <img src="/icons/chevron-right.svg" alt="" aria-hidden="true" />
           </button>
         </div>
       </div>
     </section>
 
-    <section class="section shipping-banner" aria-label="EnvÌo destacado">
+    <section class="section shipping-banner" aria-label="env√≠o destacado">
       <div class="container">
         <picture>
           <source media="(max-width: 760px)" srcset="/images/banners/movil/banner-envio-movil.webp" />
-          <img src="/images/banners/banner-envio.webp" alt="Banner de envÌo" loading="lazy" decoding="async" />
+          <img src="/images/banners/banner-envio.webp" alt="Banner de env√≠o" loading="lazy" decoding="async" />
         </picture>
       </div>
     </section>
 
-    <section class="section contact-map" aria-label="InformaciÛn de tienda y mapa">
+    <section class="section contact-map" aria-label="Informaci√≥n de tienda y mapa">
       <div class="container contact-map__grid">
         <div class="contact-map__info">
-          <h2>UbÌcanos</h2>
+          <h2>Ub√≠canos</h2>
           <hr class="contact-map__divider" />
           <ul class="contact-map__list">
             <li>
               <span class="contact-map__icon" aria-hidden="true"><img src="/icons/map-pin.svg" alt="" /></span>
-              <span>Las Malvinas Jr. HuarochirÌ 560, Lima, Per˙</span>
+              <span>Las Malvinas Jr. Huarochir√≠ 560, Lima, Per√∫</span>
             </li>
             <li>
               <span class="contact-map__icon" aria-hidden="true"><img src="/icons/brand-whatsapp.svg" alt="" /></span>
@@ -336,9 +329,9 @@ const featuredPages = Array.from({ length: Math.ceil(featuredProducts.length / 4
           </ul>
 
           <div class="contact-map__extra">
-            <h3>Horario de atenciÛn</h3>
-            <p>Lunes a s·bado: 7:00 a. m. - 9:00 p. m.</p>
-            <p>Despachos r·pidos en Lima Metropolitana.</p>
+            <h3>Horario de atenci√≥n</h3>
+            <p>Lunes a s√°bado: 7:00 a. m. - 9:00 p. m.</p>
+            <p>Despachos r√°pidos en Lima Metropolitana.</p>
             <div class="contact-map__socials">
               <a href="#" aria-label="Facebook">
                 <img src="/icons/brand-facebook.svg" alt="" />
@@ -384,4 +377,6 @@ const featuredPages = Array.from({ length: Math.ceil(featuredProducts.length / 4
   <Footer />
   <WhatsAppFloat />
 </BaseLayout>
+
+
 

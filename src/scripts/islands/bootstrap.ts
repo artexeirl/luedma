@@ -4,13 +4,14 @@ const deferredIslandLoaders: Record<string, () => Promise<{ mount: () => void }>
   'catalog-controls': () => import('./catalog-controls'),
   'featured-products-carousel': () => import('./featured-products-carousel'),
   'home-product-selector': () => import('./home-product-selector'),
+  'product-tabs': () => import('./product-tabs'),
   'product-gallery': () => import('./product-gallery'),
   'trust-strip': () => import('./trust-strip'),
   'whatsapp-cta': () => import('./whatsapp-cta'),
 };
 
 export async function startIslands(): Promise<void> {
-  const critical = await Promise.all([import('./mobile-menu'), import('./search'), import('./hero-carousel')]);
+  const critical = await Promise.all([import('./mobile-menu'), import('./search'), import('./hero-carousel'), import('./header-coming-soon')]);
   critical.forEach((module) => module.mount());
 
   Object.entries(deferredIslandLoaders).forEach(([name, loader]) => {

@@ -11,6 +11,12 @@ import type {
 } from '../types/content';
 import {normalizePath, slugFromPath} from '../utils/urls';
 import {hasSanityConfig, sanityFetch} from '../lib/sanity.client';
+import {
+  getCanonicalCategoryName,
+  getCanonicalCategorySlug,
+  isObsoleteElectricSubcategory,
+  resolveElectricSubcategorySlug,
+} from './category-taxonomy';
 
 function assert(condition: unknown, message: string): asserts condition {
   if (!condition) {
@@ -90,8 +96,8 @@ function validateSnapshot(input: unknown): StorefrontSnapshot {
     ...brand,
     name: normalizeSpanishText(brand.name),
     summary: brand.summary ? normalizeSpanishText(brand.summary) : brand.summary,
-    path: normalizePath(brand.path),
     slug: brand.slug || slugFromPath(brand.path),
+    path: `/tienda/m/${encodeURIComponent(brand.slug || slugFromPath(brand.path))}/`,
   }));
 
   const products = asArray<Product>(root.products, 'products').map((product) => ({
@@ -155,12 +161,19 @@ type SanityPayload = {
     name?: string;
     slug?: string;
     sku?: string;
+    createdAt?: string;
+    updatedAt?: string;
     price?: number;
     compareAtPrice?: number;
     stock?: number;
     isNew?: boolean;
     excerpt?: string;
+    shortDescription?: string;
     description?: string;
+    technicalSheet?: string;
+    shortDescriptionBlocks?: unknown[];
+    descriptionBlocks?: unknown[];
+    technicalSheetBlocks?: unknown[];
     brandSlug?: string;
     categorySlugs?: string[];
     images?: string[];
@@ -182,6 +195,18 @@ function buildCategoryPaths(items: Category[]): Category[] {
     return path;
   };
   return items.map((item) => ({...item, path: resolvePath(item.slug)}));
+}
+
+function mergeCategories(baseCategories: Category[], incomingCategories: Category[]): Category[] {
+  const merged = new Map(baseCategories.map((item) => [item.slug, item]));
+  incomingCategories.forEach((item) => {
+    const previous = merged.get(item.slug);
+    merged.set(item.slug, {
+      ...previous,
+      ...item,
+    });
+  });
+  return buildCategoryPaths(Array.from(merged.values()));
 }
 
 async function fetchSanityOverride(base: StorefrontSnapshot): Promise<StorefrontSnapshot> {
@@ -206,12 +231,19 @@ async function fetchSanityOverride(base: StorefrontSnapshot): Promise<Storefront
       name,
       "slug": slug.current,
       sku,
+      "createdAt": _createdAt,
+      "updatedAt": _updatedAt,
       price,
       compareAtPrice,
       stock,
       "isNew": coalesce(isNew, false),
-      "excerpt": shortDescription,
+      "excerpt": pt::text(shortDescription),
+      "shortDescription": pt::text(shortDescription),
       "description": pt::text(description),
+      "technicalSheet": pt::text(technicalSheet),
+      "shortDescriptionBlocks": shortDescription,
+      "descriptionBlocks": description,
+      "technicalSheetBlocks": technicalSheet,
       "brandSlug": brand->slug.current,
       "categorySlugs": [coalesce(subcategoryAccesorios, subcategoryConstruccion, subcategoryElectricas, subcategoryManuales, subcategorySeguridad, categoryRoot)],
       "images": images[].asset->url
@@ -224,15 +256,32 @@ async function fetchSanityOverride(base: StorefrontSnapshot): Promise<Storefront
 
     const categoriesFromSanity = (data.categories || [])
       .filter((item): item is Required<Pick<Category, 'slug' | 'name'>> & Partial<Category> => Boolean(item.slug && item.name))
-      .map((item) => ({
-        slug: item.slug,
-        name: normalizeSpanishText(item.name),
-        parentSlug: item.parentSlug,
-        summary: item.summary ? normalizeSpanishText(item.summary) : undefined,
-        path: `/product-category/${item.slug}/`,
-      } as Category));
+      .flatMap((item) => {
+        const normalizedParentSlug = getCanonicalCategorySlug(item.parentSlug) || item.parentSlug;
+        const normalizedSlug =
+          item.parentSlug === 'herramientas-electricas' ? resolveElectricSubcategorySlug(item.slug) : item.slug;
 
-    const categories = categoriesFromSanity.length > 0 ? buildCategoryPaths(categoriesFromSanity) : base.categories;
+        if (item.parentSlug === 'herramientas-electricas' && (!normalizedSlug || isObsoleteElectricSubcategory(item.slug))) {
+          return [];
+        }
+
+        const slug = normalizedSlug || item.slug;
+        return [{
+          slug,
+          name: normalizeSpanishText(getCanonicalCategoryName(slug, item.name)),
+          parentSlug: normalizedParentSlug,
+          summary: item.summary ? normalizeSpanishText(item.summary) : undefined,
+          path: `/product-category/${slug}/`,
+        } as Category];
+      });
+
+    const categories =
+      categoriesFromSanity.length > 0
+        ? mergeCategories(
+            base.categories,
+            Array.from(new Map(categoriesFromSanity.map((item) => [item.slug, item])).values()),
+          )
+        : base.categories;
 
     const brands = (data.brands || [])
       .filter((item): item is {slug: string; name: string; summary?: string; logo?: string; isFeatured?: boolean} => Boolean(item.slug && item.name))
@@ -241,7 +290,7 @@ async function fetchSanityOverride(base: StorefrontSnapshot): Promise<Storefront
         name: normalizeSpanishText(item.name),
         summary: item.summary ? normalizeSpanishText(item.summary) : undefined,
         logo: item.logo,
-        path: `/marca/${encodeURIComponent(item.slug)}/`,
+        path: `/tienda/m/${encodeURIComponent(item.slug)}/`,
       } as Brand));
 
     const products = (data.products || [])
@@ -251,6 +300,8 @@ async function fetchSanityOverride(base: StorefrontSnapshot): Promise<Storefront
         name: normalizeSpanishText(item.name as string),
         path: `/product/${encodeURIComponent(item.slug as string)}/`,
         sku: item.sku || undefined,
+        createdAt: typeof item.createdAt === 'string' ? item.createdAt : undefined,
+        updatedAt: typeof item.updatedAt === 'string' ? item.updatedAt : undefined,
         price: typeof (item as {price?: unknown}).price === 'number' ? ((item as {price: number}).price) : undefined,
         compareAtPrice:
           typeof (item as {compareAtPrice?: unknown}).compareAtPrice === 'number'
@@ -259,9 +310,21 @@ async function fetchSanityOverride(base: StorefrontSnapshot): Promise<Storefront
         stock: typeof (item as {stock?: unknown}).stock === 'number' ? ((item as {stock: number}).stock) : 0,
         isNew: Boolean((item as {isNew?: unknown}).isNew),
         excerpt: item.excerpt || 'Producto disponible en Maquinarias Luedma.',
+        shortDescription: item.shortDescription || item.excerpt || '',
         description: item.description || item.excerpt || 'Sin descripción.',
+        technicalSheet: item.technicalSheet || '',
+        shortDescriptionBlocks: Array.isArray(item.shortDescriptionBlocks) ? item.shortDescriptionBlocks : [],
+        descriptionBlocks: Array.isArray(item.descriptionBlocks) ? item.descriptionBlocks : [],
+        technicalSheetBlocks: Array.isArray(item.technicalSheetBlocks) ? item.technicalSheetBlocks : [],
         brandSlug: item.brandSlug as string,
-        categorySlug: (item.categorySlugs as string[])[0],
+        categorySlug:
+          (() => {
+            const incomingSlug = (item.categorySlugs as string[])[0];
+            const normalizedSlug = resolveElectricSubcategorySlug(incomingSlug);
+            if (normalizedSlug) return normalizedSlug;
+            if (isObsoleteElectricSubcategory(incomingSlug)) return 'herramientas-electricas';
+            return incomingSlug;
+          })(),
         images: item.images && item.images.length > 0 ? item.images : ['/images/products/p1.png'],
         seo: {},
         relatedSlugs: [],
@@ -372,11 +435,13 @@ async function refreshSnapshot(force = false): Promise<void> {
 await refreshSnapshot(true);
 
 export function getCategoryBySlug(slug: string): Category | undefined {
-  return categories.find((category) => category.slug === slug);
+  const normalizedSlug = getCanonicalCategorySlug(slug) || slug;
+  return categories.find((category) => category.slug === normalizedSlug);
 }
 
 export function getBrandBySlug(slug: string): Brand | undefined {
-  return brands.find((brand) => brand.slug === slug);
+  const normalizedSlug = slug === 'de-walt' ? 'dewalt' : slug;
+  return brands.find((brand) => brand.slug === normalizedSlug);
 }
 
 export function getProductBySlug(slug: string): Product | undefined {
@@ -394,7 +459,8 @@ export function getProductsByCategory(categorySlug: string): Product[] {
 }
 
 export function getProductsByBrand(brandSlug: string): Product[] {
-  return products.filter((product) => product.brandSlug === brandSlug);
+  const normalizedSlug = brandSlug === 'de-walt' ? 'dewalt' : brandSlug;
+  return products.filter((product) => product.brandSlug === normalizedSlug);
 }
 
 export function buildRouteIndex(): RouteEntry[] {
@@ -417,13 +483,13 @@ export function buildRouteIndex(): RouteEntry[] {
       },
     },
     {
-      path: '/c/',
+      path: '/tienda/',
       template: 'search',
       payload: {},
       seo: {
         title: `Catálogo | ${siteSettings.siteName}`,
         description: 'Catálogo navegable con filtros y búsqueda.',
-        canonicalPath: '/c/',
+        canonicalPath: '/tienda/',
       },
     },
   ];

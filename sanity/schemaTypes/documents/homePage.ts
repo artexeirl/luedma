@@ -22,9 +22,9 @@ export const homePageType = defineType({
       name: 'heroSlides',
       title: 'Banners principales',
       description:
-        'Debes cargar exactamente 3 banners. Formato obligatorio: WEBP. Tamaño requerido desktop: 2560x1024 px. Tamaño requerido móvil: 1000x1000 px.',
+        'Debes cargar de 1 a 5 banners. Formato obligatorio: WEBP. Tamaño requerido desktop: 2560x1024 px. Tamaño requerido móvil: 1000x1000 px.',
       type: 'array',
-      validation: (r) => r.required().min(3).max(3),
+      validation: (r) => r.required().min(1).max(5),
       of: [
         defineArrayMember({
           type: 'object',

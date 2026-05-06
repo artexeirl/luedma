@@ -1,0 +1,296 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import WhatsAppFloat from '../../components/WhatsAppFloat.astro';
+import { siteSettings } from '../../data/snapshot';
+
+type FaqCategory = {
+  id: string;
+  label: string;
+};
+
+type FaqItem = {
+  category: string;
+  question: string;
+  answer: string;
+};
+
+const FAQ_CATEGORIES: FaqCategory[] = [
+  { id: 'all', label: 'Todas' },
+  { id: 'envios', label: 'Envíos' },
+  { id: 'pagos', label: 'Pagos' },
+  { id: 'productos', label: 'Productos' },
+  { id: 'garantia', label: 'Garantía' },
+  { id: 'tienda', label: 'Tienda' },
+];
+
+const FAQ_ITEMS: FaqItem[] = [
+  // ─── ENVÍOS ──────────────────────────────────────────────
+  {
+    category: 'envios',
+    question: '¿Hacen envíos a todo Perú?',
+    answer: `<p>Sí, realizamos despachos a Lima Metropolitana y provincias a través de agencias de transporte. Para Lima Metropolitana ofrecemos entregas rápidas en 24 a 48 horas hábiles. Para provincias, el tiempo de entrega depende de la ubicación y la agencia seleccionada, generalmente de 3 a 7 días hábiles.</p>`,
+  },
+  {
+    category: 'envios',
+    question: '¿Cuál es el costo de envío?',
+    answer: `<p>El costo de envío varía según el peso del producto, la ubicación de entrega y la agencia de transporte. Para Lima Metropolitana, ofrecemos tarifas preferenciales. Puedes consultar el costo exacto al momento de realizar tu pedido comunicándote con nuestro equipo vía WhatsApp o llamando al <a href="tel:+51936829528">+51 936 829 528</a>.</p>`,
+  },
+  {
+    category: 'envios',
+    question: '¿Cuánto tiempo demora el despacho?',
+    answer: `<p>Una vez confirmado tu pedido y coordinado el método de pago, procesamos el despacho en un plazo de 24 a 48 horas hábiles. Los pedidos realizados antes de las 2:00 p. m. pueden ser despachados el mismo día, sujeto a disponibilidad de stock.</p>`,
+  },
+  {
+    category: 'envios',
+    question: '¿Puedo recoger mi pedido en tienda?',
+    answer: `<p>Sí, puedes recoger tu pedido directamente en nuestra tienda ubicada en <strong>Jr. Huarochirí 560, Las Malvinas, Lima</strong>. Una vez que tu pedido esté listo, te notificaremos para que puedas pasar a recogerlo en nuestro horario de atención: lunes a sábado de 7:00 a. m. a 9:00 p. m.</p>`,
+  },
+
+  // ─── PAGOS ───────────────────────────────────────────────
+  {
+    category: 'pagos',
+    question: '¿Qué métodos de pago aceptan?',
+    answer: `<p>Trabajamos con los siguientes métodos de pago:</p><ul><li>Depósito o transferencia bancaria (BCP, BBVA, Interbank, Scotiabank)</li><li>Yape y Plin</li><li>Efectivo (en tienda)</li></ul><p>Para empresas, emitimos factura con todos los datos de ley. Consulta por nuestros precios corporativos y descuentos por volumen.</p>`,
+  },
+  {
+    category: 'pagos',
+    question: '¿Ofrecen crédito o financiamiento?',
+    answer: `<p>Sí, ofrecemos condiciones especiales de crédito para empresas y clientes frecuentes, previa evaluación. Si deseas solicitar crédito comercial, contáctanos vía WhatsApp al <a href="https://wa.me/51936829528" target="_blank" rel="noreferrer">+51 936 829 528</a> con tus datos y te informaremos sobre los requisitos y líneas de crédito disponibles.</p>`,
+  },
+  {
+    category: 'pagos',
+    question: '¿Las transferencias bancarias se confirman al instante?',
+    answer: `<p>Las transferencias interbancarias pueden demorar hasta 24 horas en reflejarse, dependiendo del banco emisor. Las transferencias a misma entidad bancaria suelen ser inmediatas. Una vez recibida la confirmación del pago, procedemos con el despacho. Te recomendamos enviarnos el comprobante por WhatsApp para agilizar el proceso.</p>`,
+  },
+
+  // ─── PRODUCTOS ───────────────────────────────────────────
+  {
+    category: 'productos',
+    question: '¿Venden productos originales?',
+    answer: `<p>Sí, todos nuestros productos son 100% originales y provienen directamente de distribuidores autorizados y marcas reconocidas como Bosch, Makita, DeWalt, Hilti, Stanley, Truper, Karcher, Ronix, entre otras. Trabajamos exclusivamente con canales oficiales para garantizar la autenticidad y calidad de cada herramienta que comercializamos.</p>`,
+  },
+  {
+    category: 'productos',
+    question: '¿Puedo ver el producto antes de comprar?',
+    answer: `<p>¡Por supuesto! Puedes visitar nuestra tienda física en <strong>Jr. Huarochirí 560, Las Malvinas, Lima</strong> para ver, probar y recibir asesoría personalizada sobre cualquier producto de nuestro catálogo. Nuestro equipo está capacitado para resolver todas tus dudas técnicas y ayudarte a elegir la herramienta adecuada para tu proyecto.</p>`,
+  },
+  {
+    category: 'productos',
+    question: '¿Tienen repuestos y accesorios?',
+    answer: `<p>Sí, contamos con una amplia variedad de repuestos, accesorios y consumibles para herramientas eléctricas, manuales y de taller. Desde discos de corte, brocas, puntas atornilladoras, baterías, cargadores, hasta lubricantes y equipos de seguridad. Si no encuentras lo que buscas en nuestra web, consúltanos por WhatsApp y te confirmaremos disponibilidad.</p>`,
+  },
+  {
+    category: 'productos',
+    question: '¿Ofrecen asesoría para elegir la herramienta correcta?',
+    answer: `<p>Sí, nuestro equipo brinda asesoría técnica especializada para ayudarte a seleccionar la herramienta o equipo que mejor se adapte a tu necesidad. Puedes contactarnos por WhatsApp al <a href="https://wa.me/51936829528" target="_blank" rel="noreferrer">+51 936 829 528</a>, por teléfono al <a href="tel:+51936829528">+51 936 829 528</a>, o visitarnos directamente en tienda. Te orientamos según tu tipo de trabajo, presupuesto y frecuencia de uso.</p>`,
+  },
+
+  // ─── GARANTÍA ────────────────────────────────────────────
+  {
+    category: 'garantia',
+    question: '¿Todos los productos tienen garantía?',
+    answer: `<p>Sí, todos los productos que comercializamos cuentan con garantía oficial del fabricante. Los plazos y condiciones varían según la marca y el tipo de producto. Generalmente, las herramientas eléctricas tienen garantía de 6 meses a 1 año, mientras que herramientas manuales y equipos pueden tener coberturas extendidas. Te entregaremos tu comprobante y la información de garantía al momento de la compra.</p>`,
+  },
+  {
+    category: 'garantia',
+    question: '¿Qué hago si mi producto llega dañado o presenta fallas?',
+    answer: `<p>Si recibes un producto en mal estado o detectas una falla de fábrica, contáctanos dentro de los primeros 7 días hábiles vía WhatsApp al <a href="https://wa.me/51936829528" target="_blank" rel="noreferrer">+51 936 829 528</a> con tu número de pedido y evidencia fotográfica del daño. Coordinaremos el cambio o la reparación según corresponda. Para fallas cubiertas por garantía, el fabricante evaluará el producto y procederá con la reparación o reposición.</p>`,
+  },
+  {
+    category: 'garantia',
+    question: '¿Puedo cambiar o devolver un producto?',
+    answer: `<p>Aceptamos cambios y devoluciones dentro de los 7 días hábiles posteriores a la compra, siempre que el producto se encuentre en su empaque original, sin uso y en perfectas condiciones. No aplica para productos eléctricos que hayan sido instalados, usados o manipulados. Para iniciar el proceso, contáctanos por WhatsApp y te indicaremos los pasos a seguir.</p>`,
+  },
+
+  // ─── TIENDA ──────────────────────────────────────────────
+  {
+    category: 'tienda',
+    question: '¿Dónde están ubicados?',
+    answer: `<p>Nos encontramos en <strong>Jr. Huarochirí 560, Las Malvinas, Lima, Perú</strong>, una zona estratégica con fácil acceso y cerca de las principales vías de la ciudad. Puedes visitarnos de lunes a sábado de 7:00 a. m. a 9:00 p. m. para recibir atención personalizada.</p>`,
+  },
+  {
+    category: 'tienda',
+    question: '¿Cuál es su horario de atención?',
+    answer: `<p>Nuestro horario de atención es:</p><ul><li><strong>Lunes a sábado:</strong> 7:00 a. m. – 9:00 p. m.</li><li><strong>Domingos y feriados:</strong> Cerrado (atención virtual vía WhatsApp)</li></ul><p>Para consultas fuera del horario comercial, puedes escribirnos por WhatsApp y te atenderemos a la brevedad.</p>`,
+  },
+  {
+    category: 'tienda',
+    question: '¿Cómo puedo contactarlos?',
+    answer: `<p>Puedes contactarnos a través de los siguientes canales:</p><ul><li><strong>WhatsApp:</strong> <a href="https://wa.me/51936829528" target="_blank" rel="noreferrer">+51 936 829 528</a></li><li><strong>Teléfono:</strong> <a href="tel:+51936829528">+51 936 829 528</a></li><li><strong>Email:</strong> <a href="mailto:maquinariasluedma@gmail.com">maquinariasluedma@gmail.com</a></li><li><strong>Tienda:</strong> Jr. Huarochirí 560, Las Malvinas, Lima</li></ul><p>También puedes visitar nuestra <a href="/contacto/">página de contacto</a> para enviarnos tu consulta directamente.</p>`,
+  },
+  {
+    category: 'tienda',
+    question: '¿Tienen redes sociales?',
+    answer: `<p>Sí, puedes seguirnos en nuestras redes sociales para estar al tanto de nuestras promociones, nuevos productos y contenido técnico:</p><ul><li><strong>Facebook:</strong> <a href="${siteSettings.social.facebook || '#'}" target="_blank" rel="noreferrer">Maquinarias Luedma</a></li><li><strong>Instagram:</strong> <a href="${siteSettings.social.instagram || '#'}" target="_blank" rel="noreferrer">@maquinariasluedma</a></li><li><strong>TikTok:</strong> <a href="https://www.tiktok.com/" target="_blank" rel="noreferrer">@maquinariasluedma</a></li></ul>`,
+  },
+];
+
+// Build category counts
+const categoryCounts = new Map<string, number>();
+categoryCounts.set('all', FAQ_ITEMS.length);
+for (const item of FAQ_ITEMS) {
+  categoryCounts.set(item.category, (categoryCounts.get(item.category) || 0) + 1);
+}
+---
+
+<BaseLayout
+  seo={{
+    title: `Preguntas Frecuentes | ${siteSettings.siteName}`,
+    description: 'Resuelve tus dudas sobre envíos, pagos, productos, garantía y atención al cliente en Maquinarias Luedma.',
+    canonicalPath: '/faq/',
+  }}
+>
+  <Header />
+
+  <main id="contenido" class="faq-page">
+    <section class="faq-hero">
+      <div class="container faq-hero__inner">
+        <nav class="faq-hero__breadcrumb" aria-label="Breadcrumb">
+          <a href="/">Inicio</a>
+          <span aria-hidden="true">/</span>
+          <strong>Preguntas Frecuentes</strong>
+        </nav>
+        <h1>Preguntas Frecuentes</h1>
+        <p class="faq-hero__lead">
+          Resolvemos tus dudas sobre envíos, formas de pago, productos, garantía y atención en tienda.
+          Si no encuentras lo que buscas, escríbenos por WhatsApp.
+        </p>
+      </div>
+    </section>
+
+    <section class="faq-section">
+      <div class="container">
+        <div class="faq-categories" role="tablist" aria-label="Filtrar preguntas por categoría">
+          {FAQ_CATEGORIES.map((cat) => (
+            <button
+              type="button"
+              class:list={{ 'faq-category-btn': true, 'is-active': cat.id === 'all' }}
+              role="tab"
+              aria-selected={cat.id === 'all' ? 'true' : 'false'}
+              data-faq-category={cat.id}
+            >
+              {cat.label}
+              <span class="faq-category-btn__count">{categoryCounts.get(cat.id) || 0}</span>
+            </button>
+          ))}
+        </div>
+
+        <div class="faq-list" data-faq-list>
+          {FAQ_ITEMS.map((item) => (
+            <article class="faq-item" data-faq-item data-faq-category={item.category}>
+              <button
+                type="button"
+                class="faq-item__trigger"
+                aria-expanded="false"
+                data-faq-trigger
+              >
+                <span class="faq-item__icon" aria-hidden="true"></span>
+                <span>{item.question}</span>
+              </button>
+              <div class="faq-item__panel" data-faq-panel>
+                <div class="faq-item__panel-inner">
+                  <div class="faq-item__content" set:html={item.answer}></div>
+                </div>
+              </div>
+            </article>
+          ))}
+        </div>
+
+        <aside class="faq-cta">
+          <h2>¿No encuentras lo que buscas?</h2>
+          <p>
+            Estamos listos para ayudarte. Escríbenos por WhatsApp o visítanos en tienda y resolveremos
+            todas tus dudas en minutos.
+          </p>
+          <div class="faq-cta__actions">
+            <a
+              class="btn btn-primary"
+              href={`https://wa.me/${siteSettings.whatsappNumber}`}
+              target="_blank"
+              rel="noreferrer"
+            >
+              Escríbenos por WhatsApp
+            </a>
+            <a class="btn btn-outline" href="/contacto/">
+              Ir a contacto
+            </a>
+          </div>
+        </aside>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+  <WhatsAppFloat />
+</BaseLayout>
+
+<script>
+  (() => {
+    const root = document.querySelector('.faq-page');
+    if (!root) return;
+
+    // ─── Category filter ─────────────────────────────────
+    const categoryBtns = Array.from(root.querySelectorAll('[data-faq-category]'));
+    const items = Array.from(root.querySelectorAll('[data-faq-item]'));
+
+    const filterByCategory = (categoryId: string) => {
+      categoryBtns.forEach((btn) => {
+        const isActive = btn.getAttribute('data-faq-category') === categoryId;
+        btn.classList.toggle('is-active', isActive);
+        btn.setAttribute('aria-selected', isActive ? 'true' : 'false');
+      });
+
+      items.forEach((item) => {
+        const itemCat = item.getAttribute('data-faq-category');
+        if (categoryId === 'all' || itemCat === categoryId) {
+          item.removeAttribute('hidden');
+        } else {
+          item.setAttribute('hidden', '');
+        }
+      });
+    };
+
+    categoryBtns.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const cat = btn.getAttribute('data-faq-category') || 'all';
+        filterByCategory(cat);
+      });
+    });
+
+    // ─── Accordion ───────────────────────────────────────
+    const triggers = Array.from(root.querySelectorAll('[data-faq-trigger]'));
+
+    const closeAll = (except?: Element) => {
+      triggers.forEach((trigger) => {
+        if (except && trigger === except) return;
+        const item = trigger.closest('[data-faq-item]');
+        if (item) {
+          item.classList.remove('is-open');
+          trigger.setAttribute('aria-expanded', 'false');
+        }
+      });
+    };
+
+    triggers.forEach((trigger) => {
+      trigger.addEventListener('click', () => {
+        const item = trigger.closest('[data-faq-item]');
+        if (!item) return;
+
+        const isOpen = item.classList.contains('is-open');
+
+        // Close all others
+        closeAll(trigger);
+
+        if (isOpen) {
+          item.classList.remove('is-open');
+          trigger.setAttribute('aria-expanded', 'false');
+        } else {
+          item.classList.add('is-open');
+          trigger.setAttribute('aria-expanded', 'true');
+        }
+      });
+    });
+  })();
+</script>

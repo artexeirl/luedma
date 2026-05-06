@@ -5,12 +5,16 @@ import Footer from '../../components/Footer.astro';
 import CatalogSection from '../../components/CatalogSection.astro';
 import WhatsAppFloat from '../../components/WhatsAppFloat.astro';
 import { products } from '../../data/snapshot';
+
+const query = Astro.url.searchParams.get('q') || '';
 ---
 
 <BaseLayout
   seo={{
-    title: 'Buscar productos | Maquinarias Luedma',
-    description: 'Búsqueda local en catálogo migrado a Astro.',
+    title: query ? `Resultados para: ${query} | Maquinarias Luedma` : 'Buscar productos | Maquinarias Luedma',
+    description: query
+      ? `Resultados de búsqueda para "${query}" en Maquinarias Luedma`
+      : 'Búsqueda local en catálogo migrado a Astro.',
     canonicalPath: '/search/',
   }}
 >
@@ -22,6 +26,7 @@ import { products } from '../../data/snapshot';
         products={products}
         title="Búsqueda y catálogo"
         subtitle="Filtra por texto, marca y orden."
+        initialQuery={query}
       />
     </div>
   </main>

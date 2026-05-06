@@ -1,17 +1,19 @@
----
-import { categories, products, siteSettings } from '../data/snapshot';
+Ôªø---
+import '../styles/components/header.css';
+import { brands, categories, getBrandBySlug, getCategoryBySlug, products, siteSettings } from '../data/snapshot';
 import type { SearchIslandProps } from '../types/content';
 
 const topCategories = categories.filter((category) => !category.parentSlug).slice(0, 5);
-const buildShopCategoryPath = (slug: string) => `/c/${encodeURIComponent(slug)}/`;
+const buildShopCategoryPath = (slug: string) => `/tienda/c/${encodeURIComponent(slug)}/`;
+const buildShopBrandFilterPath = (slug: string) => `/tienda/m/${encodeURIComponent(slug)}/`;
 const topBrands = [
-  { slug: 'bosch', name: 'Bosch', path: '/marca/bosch/' },
-  { slug: 'hilti', name: 'Hilti', path: '/marca/hilti/' },
-  { slug: 'karcher', name: 'Karcher', path: '/marca/karcher/' },
-  { slug: 'makita', name: 'Makita', path: '/marca/makita/' },
-  { slug: 'makute', name: 'Makute', path: '/marca/makute/' },
-  { slug: 'milwaukee', name: 'Milwaukee', path: '/marca/milwaukee/' },
-  { slug: 'ronix', name: 'Ronix', path: '/marca/ronix/' },
+  { slug: 'bosch', name: 'Bosch', path: buildShopBrandFilterPath('bosch') },
+  { slug: 'hilti', name: 'Hilti', path: buildShopBrandFilterPath('hilti') },
+  { slug: 'karcher', name: 'Karcher', path: buildShopBrandFilterPath('karcher') },
+  { slug: 'makita', name: 'Makita', path: buildShopBrandFilterPath('makita') },
+  { slug: 'makute', name: 'Makute', path: buildShopBrandFilterPath('makute') },
+  { slug: 'milwaukee', name: 'Milwaukee', path: buildShopBrandFilterPath('milwaukee') },
+  { slug: 'ronix', name: 'Ronix', path: buildShopBrandFilterPath('ronix') },
 ];
 const topCategoryPanels = topCategories
   .map((category) => ({
@@ -22,25 +24,51 @@ const topCategoryPanels = topCategories
       .filter((childCategory) => childCategory.parentSlug === category.slug)
       .map((childCategory) => ({
         ...childCategory,
-        shopPath: buildShopCategoryPath(childCategory.slug),
+        shopPath: `/tienda/c/${encodeURIComponent(category.slug)}/${encodeURIComponent(childCategory.slug)}/`,
         displayName: childCategory.name,
       }))
       .slice()
       .sort((a, b) => a.displayName.localeCompare(b.displayName, 'es', { sensitivity: 'base' })),
   }))
   .sort((a, b) => a.displayName.localeCompare(b.displayName, 'es', { sensitivity: 'base' }));
-const megaMenuBrandLogos = [
-  { name: 'Bosch', image: '/images/brands/bosch.webp', path: '/marca/bosch/' },
-  { name: 'DeWalt', image: '/images/brands/dewalt.webp', path: '/marca/de-walt/' },
-  { name: 'Hilti', image: '/images/brands/hilti.webp', path: '/marca/hilti/' },
-  { name: 'Irwin', image: '/images/brands/irwin.webp', path: '/marca/irwin/' },
-  { name: 'Karcher', image: '/images/brands/karcher.webp', path: '/marca/karcher/' },
-  { name: 'Makute', image: '/images/brands/makute.webp', path: '/marca/makute/' },
-  { name: 'Ronix', image: '/images/brands/ronix.webp', path: '/marca/ronix/' },
-  { name: 'Total', image: '/images/brands/total.webp', path: '/marca/total/' },
-  { name: 'Stanley', image: '/images/brands/stanley.webp', path: '/marca/stanley/' },
-  { name: 'Truper', image: '/images/brands/truper.webp', path: '/marca/truper/' },
-];
+const brandBySlug = new Map(brands.map((brand) => [brand.slug, brand]));
+const categoryChildrenByParent = new Map(
+  categories
+    .filter((category) => category.parentSlug)
+    .reduce<Array<[string, string[]]>>((acc, category) => {
+      const parentSlug = category.parentSlug as string;
+      const existing = acc.find(([slug]) => slug === parentSlug);
+      if (existing) {
+        existing[1].push(category.slug);
+      } else {
+        acc.push([parentSlug, [category.slug]]);
+      }
+      return acc;
+    }, []),
+);
+
+const topCategoryBrands = new Map(
+  topCategoryPanels.map((category) => {
+    const categoryScope = new Set([category.slug, ...(categoryChildrenByParent.get(category.slug) || [])]);
+    const categoryBrands = Array.from(
+      new Set(
+        products
+          .filter((product) => categoryScope.has(product.categorySlug))
+          .map((product) => product.brandSlug),
+      ),
+    )
+      .map((brandSlug) => brandBySlug.get(brandSlug))
+      .filter((brand): brand is NonNullable<typeof brand> => Boolean(brand?.logo))
+      .sort((a, b) => a.name.localeCompare(b.name, 'es', { sensitivity: 'base' }))
+      .map((brand) => ({
+        name: brand.name,
+        slug: brand.slug,
+        image: brand.logo as string,
+      }));
+
+    return [category.slug, categoryBrands];
+  }),
+);
 const brandIconBySlug: Record<string, string> = {
   bosch: '/icons/tools/drill.svg',
   hilti: '/icons/tools/jackhammer.svg',
@@ -52,7 +80,7 @@ const brandIconBySlug: Record<string, string> = {
 };
 const categoryIconBySlug: Record<string, string> = {
   'accesorios-de-herramientas': '/icons/tools/tools.svg',
-  'equipos-de-taller-y-construccion': '/icons/tools/toolbox.svg',
+  'equipos-de-taller': '/icons/tools/toolbox.svg',
   'herramientas-electricas': '/icons/tools/plug.svg',
   'herramientas-manuales': '/icons/tools/axe.svg',
   'seguridad-e-iluminacion': '/icons/tools/light-bulb-idea.svg',
@@ -61,12 +89,20 @@ const searchIndex = products.map((product) => ({
   slug: product.slug,
   name: product.name,
   path: product.path,
-  brand: product.brandSlug,
+  brand: getBrandBySlug(product.brandSlug)?.name || product.brandSlug,
+  category: getCategoryBySlug(product.categorySlug)?.name || product.categorySlug,
+  sku: product.sku || '',
+  image:
+    product.images?.[0] && product.images[0].includes('cdn.sanity.io')
+      ? `${product.images[0]}?w=112&h=112&fit=crop&auto=format`
+      : product.images?.[0] || '/images/products/placeholder-product.svg',
+  price: typeof product.price === 'number' ? product.price.toFixed(2) : '',
+  stockText: (product.stock || 0) > 0 ? 'Stock disponible' : 'Sin stock',
 }));
 
 const searchProps: SearchIslandProps = {
   submitPath: '/search/',
-  suggestionsLimit: 6,
+  suggestionsLimit: 10,
 };
 ---
 
@@ -78,7 +114,7 @@ const searchProps: SearchIslandProps = {
       type="button"
       aria-expanded="false"
       aria-controls="mobile-nav-panel"
-      aria-label="Abrir men˙"
+      aria-label="Abrir men√∫"
     >
       <span class="header-tool__icon" aria-hidden="true">
         <img src="/icons/menu-2.svg" alt="" />
@@ -91,7 +127,7 @@ const searchProps: SearchIslandProps = {
 
     <div class="header-search-shell header-search-shell--desktop" data-island="search" data-island-props={JSON.stringify(searchProps)}>
       <form data-search-form class="header-search" action="/search/" method="get">
-        <input data-search-input type="search" name="q" placeholder="øQuÈ productos est·s buscando?" autocomplete="off" />
+        <input data-search-input type="search" name="q" placeholder="¬øQu√© productos est√°s buscando?" autocomplete="off" />
         <button type="submit" aria-label="Buscar">
           <img src="/icons/search.svg" alt="" aria-hidden="true" />
         </button>
@@ -101,49 +137,59 @@ const searchProps: SearchIslandProps = {
     </div>
 
     <div class="header-tools">
-      <a class="header-location" href="/contact/" aria-label="Actualizar ubicaciÛn de entrega">
+      <a class="header-location" href="/contacto/" aria-label="Actualizar ubicaci√≥n de entrega">
         <span class="header-tool__icon" aria-hidden="true">
           <img src="/icons/map-pin.svg" alt="" />
         </span>
         <span class="header-location__text">
-          <small>Entrega en Lima</small>
-          <strong>Jr. HuarochirÌ 560</strong>
+          <small>Ub√≠canos en</small>
+          <strong>Jr. Huarochir√≠ 560</strong>
         </span>
       </a>
 
-      <a class="header-account" href="/contact/" aria-label="Iniciar sesiÛn">
+      <button
+        class="header-account header-coming-soon-trigger"
+        type="button"
+        aria-label="Iniciar sesi√≥n (pr√≥ximamente)"
+        data-coming-soon-message="Inicio de sesi√≥n a√∫n en desarrollo. Pronto tendremos nuevas novedades"
+      >
         <span class="header-tool__icon" aria-hidden="true">
           <img src="/icons/user.svg" alt="" />
         </span>
-        <span>Iniciar sesiÛn</span>
-      </a>
+        <span>Iniciar sesi√≥n</span>
+      </button>
 
-      <a class="header-cart" href="/c/" aria-label="Ver carrito">
+      <button
+        class="header-cart header-coming-soon-trigger"
+        type="button"
+        aria-label="Carrito de compras (pr√≥ximamente)"
+        data-coming-soon-message="Carrito compras a√∫n en desarrollo. Pronto te traeremos nuevas novedades"
+      >
         <span class="header-tool__icon" aria-hidden="true">
           <img src="/icons/garden-cart.svg" alt="" />
         </span>
         <span class="header-cart__badge">0</span>
-      </a>
+      </button>
 
     </div>
   </div>
 
   <div class="site-header__bottom-wrap">
     <div class="container site-header__bottom">
-      <button
+      <a
+        href="/tienda/"
         data-mobile-menu-button
         class="menu-trigger"
-        type="button"
         aria-expanded="false"
         aria-controls="mobile-nav-panel mega-categories-panel"
       >
         <span class="header-tool__icon menu-trigger__icon" aria-hidden="true">
           <img src="/icons/category.svg" alt="" />
         </span>
-        <span>Todas las categorÌas</span>
-      </button>
+        <span>Todas las categor√≠as</span>
+      </a>
 
-      <nav class="header-nav" aria-label="NavegaciÛn principal">
+      <nav class="header-nav" aria-label="Navegaci√≥n principal">
         {topBrands.map((brand) => (
           <a href={brand.path} class="header-nav__brand">
             <span class="header-tool__icon header-nav__brand-icon" aria-hidden="true">
@@ -162,7 +208,7 @@ const searchProps: SearchIslandProps = {
       </nav>
 
       <div class="header-shortcuts">
-        <a href="/contact/" class="header-shortcuts__item">
+        <a href="/contacto/" class="header-shortcuts__item">
           <span class="header-tool__icon" aria-hidden="true">
             <img src="/icons/phone-call.svg" alt="" />
           </span>
@@ -173,7 +219,7 @@ const searchProps: SearchIslandProps = {
 
     <div id="mega-categories-panel" class="mega-menu" data-mega-menu-panel aria-hidden="true">
       <div class="container mega-menu__content">
-        <aside class="mega-menu__categories" aria-label="CategorÌas principales">
+        <aside class="mega-menu__categories" aria-label="categor√≠as principales">
           {topCategoryPanels.map((category, index) => (
             <a
               href={category.shopPath}
@@ -188,7 +234,7 @@ const searchProps: SearchIslandProps = {
                 </span>
                 <span>{category.displayName}</span>
               </span>
-              <span aria-hidden="true">õ</span>
+              <span aria-hidden="true">‚Ä∫</span>
             </a>
           ))}
         </aside>
@@ -211,27 +257,30 @@ const searchProps: SearchIslandProps = {
 
               <div class="mega-menu__brands">
                 <div class="mega-menu__brand-grid">
-                  {megaMenuBrandLogos.map((brandLogo) => (
-                    <a href={brandLogo.path} class="mega-menu__brand-item" aria-label={`Ver productos ${brandLogo.name}`}>
+                  {(topCategoryBrands.get(category.slug) || []).map((brandLogo) => (
+                    <a
+                      href={`/tienda/c/${encodeURIComponent(category.slug)}/m/${encodeURIComponent(brandLogo.slug)}/`}
+                      class="mega-menu__brand-item"
+                      aria-label={`Ver productos ${brandLogo.name}`}
+                    >
                       <img src={brandLogo.image} alt={brandLogo.name} loading="lazy" />
                     </a>
                   ))}
                 </div>
               </div>
-
-              <a class="mega-menu__more" href={category.shopPath}>Ver m·s</a>
             </section>
           ))}
         </div>
       </div>
     </div>
   </div>
+  <div class="mega-menu-backdrop" data-mega-menu-backdrop hidden></div>
 
   <aside id="mobile-nav-panel" data-mobile-menu-panel class="mobile-panel" hidden aria-hidden="true">
     <div class="mobile-panel__head">
       <div class="mobile-panel__search header-search-shell" data-island="search" data-island-props={JSON.stringify(searchProps)}>
         <form data-search-form class="header-search header-search--mobile" action="/search/" method="get">
-          <input data-search-input type="search" name="q" placeholder="øQuÈ productos est·s buscando?" autocomplete="off" />
+          <input data-search-input type="search" name="q" placeholder="¬øQu√© productos est√°s buscando?" autocomplete="off" />
           <button type="submit" aria-label="Buscar">
             <img src="/icons/search.svg" alt="" aria-hidden="true" />
           </button>
@@ -239,12 +288,12 @@ const searchProps: SearchIslandProps = {
           <script type="application/json" data-search-index set:html={JSON.stringify(searchIndex)}></script>
         </form>
       </div>
-      <button data-mobile-menu-close type="button" aria-label="Cerrar men˙">
+      <button data-mobile-menu-close type="button" aria-label="Cerrar men√∫">
         <img src="/icons/x.svg" alt="" aria-hidden="true" />
       </button>
     </div>
 
-    <div class="mobile-tabs" role="tablist" aria-label="NavegaciÛn mÛvil">
+    <div class="mobile-tabs" role="tablist" aria-label="Navegaci√≥n m√≥vil">
       <button
         type="button"
         class="mobile-tabs__button is-active"
@@ -253,7 +302,7 @@ const searchProps: SearchIslandProps = {
         role="tab"
         aria-selected="true"
       >
-        CategorÌas
+        Categor√≠as
       </button>
       <button
         type="button"
@@ -305,12 +354,12 @@ const searchProps: SearchIslandProps = {
               </article>
             ))}
           </div>
-          <a class="mobile-panel__account" href="/contact/" data-mobile-menu-close>
+          <button class="mobile-panel__account header-coming-soon-trigger" type="button" data-coming-soon-message="Inicio de sesi√≥n a√∫n en desarrollo. Pronto tendremos nuevas novedades" aria-label="Iniciar sesi√≥n (pr√≥ximamente)">
             <span class="header-tool__icon" aria-hidden="true">
               <img src="/icons/user.svg" alt="" />
             </span>
-            <span>Iniciar sesiÛn</span>
-          </a>
+            <span>Iniciar sesi√≥n</span>
+          </button>
         </div>
       </section>
 
@@ -333,16 +382,86 @@ const searchProps: SearchIslandProps = {
               </a>
             ))}
           </div>
-          <a class="mobile-panel__view-all" href="/c/" data-mobile-menu-close>Ver todas</a>
-          <a class="mobile-panel__account" href="/contact/" data-mobile-menu-close>
+          <a class="mobile-panel__view-all" href="/tienda/" data-mobile-menu-close>Ver todas</a>
+          <button class="mobile-panel__account header-coming-soon-trigger" type="button" data-coming-soon-message="Inicio de sesi√≥n a√∫n en desarrollo. Pronto tendremos nuevas novedades" aria-label="Iniciar sesi√≥n (pr√≥ximamente)">
             <span class="header-tool__icon" aria-hidden="true">
               <img src="/icons/user.svg" alt="" />
             </span>
-            <span>Iniciar sesiÛn</span>
-          </a>
+            <span>Iniciar sesi√≥n</span>
+          </button>
         </div>
       </section>
     </div>
   </aside>
+  <div class="header-coming-soon-backdrop" data-coming-soon-backdrop hidden></div>
+  <div class="header-coming-soon-popover" data-coming-soon-popover hidden role="status" aria-live="polite"></div>
+  <script is:inline>
+    (() => {
+      const root = document.currentScript?.closest('.site-header');
+      if (!root) return;
+
+      const triggers = Array.from(root.querySelectorAll('.header-coming-soon-trigger'));
+      const popover = root.querySelector('[data-coming-soon-popover]');
+      if (!triggers.length || !popover) return;
+
+      let timer;
+      let hideTransitionTimer;
+
+      const hide = () => {
+        if (timer) {
+          clearTimeout(timer);
+          timer = null;
+        }
+        if (hideTransitionTimer) {
+          clearTimeout(hideTransitionTimer);
+          hideTransitionTimer = null;
+        }
+        popover.classList.remove('is-visible');
+        hideTransitionTimer = setTimeout(() => {
+          popover.hidden = true;
+          hideTransitionTimer = null;
+        }, 220);
+      };
+
+      const show = (trigger) => {
+        if (timer) {
+          clearTimeout(timer);
+          timer = null;
+        }
+        const rect = trigger.getBoundingClientRect();
+        popover.textContent = trigger.getAttribute('data-coming-soon-message') || 'Funci√≥n en desarrollo.';
+        popover.style.top = `${rect.bottom + 10}px`;
+        popover.style.left = `${rect.left + rect.width / 2}px`;
+        if (hideTransitionTimer) {
+          clearTimeout(hideTransitionTimer);
+          hideTransitionTimer = null;
+        }
+        popover.classList.remove('is-visible');
+        popover.hidden = false;
+        requestAnimationFrame(() => popover.classList.add('is-visible'));
+      };
+
+      const scheduleHide = () => {
+        timer = setTimeout(hide, 120);
+      };
+
+      triggers.forEach((trigger) => {
+        trigger.addEventListener('mouseenter', () => show(trigger));
+        trigger.addEventListener('focus', () => show(trigger));
+        trigger.addEventListener('mouseleave', scheduleHide);
+        trigger.addEventListener('blur', scheduleHide);
+        trigger.addEventListener('click', (event) => event.preventDefault());
+      });
+
+      window.addEventListener('scroll', hide, { passive: true });
+      window.addEventListener('resize', hide);
+    })();
+  </script>
 </header>
+
+
+
+
+
+
 

@@ -1,0 +1,125 @@
+﻿---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import WhatsAppFloat from '../../components/WhatsAppFloat.astro';
+import { siteSettings, staticPages } from '../../data/snapshot';
+
+const page = staticPages.find((item) => item.slug === 'contact') || staticPages.find((item) => item.slug === 'contacto');
+---
+
+<BaseLayout
+  seo={{
+    title: page?.seo?.title || `Contacto | ${siteSettings.siteName}`,
+    description: page?.seo?.description || page?.content || 'Contacto comercial de Maquinarias Luedma.',
+    canonicalPath: '/contacto/',
+  }}
+>
+  <Header />
+
+  <main id="contenido" class="contact-page">
+    <section class="contact-hero">
+      <div class="container contact-hero__inner">
+        <nav class="contact-hero__breadcrumb" aria-label="Breadcrumb">
+          <a href="/">Inicio</a>
+          <span aria-hidden="true">/</span>
+          <strong>Contacto</strong>
+        </nav>
+        <h1>Contacto</h1>
+      </div>
+    </section>
+
+    <section class="contact-section">
+      <div class="container contact-grid">
+        <article class="contact-map__info">
+          <h2>Ubícanos</h2>
+          <hr class="contact-map__divider" />
+          <ul class="contact-map__list">
+            <li>
+              <span class="contact-map__icon" aria-hidden="true"><img src="/icons/map-pin.svg" alt="" /></span>
+              <span>Las Malvinas Jr. Huarochirí 560, Lima, Perú</span>
+            </li>
+            <li>
+              <span class="contact-map__icon" aria-hidden="true"><img src="/icons/brand-whatsapp.svg" alt="" /></span>
+              <a href="https://wa.me/51936829528" target="_blank" rel="noreferrer">+51 936 829 528</a>
+            </li>
+            <li>
+              <span class="contact-map__icon" aria-hidden="true"><img src="/icons/mail.svg" alt="" /></span>
+              <a href="mailto:maquinariasluedma@gmail.com">maquinariasluedma@gmail.com</a>
+            </li>
+          </ul>
+
+          <div class="contact-map__extra">
+            <h3>Horario de atención</h3>
+            <p>Lunes a sábado: 7:00 a. m. - 9:00 p. m.</p>
+            <p>Despachos rápidos en Lima Metropolitana.</p>
+            <div class="contact-map__socials">
+              <a href={siteSettings.social.facebook} target="_blank" rel="noreferrer" aria-label="Facebook">
+                <img src="/icons/brand-facebook.svg" alt="" />
+              </a>
+              <a href={siteSettings.social.instagram} target="_blank" rel="noreferrer" aria-label="Instagram">
+                <img src="/icons/brand-instagram.svg" alt="" />
+              </a>
+              <a href="https://www.tiktok.com/" target="_blank" rel="noreferrer" aria-label="TikTok">
+                <img src="/icons/brand-tiktok.svg" alt="" />
+              </a>
+            </div>
+          </div>
+        </article>
+
+        <div class="contact-right">
+          <aside class="contact-form-panel" aria-label="Formulario de contacto">
+            <h2>Envíanos tu consulta</h2>
+            <form class="contact-form" id="contact-whatsapp-form" data-whatsapp-number={siteSettings.whatsappNumber}>
+              <label>
+                <span>Nombre</span>
+                <input name="name" type="text" required />
+              </label>
+              <label>
+                <span>Teléfono</span>
+                <input name="phone" type="tel" required />
+              </label>
+              <label>
+                <span>Mensaje</span>
+                <textarea name="message" rows="4" required></textarea>
+              </label>
+              <button class="btn btn-primary" type="submit">Enviar por WhatsApp</button>
+            </form>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="contact-map-section" aria-label="Ubicación en mapa">
+      <div class="container">
+        <div class="contact-map-embed">
+          <iframe
+            title="Mapa de Maquinarias Luedma"
+            src="https://www.google.com/maps?q=Jr.+Huarochir%C3%AD+560,+Lima,+Per%C3%BA&output=embed"
+            loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade"
+          ></iframe>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+  <WhatsAppFloat />
+</BaseLayout>
+
+<script>
+  const form = document.getElementById('contact-whatsapp-form');
+  if (form instanceof HTMLFormElement) {
+    form.addEventListener('submit', (event) => {
+      event.preventDefault();
+      const data = new FormData(form);
+      const phone = form.dataset.whatsappNumber || '';
+      const name = String(data.get('name') || '').trim();
+      const contactPhone = String(data.get('phone') || '').trim();
+      const message = String(data.get('message') || '').trim();
+      const text = `Hola, soy ${name}.%0ATeléfono: ${contactPhone}.%0AConsulta: ${message}`;
+      window.open(`https://wa.me/${phone}?text=${text}`, '_blank', 'noopener,noreferrer');
+    });
+  }
+</script>

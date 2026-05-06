@@ -1,4 +1,4 @@
-﻿---
+---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
@@ -9,16 +9,16 @@ import { products } from '../../data/snapshot';
 
 <BaseLayout
   seo={{
-    title: 'Catálogo | Maquinarias Luedma',
-    description: 'Catálogo de productos con filtros por islas TypeScript.',
-    canonicalPath: '/c/',
+    title: 'Tienda | Maquinarias Luedma',
+    description: 'Tienda de productos con filtros por categorías y marcas.',
+    canonicalPath: '/tienda/',
   }}
 >
   <Header />
 
   <main id="contenido" class="section">
     <div class="container">
-      <CatalogSection products={products} title="Catálogo" subtitle="Vista completa de productos del snapshot local." />
+      <CatalogSection products={products} />
     </div>
   </main>
 

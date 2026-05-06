@@ -6,7 +6,6 @@ type ShowcaseItem = {
   price: string;
   oldPrice?: string;
   badge?: string;
-  stockText?: string;
   image?: string;
   path?: string;
 };
@@ -30,30 +29,13 @@ function pickPreviewImage(): string {
   return SHOWCASE_PREVIEW_IMAGES[Math.floor(Math.random() * SHOWCASE_PREVIEW_IMAGES.length)] || SHOWCASE_PREVIEW_IMAGES[0];
 }
 
-function buildCardBorder(): SVGSVGElement {
-  const ns = 'http://www.w3.org/2000/svg';
-  const svg = document.createElementNS(ns, 'svg');
-  svg.setAttribute('class', 'card-cut-border');
-  svg.setAttribute('viewBox', '0 0 100 100');
-  svg.setAttribute('preserveAspectRatio', 'none');
-  svg.setAttribute('aria-hidden', 'true');
-  svg.setAttribute('focusable', 'false');
-
-  const polygon = document.createElementNS(ns, 'polygon');
-  polygon.setAttribute('class', 'card-cut-border__shape');
-  polygon.setAttribute('points', '0,0 97,0 100,3 100,100 3,100 0,97');
-  svg.append(polygon);
-
-  return svg;
-}
-
 function buildCard(item: ShowcaseItem): HTMLElement {
   const article = document.createElement('article');
   article.className = 'showcase-card';
 
   const imageLink = document.createElement('a');
   imageLink.className = 'showcase-card__image-link';
-  imageLink.href = item.path || '/c/';
+  imageLink.href = item.path || '/tienda/';
   imageLink.setAttribute('aria-label', `Ver producto ${item.name}`);
 
   const image = document.createElement('img');
@@ -81,10 +63,6 @@ function buildCard(item: ShowcaseItem): HTMLElement {
   name.className = 'showcase-card__name';
   name.textContent = item.name;
 
-  const delivery = document.createElement('p');
-  delivery.className = 'showcase-card__delivery';
-  delivery.textContent = item.stockText || 'Sin stock';
-
   const footer = document.createElement('div');
   footer.className = 'showcase-card__footer';
 
@@ -105,11 +83,11 @@ function buildCard(item: ShowcaseItem): HTMLElement {
 
   const cta = document.createElement('a');
   cta.className = 'btn btn-primary showcase-card__cta';
-  cta.href = item.path || '/c/';
+  cta.href = item.path || '/tienda/';
   cta.textContent = 'Ver detalles';
 
   footer.append(priceWrap, cta);
-  article.append(buildCardBorder(), imageLink, meta, name, delivery, footer);
+  article.append(imageLink, meta, name, footer);
   return article;
 }
 

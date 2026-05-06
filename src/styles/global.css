@@ -1,13 +1,4 @@
-@import './components/header.css';
-@import './components/footer.css';
-@import './components/catalog-section.css';
-@import './components/breadcrumbs.css';
-@import './components/trust-strip.css';
-@import './components/whatsapp-float.css';
-@import './pages/home.css';
-@import './pages/product-detail.css';
-@import './pages/page-content.css';
-:root {
+﻿:root {
   --container-max: 1300px;
   --container-gutter: clamp(14px, 4vw, 28px);
   --container: min(var(--container-max), calc(100% - (var(--container-gutter) * 2)));
@@ -33,7 +24,7 @@
   --space-1: 4px;
   --space-2: 8px;
   --space-3: 12px;
-  --space-4: 16px;
+  --space-4: 15px;
   --space-5: 20px;
   --space-6: 24px;
   --space-7: 32px;
@@ -55,7 +46,7 @@
   --color-line: #d9e0ea;
   --color-text: #282d34;
   --color-muted: #80868e;
-  --color-brand: rgb(240, 48, 48);
+  --color-brand: #E40008;
   --color-brand-2: rgb(243, 68, 68);
   --color-ok: #25d366;
   --color-white: #ffffff;
@@ -206,41 +197,10 @@ img {
 
 .product-card,
 .showcase-card {
-  --corner-cut-size: var(--corner-cut-card-ratio);
-  --card-border-color: var(--line);
-  --card-fill: var(--surface);
   position: relative;
-  background: var(--card-fill);
-  clip-path: polygon(
-    0 0,
-    calc(100% - var(--corner-cut-size)) 0,
-    100% var(--corner-cut-size),
-    100% 100%,
-    var(--corner-cut-size) 100%,
-    0 calc(100% - var(--corner-cut-size))
-  );
-  transition: background-color 0.32s ease;
-}
-
-.card-cut-border {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  display: block;
-  pointer-events: none;
-  z-index: 2;
-}
-
-.card-cut-border__shape {
-  fill: none;
-  stroke: var(--card-border-color);
-  stroke-width: 1;
-  stroke-linecap: square;
-  stroke-linejoin: miter;
-  vector-effect: non-scaling-stroke;
-  shape-rendering: geometricPrecision;
-  transition: stroke 0.32s ease;
+  border: 1px solid var(--line);
+  border-radius: 0;
+  transition: border-color 0.32s ease;
 }
 
 .section {

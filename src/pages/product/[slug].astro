@@ -1,4 +1,4 @@
----
+﻿---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
@@ -6,7 +6,10 @@ import Breadcrumbs from '../../components/Breadcrumbs.astro';
 import WhatsAppFloat from '../../components/WhatsAppFloat.astro';
 import { getBrandBySlug, getCategoryBySlug, getProductsBySlugs, getProductBySlug, products, siteSettings } from '../../data/snapshot';
 import { buildBreadcrumbSchema, buildProductSchema, buildCanonical } from '../../utils/seo';
-import type { GalleryIslandProps } from '../../types/content';
+import type { Category, GalleryIslandProps } from '../../types/content';
+
+type PortableBlock = { _type?: string; listItem?: string; children?: Array<{ text?: string }> };
+type TechRow = { label: string; value: string };
 
 const slugParam = Astro.params.slug;
 const product = slugParam ? getProductBySlug(slugParam) : undefined;
@@ -14,7 +17,6 @@ if (!product) return Astro.redirect('/404/');
 
 const brand = getBrandBySlug(product.brandSlug);
 const category = getCategoryBySlug(product.categorySlug);
-const inStock = (product.stock || 0) > 0;
 const mainImage = product.images[0] || '/images/products/p1.png';
 const hasSource = Boolean(product.sourceUrl && product.sourceUrl.trim().length > 0);
 const relatedRaw = getProductsBySlugs(product.relatedSlugs);
@@ -22,14 +24,24 @@ const fallbackRelated = products.filter((item) => item.slug !== product.slug).sl
 const relatedItems = (relatedRaw.length > 0 ? relatedRaw : fallbackRelated).slice(0, 12).map((item) => ({
   ...item,
   brandName: getBrandBySlug(item.brandSlug)?.name || item.brandSlug,
-  stockText: (item.stock || 0) > 0 ? 'Stock disponible' : 'Sin stock',
   thumb: item.images?.[0]?.includes('cdn.sanity.io') ? `${item.images[0]}?w=400&h=400&fit=crop&auto=format` : item.images?.[0],
 }));
 const relatedPages = Array.from({ length: Math.ceil(relatedItems.length / 4) }, (_, i) => relatedItems.slice(i * 4, i * 4 + 4));
 
+function buildCategoryHierarchy(categorySlug: string): Category[] {
+  const hierarchy: Category[] = [];
+  let current = getCategoryBySlug(categorySlug);
+  while (current) {
+    hierarchy.unshift(current);
+    current = current.parentSlug ? getCategoryBySlug(current.parentSlug) : undefined;
+  }
+  return hierarchy;
+}
+
+const categoryHierarchy = category ? buildCategoryHierarchy(product.categorySlug) : [];
 const breadcrumbItems = [
   { label: 'Inicio', href: '/' },
-  { label: category?.name || 'Categoría', href: category?.path || '/c/' },
+  ...categoryHierarchy.map((cat) => ({ label: cat.name, href: cat.path })),
   { label: product.name, href: product.path },
 ];
 
@@ -46,8 +58,77 @@ const breadcrumbSchema = buildBreadcrumbSchema(
 );
 
 const galleryProps: GalleryIslandProps = { activeIndex: 0 };
----
+const galleryImages = product.images.length > 0 ? product.images : [mainImage];
+const hasThumbCarousel = galleryImages.length > 5;
 
+function escapeHtml(value: string): string {
+  return value
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#39;');
+}
+
+function renderPortableBlocks(blocks: unknown[] | undefined, fallback = ''): string {
+  if (!Array.isArray(blocks) || blocks.length === 0) {
+    return fallback ? `<p>${escapeHtml(fallback)}</p>` : '<p>Sin contenido.</p>';
+  }
+
+  let html = '';
+  let listOpen = false;
+
+  const closeList = () => {
+    if (listOpen) {
+      html += '</ul>';
+      listOpen = false;
+    }
+  };
+
+  blocks.forEach((raw) => {
+    const block = raw as PortableBlock;
+    if (block?._type !== 'block') return;
+    const text = (block.children || []).map((child) => child.text || '').join('').trim();
+    if (!text) return;
+
+    if (block.listItem === 'bullet') {
+      if (!listOpen) {
+        html += '<ul>';
+        listOpen = true;
+      }
+      html += `<li>${escapeHtml(text)}</li>`;
+      return;
+    }
+
+    closeList();
+    html += `<p>${escapeHtml(text)}</p>`;
+  });
+
+  closeList();
+  if (!html) return fallback ? `<p>${escapeHtml(fallback)}</p>` : '<p>Sin contenido.</p>';
+  return html;
+}
+
+const shortDescriptionHtml = renderPortableBlocks(product.shortDescriptionBlocks, product.shortDescription || '');
+const descriptionHtml = renderPortableBlocks(product.descriptionBlocks, product.description);
+const technicalSheetRawHtml = renderPortableBlocks(product.technicalSheetBlocks, product.technicalSheet || '');
+
+function parseTechnicalRows(htmlSource: string): TechRow[] {
+  const matches = Array.from(htmlSource.matchAll(/<li>(.*?)<\/li>/g)).map((m) => m[1].replace(/&amp;/g, '&').trim());
+  return matches
+    .map((line) => {
+      const divider = line.indexOf(':');
+      if (divider === -1) return { label: line, value: '' };
+      return {
+        label: line.slice(0, divider).trim(),
+        value: line.slice(divider + 1).trim(),
+      };
+    })
+    .filter((row) => row.label.length > 0);
+}
+
+const technicalRows = parseTechnicalRows(technicalSheetRawHtml);
+---
 <BaseLayout
   seo={{
     title: `${product.name} | ${siteSettings.siteName}`,
@@ -68,12 +149,32 @@ const galleryProps: GalleryIslandProps = { activeIndex: 0 };
             <div class="product-gallery__main">
               <img data-gallery-main src={mainImage} alt={product.name} width="1200" height="1200" loading="eager" />
             </div>
-            <div class="product-gallery__thumbs">
-              {(product.images.length > 0 ? product.images : [mainImage]).map((image, index) => (
-                <button data-gallery-thumb data-src={image} data-alt={`${product.name} imagen ${index + 1}`} type="button" class={index === 0 ? 'is-active' : ''}>
-                  <img src={image} alt={`Miniatura ${index + 1}`} loading="lazy" width="120" height="120" />
+            <div class:list={{ 'product-gallery__thumbs-shell': true, 'has-carousel': hasThumbCarousel }}>
+              {hasThumbCarousel && (
+                <button class="product-gallery__thumbs-nav product-gallery__thumbs-nav--up" type="button" data-gallery-prev aria-label="Ver miniaturas anteriores">
+                  <img src="/icons/chevron-down.svg" alt="" aria-hidden="true" />
                 </button>
-              ))}
+              )}
+              <div class="product-gallery__thumbs-viewport" data-gallery-viewport>
+                <div class="product-gallery__thumbs-track" data-gallery-track>
+                  {galleryImages.map((image, index) => (
+                    <button
+                      data-gallery-thumb
+                      data-src={image}
+                      data-alt={`${product.name} imagen ${index + 1}`}
+                      type="button"
+                      class={index === 0 ? 'is-active' : ''}
+                    >
+                      <img src={image} alt={`Miniatura ${index + 1}`} loading="lazy" width="120" height="120" />
+                    </button>
+                  ))}
+                </div>
+              </div>
+              {hasThumbCarousel && (
+                <button class="product-gallery__thumbs-nav product-gallery__thumbs-nav--down" type="button" data-gallery-next aria-label="Ver más miniaturas">
+                  <img src="/icons/chevron-down.svg" alt="" aria-hidden="true" />
+                </button>
+              )}
             </div>
           </div>
         </article>
@@ -83,12 +184,11 @@ const galleryProps: GalleryIslandProps = { activeIndex: 0 };
             <p class="product-info-panel__meta">{brand?.name || 'Marca'} · {category?.name || 'Categoría'}</p>
             <div class="product-info-panel__chips">
               {product.isNew && <span class="product-chip">NUEVO</span>}
-              <span class:list={{ 'product-chip': true, 'is-ok': inStock, 'is-off': !inStock }}>{inStock ? 'Stock disponible' : 'Sin stock'}</span>
             </div>
           </div>
 
           <h1>{product.name}</h1>
-          <p class="product-info-panel__excerpt">{product.sku || 'SKU no especificado'}</p>
+          <p class="product-info-panel__excerpt">SKU: {product.sku || 'No especificado'}</p>
 
           <div class="product-pricing">
             {typeof product.compareAtPrice === 'number' && <span class="product-pricing__old">S/ {product.compareAtPrice.toFixed(2)}</span>}
@@ -96,13 +196,13 @@ const galleryProps: GalleryIslandProps = { activeIndex: 0 };
           </div>
 
           <div class="product-description">
-            <p>{product.description}</p>
+            <div class="product-richtext" set:html={shortDescriptionHtml}></div>
           </div>
 
           <div class="product-actions">
             <a class="btn btn-primary" data-island="whatsapp-cta" data-whatsapp-number={siteSettings.whatsappNumber} data-whatsapp-message={`Hola Maquinarias Luedma, quiero cotizar ${product.name}.`} target="_blank" rel="noreferrer">
               <img src="/icons/brand-whatsapp.svg" alt="" aria-hidden="true" />
-              Solicitar por WhatsApp
+              SOLICITAR POR WHATSAPP
             </a>
             {hasSource && <a class="btn btn-outline" href={product.sourceUrl} target="_blank" rel="noreferrer">Referencia original</a>}
           </div>
@@ -119,6 +219,43 @@ const galleryProps: GalleryIslandProps = { activeIndex: 0 };
         </article>
       </section>
 
+      <section class="section product-tabs" data-island="product-tabs">
+        <div class="product-tabs__header" role="tablist" aria-label="Información del producto">
+          <button class="product-tabs__btn is-active" type="button" role="tab" aria-selected="true" data-tab-target="descripcion">
+            Descripción
+          </button>
+          <button class="product-tabs__btn" type="button" role="tab" aria-selected="false" data-tab-target="ficha">
+            Información técnica
+          </button>
+        </div>
+        <div class="product-tabs__content">
+          <article class="product-tabs__panel is-active" role="tabpanel" data-tab-panel="descripcion">
+            <div class="product-richtext" set:html={descriptionHtml}></div>
+          </article>
+          <article class="product-tabs__panel" role="tabpanel" data-tab-panel="ficha" aria-hidden="true">
+            {technicalRows.length > 0 ? (
+              <div class="tech-sheet">
+                {technicalRows.map((row, index) => (
+                  <div class:list={{ 'tech-sheet__row': true, 'is-alt': index % 2 === 0 }}>
+                    <span class="tech-sheet__label">{row.label}</span>
+                    <span class="tech-sheet__value">
+                      {row.value.split(' / ').map((segment, segmentIndex) => (
+                        <span class="tech-sheet__value-segment">
+                          {segmentIndex > 0 && <span class="tech-sheet__value-separator" aria-hidden="true"> / </span>}
+                          <span class="tech-sheet__value-text">{segment.trim()}</span>
+                        </span>
+                      ))}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div class="product-richtext"><p>Sin información técnica.</p></div>
+            )}
+          </article>
+        </div>
+      </section>
+
       <section class="section product-related featured-products" data-island="featured-products-carousel">
         <h2>Productos relacionados</h2>
         <div class="featured-products__carousel" data-featured-carousel>
@@ -131,10 +268,7 @@ const galleryProps: GalleryIslandProps = { activeIndex: 0 };
                 <div class="featured-products__page" data-featured-page={pageIndex}>
                   {page.map((item) => (
                     <article class="showcase-card">
-                      <svg class="card-cut-border" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true" focusable="false">
-                        <polygon class="card-cut-border__shape" points="0,0 97,0 100,3 100,100 3,100 0,97"></polygon>
-                      </svg>
-                      <a href={item.path || '/c/'} class="showcase-card__image-link" aria-label={`Ver producto ${item.name}`}>
+                      <a href={item.path || '/tienda/'} class="showcase-card__image-link" aria-label={`Ver producto ${item.name}`}>
                         <img src={item.thumb || '/images/products/p1.png'} alt={`Imagen de ${item.name}`} loading="lazy" />
                       </a>
                       <div class="showcase-card__meta">
@@ -142,13 +276,12 @@ const galleryProps: GalleryIslandProps = { activeIndex: 0 };
                         {item.isNew && <span class="showcase-card__badge">NUEVO</span>}
                       </div>
                       <h3 class="showcase-card__name">{item.name}</h3>
-                      <p class="showcase-card__delivery">{item.stockText}</p>
                       <div class="showcase-card__footer">
                         <div class="showcase-card__price-wrap">
                           {typeof item.compareAtPrice === 'number' && <span class="showcase-card__old-price">S/ {item.compareAtPrice.toFixed(2)}</span>}
                           <p class="showcase-card__price">{typeof item.price === 'number' ? `S/ ${item.price.toFixed(2)}` : 'Consultar'}</p>
                         </div>
-                        <a class="btn btn-primary showcase-card__cta" href={item.path || '/c/'}>Ver detalles</a>
+                        <a class="btn btn-primary showcase-card__cta" href={item.path || '/tienda/'}>Ver detalles</a>
                       </div>
                     </article>
                   ))}
