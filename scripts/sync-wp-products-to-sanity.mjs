@@ -6,9 +6,15 @@ const PER_PAGE = 100;
 
 const ROOT_CATEGORY_SET = new Set([
   'accesorios-de-herramientas',
+  'bombas-de-agua',
+  'cabezales',
+  'combos',
+  'equipos-de-combustion',
+  'equipos-de-pintado',
   'equipos-de-taller',
   'herramientas-electricas',
   'herramientas-manuales',
+  'motores',
   'seguridad-e-iluminacion',
 ]);
 
@@ -24,6 +30,34 @@ const SUBCATEGORY_TO_ROOT = {
   'equipos-de-medicion': 'equipos-de-taller',
   'organizacion-y-almacenamiento': 'equipos-de-taller',
 
+  ahoyadores: 'equipos-de-combustion',
+  amoladoras: 'equipos-de-combustion',
+  'cortacesped': 'equipos-de-combustion',
+  fumigadores: 'equipos-de-combustion',
+  generadores: 'equipos-de-combustion',
+  motoazadas: 'equipos-de-combustion',
+  motocultores: 'equipos-de-combustion',
+  motoguadanas: 'equipos-de-combustion',
+  motosoldadoras: 'equipos-de-combustion',
+  motosierras: 'equipos-de-combustion',
+  podadoras: 'equipos-de-combustion',
+  sopladoras: 'equipos-de-combustion',
+
+  airless: 'equipos-de-pintado',
+  'compresores-de-aire': 'equipos-de-pintado',
+
+  'bombas-estacionarias': 'bombas-de-agua',
+  electrobombas: 'bombas-de-agua',
+  motobombas: 'bombas-de-agua',
+
+  compresora: 'cabezales',
+  hidrolavadoras: 'cabezales',
+
+  'combo-carwash': 'combos',
+  'combo-carpintero': 'combos',
+  'combo-constructor': 'combos',
+  'combo-minero': 'combos',
+
   'amoladoras-y-pulidoras': 'herramientas-electricas',
   'baterias-y-cargadores': 'herramientas-electricas',
   'construccion-y-demolicion': 'herramientas-electricas',
@@ -33,6 +67,10 @@ const SUBCATEGORY_TO_ROOT = {
   'lijadoras-y-cepillos': 'herramientas-electricas',
   'pistolas-de-calor': 'herramientas-electricas',
   'taladros-y-atornilladores': 'herramientas-electricas',
+
+  'electricos': 'motores',
+  gasolineros: 'motores',
+  petroleros: 'motores',
 
   abrazadoras: 'herramientas-manuales',
   'alicates-y-prensas': 'herramientas-manuales',
@@ -50,9 +88,15 @@ const SUBCATEGORY_TO_ROOT = {
 
 const ROOT_TO_FIELD = {
   'accesorios-de-herramientas': 'subcategoryAccesorios',
+  'bombas-de-agua': 'subcategoryBombasAgua',
+  cabezales: 'subcategoryCabezal',
+  combos: 'subcategoryCombos',
+  'equipos-de-combustion': 'subcategoryCombustion',
+  'equipos-de-pintado': 'subcategoryPintado',
   'equipos-de-taller': 'subcategoryConstruccion',
   'herramientas-electricas': 'subcategoryElectricas',
   'herramientas-manuales': 'subcategoryManuales',
+  motores: 'subcategoryMotores',
   'seguridad-e-iluminacion': 'subcategorySeguridad',
 };
 

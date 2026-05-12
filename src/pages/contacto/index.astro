@@ -4,6 +4,7 @@ import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
 import WhatsAppFloat from '../../components/WhatsAppFloat.astro';
 import { siteSettings, staticPages } from '../../data/snapshot';
+import { CONTACT_EMAIL } from '../../utils/contact';
 
 const page = staticPages.find((item) => item.slug === 'contact') || staticPages.find((item) => item.slug === 'contacto');
 ---
@@ -37,15 +38,15 @@ const page = staticPages.find((item) => item.slug === 'contact') || staticPages.
           <ul class="contact-map__list">
             <li>
               <span class="contact-map__icon" aria-hidden="true"><img src="/icons/map-pin.svg" alt="" /></span>
-              <span>Las Malvinas Jr. Huarochirí 560, Lima, Perú</span>
+              <span>{siteSettings.address}</span>
             </li>
             <li>
               <span class="contact-map__icon" aria-hidden="true"><img src="/icons/brand-whatsapp.svg" alt="" /></span>
-              <a href="https://wa.me/51936829528" target="_blank" rel="noreferrer">+51 936 829 528</a>
+              <a href={`https://wa.me/${siteSettings.whatsappNumber}`} target="_blank" rel="noreferrer">{siteSettings.phone}</a>
             </li>
             <li>
               <span class="contact-map__icon" aria-hidden="true"><img src="/icons/mail.svg" alt="" /></span>
-              <a href="mailto:maquinariasluedma@gmail.com">maquinariasluedma@gmail.com</a>
+              <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>
             </li>
           </ul>
 
@@ -95,7 +96,11 @@ const page = staticPages.find((item) => item.slug === 'contact') || staticPages.
         <div class="contact-map-embed">
           <iframe
             title="Mapa de Maquinarias Luedma"
-            src="https://www.google.com/maps?q=Jr.+Huarochir%C3%AD+560,+Lima,+Per%C3%BA&output=embed"
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d580.030082573926!2d-77.04463027725194!3d-12.046153655634013!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x9105c8d2788dd61f%3A0xa00b8b215a42b702!2sCentro%20Comercial%20Plaza%20Ferretero!5e0!3m2!1ses-419!2spe!4v1778383084932!5m2!1ses-419!2spe"
+            width="600"
+            height="450"
+            style="border:0;"
+            allowfullscreen=""
             loading="lazy"
             referrerpolicy="no-referrer-when-downgrade"
           ></iframe>

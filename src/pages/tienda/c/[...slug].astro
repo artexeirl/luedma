@@ -5,6 +5,7 @@ import Footer from '../../../components/Footer.astro';
 import CatalogSection from '../../../components/CatalogSection.astro';
 import WhatsAppFloat from '../../../components/WhatsAppFloat.astro';
 import { categories, products, getCategoryBySlug, getBrandBySlug } from '../../../data/snapshot';
+import { shopCategoryPathFromSlugs } from '../../../utils/urls';
 
 type PathParams = {
   slug?: string[];
@@ -43,21 +44,16 @@ let categorySlug = '';
 let brandSlug = '';
 
 if (parts.length >= 2 && parts[0] === 'm') {
-  // /tienda/c/m/{brand}
   brandSlug = parts[1];
 } else if (parts.length >= 4 && parts[parts.length - 2] === 'm') {
-  // /tienda/c/{parent}/{subcategory}/m/{brand}
   brandSlug = parts[parts.length - 1];
   categorySlug = parts[parts.length - 3];
 } else if (parts.length >= 3 && parts[parts.length - 2] === 'm') {
-  // /tienda/c/{category}/m/{brand}
   brandSlug = parts[parts.length - 1];
   categorySlug = parts[0];
 } else if (parts.length >= 2) {
-  // /tienda/c/{parent}/{subcategory}
   categorySlug = parts[1];
 } else if (parts.length === 1) {
-  // /tienda/c/{category}
   categorySlug = parts[0];
 }
 
@@ -68,16 +64,25 @@ if (!selectedCategory && !selectedBrand) {
   return Astro.redirect('/tienda/');
 }
 
-if (brandSlug && !selectedBrand && selectedCategory) {
-  return Astro.redirect(`/tienda/c/${encodeURIComponent(selectedCategory.slug)}/`);
+if (selectedBrand && !selectedCategory) {
+  return Astro.redirect(`/tienda/m/${encodeURIComponent(selectedBrand.slug)}/`, 301);
 }
+
+if (brandSlug && !selectedBrand && selectedCategory) {
+  return Astro.redirect(shopCategoryPathFromSlugs(selectedCategory.slug, selectedCategory.parentSlug));
+}
+
+const categoryCanonicalPath = selectedCategory
+  ? shopCategoryPathFromSlugs(selectedCategory.slug, selectedCategory.parentSlug)
+  : '/tienda/';
 ---
 
 <BaseLayout
   seo={{
     title: `${selectedCategory?.name || 'Tienda'}${selectedBrand ? ` · ${selectedBrand.name}` : ''} | Maquinarias Luedma`,
     description: `Productos en ${selectedCategory?.name || 'Tienda'}${selectedBrand ? ` de la marca ${selectedBrand.name}` : ''}.`,
-    canonicalPath: Astro.url.pathname,
+    canonicalPath: selectedBrand ? categoryCanonicalPath : Astro.url.pathname,
+    noindex: Boolean(selectedBrand),
   }}
 >
   <Header />

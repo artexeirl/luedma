@@ -1,0 +1,187 @@
+---
+import '../../styles/pages/nosotros.css';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import WhatsAppFloat from '../../components/WhatsAppFloat.astro';
+import { siteSettings, staticPages } from '../../data/snapshot';
+import { CONTACT_EMAIL } from '../../utils/contact';
+
+const page = staticPages.find((item) => item.slug === 'politicas-de-privacidad');
+---
+
+<BaseLayout
+  seo={{
+    title: page?.seo?.title || `Política de Privacidad | ${siteSettings.siteName}`,
+    description:
+      page?.seo?.description || 'Política de privacidad y tratamiento de datos personales de Maquinarias Luedma.',
+    canonicalPath: '/politicas-de-privacidad/',
+  }}
+>
+  <Header />
+
+  <main id="contenido" class="about-page">
+    <section class="about-hero">
+      <div class="container about-hero__inner">
+        <nav class="about-hero__breadcrumb" aria-label="Breadcrumb">
+          <a href="/">Inicio</a>
+          <span aria-hidden="true">/</span>
+          <strong>Política de Privacidad</strong>
+        </nav>
+        <h1>Política de Privacidad</h1>
+      </div>
+    </section>
+
+    <section class="privacy-section">
+      <div class="container privacy-section__inner">
+        <article class="privacy-copy" aria-label="Texto de Política de Privacidad">
+          <p>
+            La presente Política de Privacidad establece los términos en que Maquinarias Luedma E.I.R.L. realiza el
+            tratamiento de los datos personales que los usuarios facilitan al navegar por nuestro catálogo web.
+            Actuamos bajo los principios de legalidad, consentimiento y finalidad exigidos por la Ley N° 29733,
+            Ley de Protección de Datos Personales, y su Reglamento en Perú.
+          </p>
+
+          <h2>1. Identidad del Titular del Banco de Datos</h2>
+          <p>
+            El responsable del tratamiento de sus datos es Maquinarias Luedma E.I.R.L., con RUC 20607619264 y
+            domicilio en Plaza Ferretero Las Malvinas Jr. Huarochirí 500 Psj. A - Stand 1089 y 1146, Lima, Perú.
+            Correo de contacto: {CONTACT_EMAIL}.
+          </p>
+
+          <h2>2. Finalidad del Tratamiento</h2>
+          <p>Los datos personales que recopilamos, como nombres, teléfono y correo, a través de nuestros canales de contacto se utilizan para:</p>
+          <ul>
+            <li>
+              Atención y cotización vía WhatsApp: Responder consultas sobre precios, stock y especificaciones técnicas
+              de las herramientas y maquinarias del catálogo una vez que el usuario inicia el chat.
+            </li>
+            <li>
+              Gestión de pedidos: Coordinar las ventas, formas de pago y los detalles de entrega o recojo de los
+              productos consultados.
+            </li>
+            <li>
+              Soporte técnico: Brindar asesoría personalizada sobre el uso de la maquinaria pesada o herramientas
+              eléctricas.
+            </li>
+            <li>
+              Marketing opcional: Solo si el usuario lo autoriza, enviar promociones de temporada o nuevos ingresos
+              al catálogo.
+            </li>
+          </ul>
+
+          <h2>3. Banco de Datos Personales</h2>
+          <p>
+            Sus datos serán incorporados en nuestro banco de datos denominado "Prospectos y Clientes", debidamente
+            protegido con medidas de seguridad técnicas para evitar el acceso no autorizado.
+          </p>
+
+          <h2>4. Flujo de Datos vía WhatsApp</h2>
+          <p>
+            Al hacer clic en los botones de WhatsApp de nuestro sitio web, el usuario reconoce que la plataforma
+            WhatsApp, propiedad de Meta Platforms, Inc., tiene sus propias políticas de privacidad. Maquinarias Luedma
+            E.I.R.L. solo se hace responsable del tratamiento de los datos una vez que la información es recibida en
+            nuestra línea oficial de atención.
+          </p>
+
+          <h2>5. Carácter de la Información</h2>
+          <p>
+            Para poder brindarle una cotización o gestionar una venta por WhatsApp, el nombre y el número de teléfono
+            son datos esenciales. Sin ellos, no podremos establecer comunicación para concretar la atención comercial.
+          </p>
+
+          <h2>6. Transferencia de Datos</h2>
+          <p>
+            No compartimos sus datos con terceros con fines comerciales. Sin embargo, los datos podrían ser compartidos
+            con:
+          </p>
+          <ul>
+            <li>Empresas de transporte o courier, solo para gestionar el envío de su compra.</li>
+            <li>Proveedores de servicios de hosting que mantienen operativa la página web.</li>
+          </ul>
+
+          <h2>7. Ejercicio de Derechos ARCO</h2>
+          <p>
+            Usted puede ejercer en cualquier momento sus derechos de Acceso, Rectificación, Cancelación y Oposición.
+            Para hacerlo, envíe un correo electrónico a {CONTACT_EMAIL} indicando su solicitud y adjuntando una copia
+            de su DNI.
+          </p>
+
+          <h2>8. Plazo de Conservación</h2>
+          <p>
+            Conservaremos su información mientras sea necesaria para la gestión comercial y el cumplimiento de las
+            garantías de los productos adquiridos, o hasta que usted solicite la eliminación de sus datos.
+          </p>
+
+          <h2>9. Seguridad</h2>
+          <p>
+            Hemos implementado protocolos de seguridad para proteger la integridad de su información y evitar cualquier
+            tipo de filtración o uso indebido de los datos de contacto que nos proporciona a través de la web.
+          </p>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+  <WhatsAppFloat />
+</BaseLayout>
+
+<style>
+  .privacy-section {
+    padding: clamp(28px, 5vw, 56px) 0 clamp(40px, 6vw, 72px);
+  }
+
+  .privacy-section__inner {
+    padding-inline: clamp(20px, 6vw, 84px);
+  }
+
+  .privacy-copy {
+    max-width: 980px;
+    margin: 0 auto;
+    font-size: clamp(1rem, 1.05vw, 1.05rem);
+    line-height: 1.8;
+    color: var(--text);
+  }
+
+  .privacy-copy :where(h2, p, ul, li) {
+    font: inherit;
+  }
+
+  .privacy-copy p,
+  .privacy-copy h2,
+  .privacy-copy ul {
+    margin: 0;
+  }
+
+  .privacy-copy h2 {
+    font-weight: 700;
+    margin-top: 1.35rem;
+  }
+
+  .privacy-copy p + p,
+  .privacy-copy p + ul,
+  .privacy-copy ul + p {
+    margin-top: 0.75rem;
+  }
+
+  .privacy-copy ul {
+    padding-left: 1.35rem;
+    display: grid;
+    gap: 0.7rem;
+  }
+
+  .privacy-copy li::marker {
+    color: var(--brand);
+  }
+
+  @media (max-width: 760px) {
+    .privacy-section__inner {
+      padding-inline: 0;
+    }
+
+    .privacy-copy {
+      line-height: 1.75;
+    }
+  }
+</style>

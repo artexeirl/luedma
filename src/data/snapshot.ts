@@ -10,7 +10,7 @@ import type {
   StorefrontSnapshot,
 } from '../types/content';
 import {normalizeBrandSlug} from '../utils/brand-slugs';
-import {normalizePath, slugFromPath} from '../utils/urls';
+import {normalizePath, shopCategoryPathFromSlugs, slugFromPath} from '../utils/urls';
 import {hasSanityConfig, sanityFetch} from '../lib/sanity.client';
 import {
   getCanonicalCategoryName,
@@ -35,6 +35,35 @@ function asObject(value: unknown, label: string): Record<string, unknown> {
   return value as Record<string, unknown>;
 }
 
+function compareCategoryNames(a: Category, b: Category): number {
+  return a.name.localeCompare(b.name, 'es', {sensitivity: 'base'}) || a.slug.localeCompare(b.slug, 'es', {sensitivity: 'base'});
+}
+
+function sortCategories(items: Category[]): Category[] {
+  const roots: Category[] = [];
+  const childrenByParent = new Map<string, Category[]>();
+  const knownSlugs = new Set(items.map((item) => item.slug));
+
+  items.forEach((item) => {
+    if (item.parentSlug && knownSlugs.has(item.parentSlug)) {
+      const existing = childrenByParent.get(item.parentSlug) || [];
+      existing.push(item);
+      childrenByParent.set(item.parentSlug, existing);
+      return;
+    }
+
+    roots.push(item);
+  });
+
+  const walk = (nodes: Category[]): Category[] =>
+    nodes
+      .slice()
+      .sort(compareCategoryNames)
+      .flatMap((node) => [node, ...walk(childrenByParent.get(node.slug) || [])]);
+
+  return walk(roots);
+}
+
 function normalizeSpanishText(text: string): string {
   return text
     .replace(/\bCatalogo\b/g, 'Catálogo')
@@ -53,10 +82,14 @@ function normalizeSpanishText(text: string): string {
     .replace(/\bbaterias\b/g, 'baterías')
     .replace(/\bConstruccion\b/g, 'Construcción')
     .replace(/\bconstruccion\b/g, 'construcción')
+    .replace(/\bCombustion\b/g, 'Combustión')
+    .replace(/\bcombustion\b/g, 'combustión')
     .replace(/\bDemolicion\b/g, 'Demolición')
     .replace(/\bdemolicion\b/g, 'demolición')
     .replace(/\bCesped\b/g, 'Césped')
     .replace(/\bcesped\b/g, 'césped')
+    .replace(/\bGuadanas\b/g, 'Guadañas')
+    .replace(/\bguadanas\b/g, 'guadañas')
     .replace(/\bMedicion\b/g, 'Medición')
     .replace(/\bmedicion\b/g, 'medición')
     .replace(/\bOrganizacion\b/g, 'Organización')
@@ -131,7 +164,7 @@ function validateSnapshot(input: unknown): StorefrontSnapshot {
         label: normalizeSpanishText(child.label),
       })),
     })),
-    categories,
+    categories: sortCategories(categories),
     brands,
     products,
     pages,
@@ -149,6 +182,7 @@ type SanityPayload = {
     logo?: {asset?: {url?: string}; alt?: string};
     favicon?: {asset?: {url?: string}};
     phones?: string[];
+    email?: string;
     address?: string;
     socialLinks?: Array<{network?: string; url?: string}>;
   };
@@ -225,7 +259,7 @@ function mergeCategories(baseCategories: Category[], incomingCategories: Categor
       ...item,
     });
   });
-  return buildCategoryPaths(Array.from(merged.values()));
+  return sortCategories(buildCategoryPaths(Array.from(merged.values())));
 }
 
 async function fetchSanityOverride(base: StorefrontSnapshot): Promise<StorefrontSnapshot> {
@@ -258,7 +292,7 @@ async function fetchSanityOverride(base: StorefrontSnapshot): Promise<Storefront
       "isNew": coalesce(isNew, false),
       "excerpt": pt::text(shortDescription),
       "brandSlug": brand->slug.current,
-      "categorySlugs": [coalesce(subcategoryAccesorios, subcategoryConstruccion, subcategoryElectricas, subcategoryManuales, subcategorySeguridad, categoryRoot)],
+      "categorySlugs": [coalesce(subcategoryAccesorios, subcategoryBombasAgua, subcategoryCabezal, subcategoryCombos, subcategoryCombustion, subcategoryConstruccion, subcategoryElectricas, subcategoryManuales, subcategoryMotores, subcategoryPintado, subcategorySeguridad, categoryRoot)],
       "images": images[].asset->url
     }
   }`;
@@ -372,6 +406,7 @@ async function fetchSanityOverride(base: StorefrontSnapshot): Promise<Storefront
         logo: data.siteSettings?.logo?.asset?.url || base.site.logo,
         favicon: data.siteSettings?.favicon?.asset?.url || base.site.favicon,
         phone: data.siteSettings?.phones?.[0] || base.site.phone,
+        email: data.siteSettings?.email || base.site.email,
         location: data.siteSettings?.address || base.site.location,
         social,
         defaultSeo: {
@@ -482,7 +517,7 @@ export async function fetchSanityProductDetailBySlug(slug: string): Promise<Prod
     "descriptionBlocks": description,
     "technicalSheetBlocks": technicalSheet,
     "brandSlug": brand->slug.current,
-    "categorySlug": coalesce(subcategoryAccesorios, subcategoryConstruccion, subcategoryElectricas, subcategoryManuales, subcategorySeguridad, categoryRoot),
+    "categorySlug": coalesce(subcategoryAccesorios, subcategoryBombasAgua, subcategoryCabezal, subcategoryCombos, subcategoryCombustion, subcategoryConstruccion, subcategoryElectricas, subcategoryManuales, subcategoryMotores, subcategoryPintado, subcategorySeguridad, categoryRoot),
     "images": images[].asset->url,
     "relatedSlugs": relatedProducts[]->slug.current,
     sourceUrl
@@ -541,6 +576,28 @@ export function getProductsByBrand(brandSlug: string): Product[] {
 
 export function buildRouteIndex(): RouteEntry[] {
   const baseSeo: SeoMeta = siteSettings.defaultSeo;
+  const manualRoutes: RouteEntry[] = [
+    {
+      path: '/faq/',
+      template: 'legal',
+      payload: {slug: 'faq'},
+      seo: {
+        title: `Preguntas Frecuentes | ${siteSettings.siteName}`,
+        description: 'Resuelve tus dudas sobre envíos, pagos, productos, garantía y atención al cliente.',
+        canonicalPath: '/faq/',
+      },
+    },
+    {
+      path: '/metodos-de-pago/',
+      template: 'legal',
+      payload: {slug: 'metodos-de-pago'},
+      seo: {
+        title: `Métodos de Pago | ${siteSettings.siteName}`,
+        description: 'Consulta las cuentas bancarias y opciones de pago disponibles en Maquinarias Luedma.',
+        canonicalPath: '/metodos-de-pago/',
+      },
+    },
+  ];
   const routes: RouteEntry[] = [
     {
       path: '/',
@@ -556,6 +613,7 @@ export function buildRouteIndex(): RouteEntry[] {
         title: `Buscar productos | ${siteSettings.siteName}`,
         description: 'Búsqueda local de catálogo y productos.',
         canonicalPath: '/search/',
+        noindex: true,
       },
     },
     {
@@ -571,14 +629,15 @@ export function buildRouteIndex(): RouteEntry[] {
   ];
 
   categories.forEach((category) => {
+    const canonicalCategoryPath = shopCategoryPathFromSlugs(category.slug, category.parentSlug);
     routes.push({
-      path: category.path,
+      path: canonicalCategoryPath,
       template: 'category',
       payload: {slug: category.slug, parentSlug: category.parentSlug},
       seo: {
         title: `${category.name} | ${siteSettings.siteName}`,
         description: category.summary || `Catálogo de ${category.name} en ${siteSettings.siteName}.`,
-        canonicalPath: category.path,
+        canonicalPath: canonicalCategoryPath,
       },
     });
   });
@@ -611,17 +670,25 @@ export function buildRouteIndex(): RouteEntry[] {
   });
 
   staticPages.forEach((page) => {
+    const canonicalPagePath =
+      page.slug === 'contact'
+        ? '/contacto/'
+        : page.slug === 'about-us'
+          ? '/nosotros/'
+          : page.path;
     routes.push({
-      path: page.path,
+      path: canonicalPagePath,
       template: page.slug === 'contact' ? 'contact' : page.slug === 'about-us' ? 'about' : 'legal',
       payload: {slug: page.slug},
       seo: {
         title: page.seo?.title || `${page.name} | ${siteSettings.siteName}`,
         description: page.seo?.description || page.content,
-        canonicalPath: page.path,
+        canonicalPath: canonicalPagePath,
       },
     });
   });
+
+  routes.push(...manualRoutes);
 
   return routes;
 }

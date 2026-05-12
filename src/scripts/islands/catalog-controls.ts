@@ -115,8 +115,6 @@ function mountCatalogControls(root: HTMLElement): void {
   const pageNumbers = root.querySelector<HTMLElement>('[data-page-numbers]');
   const breadcrumbEl = root.querySelector<HTMLElement>('[data-catalog-breadcrumb]');
   const titleEl = root.querySelector<HTMLElement>('[data-catalog-title]');
-  const subtitleEl = root.querySelector<HTMLElement>('[data-catalog-subtitle]');
-
   if (!grid || !brandSelect || !categorySelect || !sortSelect || !resetButton || !summary || !pagination || !prevButton || !nextButton || !pageNumbers || activeResetButtons.length === 0) {
     return;
   }

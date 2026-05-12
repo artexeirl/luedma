@@ -1,0 +1,109 @@
+---
+import '../../styles/pages/metodos-de-pago.css';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import WhatsAppFloat from '../../components/WhatsAppFloat.astro';
+import { siteSettings, staticPages } from '../../data/snapshot';
+
+const page = staticPages.find((item) => item.slug === 'metodos-de-pago');
+const yapeNumber = siteSettings.phone;
+---
+
+<BaseLayout
+  seo={{
+    title: page?.seo?.title || `Métodos de Pago | ${siteSettings.siteName}`,
+    description:
+      page?.seo?.description || 'Consulta las cuentas bancarias y opciones de pago disponibles en Maquinarias Luedma.',
+    canonicalPath: '/metodos-de-pago/',
+  }}
+>
+  <Header />
+
+  <main id="contenido" class="payment-page">
+    <section class="about-hero">
+      <div class="container about-hero__inner">
+        <nav class="about-hero__breadcrumb" aria-label="Breadcrumb">
+          <a href="/">Inicio</a>
+          <span aria-hidden="true">/</span>
+          <strong>Métodos de Pago</strong>
+        </nav>
+        <h1>Métodos de Pago</h1>
+      </div>
+    </section>
+
+    <section class="payment-section">
+      <div class="container">
+        <div class="payment-stack" aria-label="Opciones de pago">
+          <article class="payment-card">
+            <div class="payment-card__logo">
+              <img src="/images/banks/bcp.webp" alt="Logo BCP" loading="lazy" />
+            </div>
+            <div class="payment-card__body">
+              <h2 class="payment-card__title">BCP</h2>
+              <div class="payment-account-list">
+                <div class="payment-account">
+                  <small>Nombre de la cuenta</small>
+                  <strong>Maquinarias Luedma E.I.R.L.</strong>
+                </div>
+                <div class="payment-account">
+                  <small>Cuenta en soles</small>
+                  <strong>1914213755080</strong>
+                </div>
+                <div class="payment-account">
+                  <small>Cuenta interbancaria</small>
+                  <strong>00219100421375508054</strong>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <article class="payment-card">
+            <div class="payment-card__logo">
+              <img src="/images/banks/bbva.webp" alt="Logo BBVA" loading="lazy" />
+            </div>
+            <div class="payment-card__body">
+              <h2 class="payment-card__title">BBVA</h2>
+              <div class="payment-account-list">
+                <div class="payment-account">
+                  <small>Nombre de la cuenta</small>
+                  <strong>Maquinarias Luedma E.I.R.L.</strong>
+                </div>
+                <div class="payment-account">
+                  <small>Cuenta en soles</small>
+                  <strong>011-566-000200159800-78</strong>
+                </div>
+                <div class="payment-account">
+                  <small>Cuenta interbancaria</small>
+                  <strong>001-0566-0200159800</strong>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <article class="payment-card payment-card--yape">
+            <div class="payment-card__logo">
+              <img src="/images/banks/yape.webp" alt="Logo Yape" loading="lazy" />
+            </div>
+            <div class="payment-card__body">
+              <h2 class="payment-card__title">Yape</h2>
+              <div class="payment-account-list">
+                <div class="payment-account">
+                  <small>Nombre de la cuenta</small>
+                  <strong>Edwin Huanco</strong>
+                </div>
+                <div class="payment-account">
+                  <small>Número Yape</small>
+                  <strong>{yapeNumber}</strong>
+                </div>
+              </div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+  <WhatsAppFloat />
+</BaseLayout>

@@ -1,0 +1,173 @@
+---
+import '../../styles/pages/nosotros.css';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import WhatsAppFloat from '../../components/WhatsAppFloat.astro';
+import { siteSettings, staticPages } from '../../data/snapshot';
+
+const page = staticPages.find((item) => item.slug === 'terminos-y-condiciones');
+---
+
+<BaseLayout
+  seo={{
+    title: page?.seo?.title || `Términos y Condiciones | ${siteSettings.siteName}`,
+    description:
+      page?.seo?.description || 'Términos y condiciones del catálogo digital de Maquinarias Luedma.',
+    canonicalPath: '/terminos-y-condiciones/',
+  }}
+>
+  <Header />
+
+  <main id="contenido" class="about-page">
+    <section class="about-hero">
+      <div class="container about-hero__inner">
+        <nav class="about-hero__breadcrumb" aria-label="Breadcrumb">
+          <a href="/">Inicio</a>
+          <span aria-hidden="true">/</span>
+          <strong>Términos y Condiciones</strong>
+        </nav>
+        <h1>Términos y Condiciones</h1>
+      </div>
+    </section>
+
+    <section class="legal-section">
+      <div class="container legal-section__inner">
+        <article class="legal-copy" aria-label="Texto de Términos y Condiciones">
+          <p>
+            Al acceder y navegar por nuestro catálogo digital, el usuario acepta cumplir con los siguientes términos y
+            condiciones. Se recomienda leerlos detenidamente antes de realizar cualquier consulta o pedido.
+          </p>
+
+          <h2>1. Naturaleza del Sitio Web</h2>
+          <p>
+            El sitio web https://maquinariasluedma.com.pe funciona exclusivamente como un catálogo virtual de
+            productos. La plataforma permite al usuario visualizar herramientas y maquinaria pesada, pero no
+            constituye una tienda de venta directa automatizada. Todas las transacciones y cierres de venta se realizan
+            de forma personalizada a través de nuestra línea oficial de WhatsApp.
+          </p>
+
+          <h2>2. Exactitud de la Información y Precios</h2>
+          <p>
+            Maquinarias Luedma realiza los mejores esfuerzos para que la información del catálogo sea precisa. Sin
+            embargo:
+          </p>
+          <ul>
+            <li>Las imágenes de los productos son referenciales y pueden variar ligeramente del producto físico.</li>
+            <li>
+              En caso de existir un error tipográfico evidente en la información técnica o descripción, la empresa se
+              reserva el derecho de corregirlo y no estará obligada a procesar pedidos basados en información errónea.
+            </li>
+          </ul>
+
+          <h2>3. Proceso de Cotización y Compra</h2>
+          <p>El usuario podrá solicitar cotizaciones mediante los botones de enlace a WhatsApp.</p>
+          <ul>
+            <li>La recepción de una consulta no garantiza la reserva del producto.</li>
+            <li>La validez de las cotizaciones enviadas por nuestros asesores tendrá una vigencia específica.</li>
+            <li>
+              La venta se considera formalizada únicamente cuando el cliente realiza el pago a través de los medios
+              autorizados y recibe la confirmación por parte de Maquinarias Luedma.
+            </li>
+          </ul>
+
+          <h2>4. Disponibilidad de Stock</h2>
+          <p>
+            Debido a la alta rotación de maquinaria y herramientas, la disponibilidad mostrada en la web es
+            informativa. La confirmación real del stock se brindará exclusivamente durante la atención personalizada
+            por WhatsApp o en nuestra tienda física en Las Malvinas.
+          </p>
+
+          <h2>5. Propiedad Intelectual</h2>
+          <p>
+            El contenido de este sitio, incluidos textos, logotipos, diseño de imágenes, nombres comerciales y diseño
+            web, es propiedad de Maquinarias Luedma E.I.R.L. o de sus respectivos fabricantes. Queda estrictamente
+            prohibida la reproducción total o parcial del contenido con fines comerciales sin autorización expresa.
+          </p>
+
+          <h2>6. Limitación de Responsabilidad</h2>
+          <p>
+            Maquinarias Luedma no se responsabiliza por daños derivados del uso inadecuado de las herramientas o
+            maquinarias adquiridas. El usuario es responsable de leer los manuales de seguridad y operación de cada
+            equipo.
+          </p>
+
+          <h2>7. Libro de Reclamaciones</h2>
+          <p>
+            Conforme al Código de Protección y Defensa del Consumidor de Perú, ponemos a disposición de nuestros
+            clientes el Libro de Reclamaciones virtual o físico. Ante cualquier disconformidad, el usuario puede
+            solicitar el registro de su queja o reclamo conforme a ley.
+          </p>
+
+          <h2>8. Ley Aplicable y Jurisdicción</h2>
+          <p>
+            Estos términos se rigen por las leyes de la República del Perú. Cualquier controversia será resuelta ante
+            las autoridades administrativas, como Indecopi, o judiciales correspondientes a la ciudad de Lima.
+          </p>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+  <WhatsAppFloat />
+</BaseLayout>
+
+<style>
+  .legal-section {
+    padding: clamp(28px, 5vw, 56px) 0 clamp(40px, 6vw, 72px);
+  }
+
+  .legal-section__inner {
+    padding-inline: clamp(20px, 6vw, 84px);
+  }
+
+  .legal-copy {
+    max-width: 980px;
+    margin: 0 auto;
+    font-size: clamp(1rem, 1.05vw, 1.05rem);
+    line-height: 1.8;
+    color: var(--text);
+  }
+
+  .legal-copy :where(h2, p, ul, li) {
+    font: inherit;
+  }
+
+  .legal-copy p,
+  .legal-copy h2,
+  .legal-copy ul {
+    margin: 0;
+  }
+
+  .legal-copy h2 {
+    font-weight: 700;
+    margin-top: 1.35rem;
+  }
+
+  .legal-copy p + p,
+  .legal-copy p + ul,
+  .legal-copy ul + p {
+    margin-top: 0.75rem;
+  }
+
+  .legal-copy ul {
+    padding-left: 1.35rem;
+    display: grid;
+    gap: 0.7rem;
+  }
+
+  .legal-copy li::marker {
+    color: var(--brand);
+  }
+
+  @media (max-width: 760px) {
+    .legal-section__inner {
+      padding-inline: 0;
+    }
+
+    .legal-copy {
+      line-height: 1.75;
+    }
+  }
+</style>

@@ -2,8 +2,11 @@
 import '../styles/components/header.css';
 import { brands, categories, getBrandBySlug, getCategoryBySlug, products, siteSettings } from '../data/snapshot';
 import type { SearchIslandProps } from '../types/content';
+import { SALES_EMAIL } from '../utils/contact';
 
-const topCategories = categories.filter((category) => !category.parentSlug).slice(0, 5);
+const compareCategoryNames = (a: {name: string}, b: {name: string}) =>
+  a.name.localeCompare(b.name, 'es', {sensitivity: 'base'});
+const topCategories = categories.filter((category) => !category.parentSlug).sort(compareCategoryNames);
 const buildShopCategoryPath = (slug: string) => `/tienda/c/${encodeURIComponent(slug)}/`;
 const buildShopBrandFilterPath = (slug: string) => `/tienda/m/${encodeURIComponent(slug)}/`;
 const topBrands = [
@@ -80,9 +83,15 @@ const brandIconBySlug: Record<string, string> = {
 };
 const categoryIconBySlug: Record<string, string> = {
   'accesorios-de-herramientas': '/icons/tools/tools.svg',
+  'bombas-de-agua': '/icons/tools/hydrobomb.svg',
+  cabezales: '/icons/tools/cabezal.svg',
+  combos: '/icons/tools/combo.svg',
+  'equipos-de-combustion': '/icons/tools/combustion.svg',
+  'equipos-de-pintado': '/icons/tools/spray-gun.svg',
   'equipos-de-taller': '/icons/tools/toolbox.svg',
   'herramientas-electricas': '/icons/tools/plug.svg',
   'herramientas-manuales': '/icons/tools/axe.svg',
+  motores: '/icons/tools/motor.svg',
   'seguridad-e-iluminacion': '/icons/tools/light-bulb-idea.svg',
 };
 const searchIndex = products.map((product) => ({
@@ -107,6 +116,41 @@ const searchProps: SearchIslandProps = {
 ---
 
 <header class="site-header" data-island="mobile-menu">
+  <div class="site-header__topbar">
+    <div class="container site-header__topbar-inner">
+      <a class="site-header__topbar-item site-header__topbar-item--address" href="/contacto/">
+        <span class="header-tool__icon" aria-hidden="true">
+          <img src="/icons/map-pin.svg" alt="" />
+        </span>
+        <span>{siteSettings.address}</span>
+      </a>
+
+      <div class="site-header__topbar-contact-group">
+        <a
+          class="site-header__topbar-item site-header__topbar-item--phone"
+          href="/contacto/"
+          aria-label={`Ir a la página de contacto para llamar al ${siteSettings.phone}`}
+        >
+          <span class="header-tool__icon" aria-hidden="true">
+            <img src="/icons/brand-whatsapp.svg" alt="" />
+          </span>
+          <span>{siteSettings.phone}</span>
+        </a>
+
+        <a
+          class="site-header__topbar-item site-header__topbar-item--email"
+          href={`mailto:${SALES_EMAIL}`}
+          aria-label={`Enviar correo a ${SALES_EMAIL}`}
+        >
+          <span class="header-tool__icon" aria-hidden="true">
+            <img src="/icons/mail.svg" alt="" />
+          </span>
+          <span>{SALES_EMAIL}</span>
+        </a>
+      </div>
+    </div>
+  </div>
+
   <div class="container site-header__top">
     <button
       data-mobile-menu-button
@@ -132,18 +176,18 @@ const searchProps: SearchIslandProps = {
           <img src="/icons/search.svg" alt="" aria-hidden="true" />
         </button>
         <ul data-search-suggestions hidden></ul>
-        <script type="application/json" data-search-index set:html={JSON.stringify(searchIndex)}></script>
+        <script is:inline type="application/json" data-search-index set:html={JSON.stringify(searchIndex)}></script>
       </form>
     </div>
 
     <div class="header-tools">
-      <a class="header-location" href="/contacto/" aria-label="Actualizar ubicación de entrega">
+      <a class="header-location" href="/contacto/" title="Jr. Huarochirí 536" aria-label="Ubicación de entrega: Jr. Huarochirí 536">
         <span class="header-tool__icon" aria-hidden="true">
           <img src="/icons/map-pin.svg" alt="" />
         </span>
         <span class="header-location__text">
           <small>Ubícanos en</small>
-          <strong>Jr. Huarochirí 560</strong>
+          <strong>Jr. Huarochirí 536</strong>
         </span>
       </a>
 
@@ -208,11 +252,11 @@ const searchProps: SearchIslandProps = {
       </nav>
 
       <div class="header-shortcuts">
-        <a href="/contacto/" class="header-shortcuts__item">
+        <a href="/contacto/" class="header-shortcuts__item" aria-label={`Ir a Contacto para llamar al ${siteSettings.phone}`}>
           <span class="header-tool__icon" aria-hidden="true">
             <img src="/icons/phone-call.svg" alt="" />
           </span>
-          <span>+51 936 829 528</span>
+          <span>{siteSettings.phone}</span>
         </a>
       </div>
     </div>
@@ -234,9 +278,12 @@ const searchProps: SearchIslandProps = {
                 </span>
                 <span>{category.displayName}</span>
               </span>
-              <span aria-hidden="true">›</span>
+              <span class="mega-menu__category-chevron" aria-hidden="true">
+                <img src="/icons/chevron-right.svg" alt="" />
+              </span>
             </a>
           ))}
+
         </aside>
 
         <div class="mega-menu__panels">
@@ -285,7 +332,7 @@ const searchProps: SearchIslandProps = {
             <img src="/icons/search.svg" alt="" aria-hidden="true" />
           </button>
           <ul data-search-suggestions hidden></ul>
-          <script type="application/json" data-search-index set:html={JSON.stringify(searchIndex)}></script>
+          <script is:inline type="application/json" data-search-index set:html={JSON.stringify(searchIndex)}></script>
         </form>
       </div>
       <button data-mobile-menu-close type="button" aria-label="Cerrar menú">

@@ -16,6 +16,7 @@ const query = Astro.url.searchParams.get('q') || '';
       ? `Resultados de búsqueda para "${query}" en Maquinarias Luedma`
       : 'Búsqueda local en catálogo migrado a Astro.',
     canonicalPath: '/search/',
+    noindex: true,
   }}
 >
   <Header />

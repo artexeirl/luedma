@@ -5,7 +5,7 @@ function buildUrl(number: string, message: string): string {
 }
 
 function mountWhatsappCta(root: HTMLElement): void {
-  const phone = root.getAttribute('data-whatsapp-number') || '51936829528';
+  const phone = root.getAttribute('data-whatsapp-number') || '51999163774';
   const message = root.getAttribute('data-whatsapp-message') || 'Hola Maquinarias Luedma.';
 
   if (root instanceof HTMLAnchorElement) {

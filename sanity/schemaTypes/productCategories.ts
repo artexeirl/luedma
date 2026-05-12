@@ -1,8 +1,14 @@
 export const ROOT_CATEGORIES = [
   {title: 'Accesorios de Herramientas', value: 'accesorios-de-herramientas'},
+  {title: 'Bombas de Agua', value: 'bombas-de-agua'},
+  {title: 'Cabezales', value: 'cabezales'},
+  {title: 'Combos', value: 'combos'},
+  {title: 'Equipos de Combustión', value: 'equipos-de-combustion'},
+  {title: 'Equipos de Pintado', value: 'equipos-de-pintado'},
   {title: 'Equipos de Taller', value: 'equipos-de-taller'},
   {title: 'Herramientas Electricas', value: 'herramientas-electricas'},
   {title: 'Herramientas Manuales', value: 'herramientas-manuales'},
+  {title: 'Motores', value: 'motores'},
   {title: 'Seguridad e Iluminacion', value: 'seguridad-e-iluminacion'},
 ] as const;
 
@@ -14,6 +20,39 @@ export const SUBCATEGORY_OPTIONS: Record<string, Array<{title: string; value: st
     {title: 'Hojas de Sierra', value: 'hojas-sierra'},
     {title: 'Juego de Llaves de Vaso', value: 'juego-de-llaves-de-vaso'},
     {title: 'Sierra Copa', value: 'sierra-copa'},
+  ],
+  'bombas-de-agua': [
+    {title: 'Bombas Estacionarias', value: 'bombas-estacionarias'},
+    {title: 'Electrobombas', value: 'electrobombas'},
+    {title: 'Motobombas', value: 'motobombas'},
+  ],
+  cabezales: [
+    {title: 'Compresora', value: 'compresora'},
+    {title: 'Hidrolavadoras', value: 'hidrolavadoras'},
+  ],
+  combos: [
+    {title: 'Combo Carpintero', value: 'combo-carpintero'},
+    {title: 'Combo Carwash', value: 'combo-carwash'},
+    {title: 'Combo Constructor', value: 'combo-constructor'},
+    {title: 'Combo Minero', value: 'combo-minero'},
+  ],
+  'equipos-de-combustion': [
+    {title: 'Ahoyadores', value: 'ahoyadores'},
+    {title: 'Amoladoras', value: 'amoladoras'},
+    {title: 'Cortacésped', value: 'cortacesped'},
+    {title: 'Fumigadores', value: 'fumigadores'},
+    {title: 'Generadores', value: 'generadores'},
+    {title: 'Motoazadas', value: 'motoazadas'},
+    {title: 'Motocultores', value: 'motocultores'},
+    {title: 'Motoguadañas', value: 'motoguadanas'},
+    {title: 'Motosierras', value: 'motosierras'},
+    {title: 'Motosoldadoras', value: 'motosoldadoras'},
+    {title: 'Podadoras', value: 'podadoras'},
+    {title: 'Sopladoras', value: 'sopladoras'},
+  ],
+  'equipos-de-pintado': [
+    {title: 'Airless', value: 'airless'},
+    {title: 'Compresores de Aire', value: 'compresores-de-aire'},
   ],
   'equipos-de-taller': [
     {title: 'Equipos de Levantamiento y Carga', value: 'equipos-de-levantamiento-y-carga'},
@@ -42,6 +81,11 @@ export const SUBCATEGORY_OPTIONS: Record<string, Array<{title: string; value: st
     {title: 'Cortador de Mayolica', value: 'cortadormayolica'},
     {title: 'Hacha', value: 'hacha'},
   ],
+  motores: [
+    {title: 'Eléctricos', value: 'electricos'},
+    {title: 'Gasolineros', value: 'gasolineros'},
+    {title: 'Petroleros', value: 'petroleros'},
+  ],
   'seguridad-e-iluminacion': [
     {title: 'Iluminacion de Trabajo', value: 'iluminacion-de-trabajo'},
     {title: 'Material de Seguridad', value: 'material-de-seguridad'},
@@ -51,8 +95,14 @@ export const SUBCATEGORY_OPTIONS: Record<string, Array<{title: string; value: st
 
 export const ROOT_TO_SUBCATEGORY_FIELD: Record<string, string> = {
   'accesorios-de-herramientas': 'subcategoryAccesorios',
+  'bombas-de-agua': 'subcategoryBombasAgua',
+  cabezales: 'subcategoryCabezal',
+  combos: 'subcategoryCombos',
+  'equipos-de-combustion': 'subcategoryCombustion',
+  'equipos-de-pintado': 'subcategoryPintado',
   'equipos-de-taller': 'subcategoryConstruccion',
   'herramientas-electricas': 'subcategoryElectricas',
   'herramientas-manuales': 'subcategoryManuales',
+  motores: 'subcategoryMotores',
   'seguridad-e-iluminacion': 'subcategorySeguridad',
 };

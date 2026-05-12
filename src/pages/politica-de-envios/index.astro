@@ -1,0 +1,182 @@
+---
+import '../../styles/pages/nosotros.css';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import WhatsAppFloat from '../../components/WhatsAppFloat.astro';
+import { siteSettings, staticPages } from '../../data/snapshot';
+
+const page = staticPages.find((item) => item.slug === 'politica-de-envios');
+---
+
+<BaseLayout
+  seo={{
+    title: page?.seo?.title || `Política de Envíos | ${siteSettings.siteName}`,
+    description: page?.seo?.description || 'Política de envíos y despacho nacional de Maquinarias Luedma.',
+    canonicalPath: '/politica-de-envios/',
+  }}
+>
+  <Header />
+
+  <main id="contenido" class="about-page">
+    <section class="about-hero">
+      <div class="container about-hero__inner">
+        <nav class="about-hero__breadcrumb" aria-label="Breadcrumb">
+          <a href="/">Inicio</a>
+          <span aria-hidden="true">/</span>
+          <strong>Política de Envíos</strong>
+        </nav>
+        <h1>Política de Envíos</h1>
+      </div>
+    </section>
+
+    <section class="legal-section">
+      <div class="container legal-section__inner">
+        <article class="legal-copy" aria-label="Texto de Política de Envíos">
+          <p>
+            En Maquinarias Luedma E.I.R.L., nos comprometemos a que tus herramientas y maquinarias lleguen a su
+            destino de forma segura y en los plazos establecidos. A continuación, detallamos las condiciones que rigen
+            nuestro servicio de despacho para las compras gestionadas a través de nuestro catálogo web y cerradas vía
+            WhatsApp.
+          </p>
+
+          <h2>1. Cobertura</h2>
+          <p>Realizamos envíos a nivel nacional. Nuestra cobertura se divide en:</p>
+          <ul>
+            <li>Lima Metropolitana y Callao: Despacho directo a domicilio, taller u obra.</li>
+            <li>Provincias: Envíos a todo el Perú a través de agencias de transporte de carga.</li>
+          </ul>
+
+          <h2>2. Plazos de Entrega</h2>
+          <p>Los plazos de despacho se cuentan a partir de la confirmación del pago total de la mercadería:</p>
+          <ul>
+            <li>Lima Metropolitana: Entre 24 a 48 horas hábiles.</li>
+            <li>
+              Provincias (Llegada a agencia): El traslado de nuestra tienda a la agencia de transporte se realiza en un
+              plazo de 24 a 48 horas. El tiempo que demore la agencia en llegar a la ciudad de destino dependerá
+              exclusivamente de la empresa transportista, generalmente de 2 a 5 días hábiles.
+            </li>
+          </ul>
+
+          <h2>3. Costos de Envío</h2>
+          <ul>
+            <li>
+              Lima: El costo varía según el distrito de destino y el volumen o peso de la maquinaria. Este monto será
+              comunicado por el asesor de ventas durante la atención por WhatsApp.
+            </li>
+            <li>
+              Provincias: Maquinarias Luedma traslada la mercadería de forma gratuita o con un costo mínimo, según
+              promoción vigente, hacia la agencia de transporte en Lima. El costo del flete desde Lima hasta la ciudad
+              de destino es asumido por el cliente y se cancela directamente a la agencia al momento de recoger el
+              producto.
+            </li>
+          </ul>
+
+          <h2>4. Agencias de Transporte</h2>
+          <p>Trabajamos con las agencias de carga con mayor cobertura y prestigio en el país, tales como:</p>
+          <ul>
+            <li>Shalom, Marvisur, Olva Courier, Empresa Cavassa, entre otras indicadas por el mismo cliente o sugeridas por nuestro equipo según la localidad.</li>
+          </ul>
+
+          <h2>5. Seguimiento del Envío</h2>
+          <p>
+            Una vez que el producto sea entregado a la agencia de transporte, nuestro equipo de ventas enviará al
+            cliente la foto de la Guía de Remisión o comprobante de la agencia, con número de remito o clave, a través
+            de WhatsApp. Con este documento, el cliente podrá realizar el seguimiento de su pedido en las plataformas
+            de la transportista.
+          </p>
+
+          <h2>6. Recojo en Tienda</h2>
+          <p>El cliente puede optar por recoger su pedido sin costo adicional en nuestro local físico:</p>
+          <ul>
+            <li>Dirección: Plaza Ferretero Las Malvinas Jr. Huarochirí 500 Psj. A - Stand 1089 y 1146, Lima.</li>
+            <li>Horario: Previa coordinación con su asesor de ventas para asegurar que el equipo esté listo y probado para su entrega.</li>
+          </ul>
+
+          <h2>7. Responsabilidad y Recepción</h2>
+          <ul>
+            <li>
+              Verificación: Es responsabilidad del cliente revisar el estado del empaque y el producto al momento de la
+              recepción. Si nota alguna abolladura o daño evidente, debe informarlo de inmediato y dejar constancia en
+              la guía de la transportista.
+            </li>
+            <li>
+              Datos de Entrega: El cliente es responsable de proporcionar datos exactos, como DNI, nombre completo,
+              teléfono y dirección. Maquinarias Luedma no se hace responsable por retrasos derivados de errores en la
+              información proporcionada.
+            </li>
+          </ul>
+
+          <h2>8. Embalaje</h2>
+          <p>
+            Toda maquinaria y herramienta es debidamente embalada y protegida para resistir el traslado. En caso de
+            equipos de alta precisión, se utilizan protecciones adicionales para garantizar que la calibración de
+            fábrica se mantenga intacta.
+          </p>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+  <WhatsAppFloat />
+</BaseLayout>
+
+<style>
+  .legal-section {
+    padding: clamp(28px, 5vw, 56px) 0 clamp(40px, 6vw, 72px);
+  }
+
+  .legal-section__inner {
+    padding-inline: clamp(20px, 6vw, 84px);
+  }
+
+  .legal-copy {
+    max-width: 980px;
+    margin: 0 auto;
+    font-size: clamp(1rem, 1.05vw, 1.05rem);
+    line-height: 1.8;
+    color: var(--text);
+  }
+
+  .legal-copy :where(h2, p, ul, li) {
+    font: inherit;
+  }
+
+  .legal-copy p,
+  .legal-copy h2,
+  .legal-copy ul {
+    margin: 0;
+  }
+
+  .legal-copy h2 {
+    font-weight: 700;
+    margin-top: 1.35rem;
+  }
+
+  .legal-copy p + p,
+  .legal-copy p + ul,
+  .legal-copy ul + p {
+    margin-top: 0.75rem;
+  }
+
+  .legal-copy ul {
+    padding-left: 1.35rem;
+    display: grid;
+    gap: 0.7rem;
+  }
+
+  .legal-copy li::marker {
+    color: var(--brand);
+  }
+
+  @media (max-width: 760px) {
+    .legal-section__inner {
+      padding-inline: 0;
+    }
+
+    .legal-copy {
+      line-height: 1.75;
+    }
+  }
+</style>

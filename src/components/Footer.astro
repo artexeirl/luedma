@@ -2,8 +2,12 @@
 import '../styles/components/footer.css';
 import TrustStrip from './TrustStrip.astro';
 import { categories, siteSettings } from '../data/snapshot';
+import { SALES_EMAIL } from '../utils/contact';
 
-const topCategories = categories.filter((category) => !category.parentSlug).slice(0, 5);
+const topCategories = categories
+  .filter((category) => !category.parentSlug)
+  .sort((a, b) => a.name.localeCompare(b.name, 'es', {sensitivity: 'base'}));
+const footerCategories = topCategories.slice(0, 5);
 const buildShopCategoryPath = (slug: string) => `/tienda/c/${encodeURIComponent(slug)}/`;
 ---
 
@@ -16,21 +20,21 @@ const buildShopCategoryPath = (slug: string) => `/tienda/c/${encodeURIComponent(
           <img src={siteSettings.logo} alt={`Logo ${siteSettings.siteName}`} loading="lazy" />
         </a>
         <p>
-          Herramientas y equipos para trabajo profesional, industria y hogar, con despacho rápido en Lima.
+          Especialistas en la venta de maquinaria industrial y herramientas profesionales. Ofrecemos equipos de alta calidad para la industria y hogar.
         </p>
 
         <ul class="footer-contact-list">
           <li>
             <img src="/icons/map-pin.svg" alt="" aria-hidden="true" />
-            <span>Las Malvinas Jr. Huarochirí 560, Lima, Perú</span>
+            <span>{siteSettings.address}</span>
           </li>
           <li>
             <img src="/icons/phone-call.svg" alt="" aria-hidden="true" />
-            <a href={`https://wa.me/${siteSettings.whatsappNumber}`} target="_blank" rel="noreferrer">{siteSettings.phone}</a>
+            <a href={`tel:+${siteSettings.whatsappNumber}`}>{siteSettings.phone}</a>
           </li>
           <li>
             <img src="/icons/mail.svg" alt="" aria-hidden="true" />
-            <a href="mailto:maquinariasluedma@gmail.com">maquinariasluedma@gmail.com</a>
+            <a href={`mailto:${SALES_EMAIL}`}>{SALES_EMAIL}</a>
           </li>
         </ul>
       </article>
@@ -41,6 +45,7 @@ const buildShopCategoryPath = (slug: string) => `/tienda/c/${encodeURIComponent(
           <li><a href="/nosotros/">Sobre nosotros</a></li>
           <li><a href="/tienda/">Productos</a></li>
           <li><a href="/faq/">Preguntas Frecuentes</a></li>
+          <li><a href="/metodos-de-pago/">Métodos de Pago</a></li>
           <li><a href="/contacto/">Contacto</a></li>
         </ul>
       </article>
@@ -48,20 +53,26 @@ const buildShopCategoryPath = (slug: string) => `/tienda/c/${encodeURIComponent(
       <article class="footer-column">
         <h3>Categorías</h3>
         <ul>
-          {topCategories.map((category) => (
+          {footerCategories.map((category) => (
             <li><a href={buildShopCategoryPath(category.slug)}>{category.name}</a></li>
           ))}
+          {topCategories.length > footerCategories.length && (
+            <li><a href="/tienda/">Ver más</a></li>
+          )}
         </ul>
       </article>
 
       <article class="footer-column">
         <h3>Políticas</h3>
         <ul>
-          <li><span>Términos y Condiciones</span></li>
-          <li><span>Cambios y Devoluciones</span></li>
-          <li><span>Pago Seguro</span></li>
-          <li><span>Condiciones de Envío</span></li>
+          <li><a href="/politica-de-devoluciones/">Política de Devoluciones</a></li>
+          <li><a href="/politica-de-envios/">Política de Envíos</a></li>
+          <li><a href="/politicas-de-privacidad/">Política de Privacidad</a></li>
+          <li><a href="/terminos-y-condiciones/">Términos y Condiciones</a></li>
         </ul>
+        <a class="footer-claims-link" href="/libro-de-reclamaciones/" aria-label="Ir al Libro de Reclamaciones">
+          <img src="/images/libro-reclamaciones.webp" alt="Libro de Reclamaciones" loading="lazy" />
+        </a>
       </article>
     </div>
 

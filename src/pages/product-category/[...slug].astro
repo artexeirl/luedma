@@ -1,10 +1,5 @@
-﻿---
-import BaseLayout from '../../layouts/BaseLayout.astro';
-import Header from '../../components/Header.astro';
-import Footer from '../../components/Footer.astro';
-import CatalogSection from '../../components/CatalogSection.astro';
-import WhatsAppFloat from '../../components/WhatsAppFloat.astro';
-import { categories, products, siteSettings, getCategoryBySlug } from '../../data/snapshot';
+---
+import { categories, getCategoryBySlug } from '../../data/snapshot';
 import { categoryParamFromPath } from '../../utils/urls';
 import type { Category } from '../../types/content';
 
@@ -32,26 +27,11 @@ const category = propCategory ?? (slugParam ? resolveCategoryFromSlug(slugParam)
 if (!category) {
   return Astro.redirect('/404/');
 }
+
+return Astro.redirect(
+  category.parentSlug
+    ? `/tienda/c/${encodeURIComponent(category.parentSlug)}/${encodeURIComponent(category.slug)}/`
+    : `/tienda/c/${encodeURIComponent(category.slug)}/`,
+  301,
+);
 ---
-
-<BaseLayout
-  seo={{
-    title: `${category.name} | ${siteSettings.siteName}`,
-    description: category.summary || `Catálogo de ${category.name}.`,
-    canonicalPath: category.path,
-  }}
->
-  <Header />
-
-  <main id="contenido" class="section">
-    <div class="container">
-      <CatalogSection
-        products={products}
-        initialCategory={category.slug}
-      />
-    </div>
-  </main>
-
-  <Footer />
-  <WhatsAppFloat />
-</BaseLayout>

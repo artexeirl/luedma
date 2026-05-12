@@ -1,0 +1,96 @@
+.payment-page {
+  overflow-x: clip;
+}
+
+.payment-section {
+  padding: clamp(24px, 5vw, 54px) 0;
+}
+
+.payment-stack {
+  display: grid;
+  gap: 18px;
+}
+
+.payment-card {
+  display: grid;
+  grid-template-columns: 220px minmax(0, 1fr);
+  gap: 22px;
+  align-items: center;
+  padding: clamp(16px, 3vw, 28px);
+  border: var(--border-width) var(--border-style) var(--line);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.payment-card__logo {
+  display: grid;
+  place-items: center;
+  min-height: 150px;
+  padding: 18px;
+  background: color-mix(in srgb, var(--bg-soft) 74%, #fff 26%);
+  border: 1px solid color-mix(in srgb, var(--line) 74%, transparent);
+}
+
+.payment-card__logo img {
+  width: 100%;
+  max-width: 160px;
+  max-height: 110px;
+  object-fit: contain;
+}
+
+.payment-card__body {
+  display: grid;
+  gap: 12px;
+}
+
+.payment-card__title {
+  margin: 0;
+  font-size: clamp(1.2rem, 2vw, 1.6rem);
+  letter-spacing: -0.03em;
+}
+
+.payment-card__subtitle {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.96rem;
+}
+
+.payment-account-list {
+  display: grid;
+  gap: 12px;
+}
+
+.payment-account {
+  display: grid;
+  gap: 4px;
+  padding: 14px 16px;
+  border: 1px solid color-mix(in srgb, var(--line) 82%, transparent);
+  background: color-mix(in srgb, var(--surface) 96%, #fff 4%);
+}
+
+.payment-account small {
+  color: var(--muted);
+  font-size: 0.74rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.payment-account strong {
+  font-size: 1rem;
+  letter-spacing: 0.02em;
+  word-break: break-word;
+}
+
+.payment-card--yape .payment-card__logo img {
+  max-width: 140px;
+}
+
+@media (max-width: 760px) {
+  .payment-card {
+    grid-template-columns: 1fr;
+  }
+
+  .payment-card__logo {
+    min-height: 120px;
+  }
+}

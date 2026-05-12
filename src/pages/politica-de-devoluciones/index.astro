@@ -1,0 +1,175 @@
+---
+import '../../styles/pages/nosotros.css';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import WhatsAppFloat from '../../components/WhatsAppFloat.astro';
+import { siteSettings, staticPages } from '../../data/snapshot';
+
+const page = staticPages.find((item) => item.slug === 'politica-de-devoluciones');
+---
+
+<BaseLayout
+  seo={{
+    title: page?.seo?.title || `Política de Devoluciones | ${siteSettings.siteName}`,
+    description: page?.seo?.description || 'Política de devoluciones y garantías de Maquinarias Luedma.',
+    canonicalPath: '/politica-de-devoluciones/',
+  }}
+>
+  <Header />
+
+  <main id="contenido" class="about-page">
+    <section class="about-hero">
+      <div class="container about-hero__inner">
+        <nav class="about-hero__breadcrumb" aria-label="Breadcrumb">
+          <a href="/">Inicio</a>
+          <span aria-hidden="true">/</span>
+          <strong>Política de Devoluciones</strong>
+        </nav>
+        <h1>Política de Devoluciones</h1>
+      </div>
+    </section>
+
+    <section class="legal-section">
+      <div class="container legal-section__inner">
+        <article class="legal-copy" aria-label="Texto de Política de Devoluciones">
+          <p>
+            En Maquinarias Luedma E.I.R.L., nuestro objetivo es asegurar que cada herramienta y maquinaria entregada
+            cumpla con los estándares de rendimiento esperados. A continuación, detallamos los lineamientos para
+            cambios, devoluciones y ejecución de garantías.
+          </p>
+
+          <h2>1. Cambios y Devoluciones</h2>
+          <p>
+            Si el cliente no está satisfecho con el producto recibido o hubo un error en el despacho, podrá solicitar
+            un cambio o devolución bajo las siguientes condiciones:
+          </p>
+          <ul>
+            <li>Plazo: Máximo de 7 días calendario desde la recepción del producto.</li>
+            <li>
+              Estado del Producto: El artículo debe estar sin uso, con empaques originales sellados, manuales y
+              accesorios completos. No se aceptarán devoluciones de equipos que hayan sido encendidos o utilizados con
+              combustible o aceite, en caso de motores.
+            </li>
+            <li>Documentación: Es obligatorio presentar el comprobante de pago original, boleta o factura.</li>
+          </ul>
+
+          <h2>2. Garantía Técnica</h2>
+          <p>
+            Todos nuestros productos cuentan con garantía contra defectos de fabricación. El plazo de la misma depende
+            de la marca y el tipo de herramienta, lo cual será especificado al momento de la compra por su asesor de
+            ventas.
+          </p>
+          <ul>
+            <li>
+              Evaluación Técnica: Ante una presunta falla de fábrica, el equipo debe ser enviado a nuestra tienda
+              física o al Servicio Técnico Autorizado de la marca respectiva para una evaluación técnica.
+            </li>
+            <li>
+              Plazo de Diagnóstico: El tiempo de revisión técnica suele oscilar entre 3 a 15 días hábiles,
+              dependiendo de la complejidad de la maquinaria.
+            </li>
+            <li>
+              Resolución: Si el informe técnico determina que el daño es por defecto de fabricación, se procederá a la
+              reparación gratuita o, en caso de ser irreparable, al cambio por un equipo nuevo.
+            </li>
+          </ul>
+
+          <h2>3. Exclusiones de Garantía</h2>
+          <p>La garantía quedará sin efecto en los siguientes casos:</p>
+          <ul>
+            <li>Uso inadecuado, negligencia o manipulación por personal no autorizado por la marca.</li>
+            <li>Daños causados por fluctuaciones de voltaje, sobrecargas eléctricas o uso de accesorios no compatibles.</li>
+            <li>Desgaste natural de piezas de consumo, como carbones, filtros, fajas, brocas o discos de corte.</li>
+            <li>Equipos que presenten señales de haber sido abiertos o reparados por terceros.</li>
+            <li>Daños derivados del transporte externo una vez que el producto fue entregado conforme a la agencia de carga.</li>
+          </ul>
+
+          <h2>4. Procedimiento para Consultas</h2>
+          <p>Para iniciar un proceso de garantía o devolución, el cliente debe:</p>
+          <ol>
+            <li>Contactar a su asesor de ventas vía WhatsApp enviando fotos o videos del inconveniente.</li>
+            <li>Adjuntar copia del comprobante de pago.</li>
+            <li>
+              Coordinar la entrega del equipo en nuestro local comercial en Las Malvinas. Los costos de traslado hacia
+              el servicio técnico son asumidos por el cliente, salvo acuerdos específicos previos.
+            </li>
+          </ol>
+
+          <h2>5. Reembolsos</h2>
+          <p>
+            En caso de que proceda una devolución de dinero, se realizará por el mismo medio de pago utilizado en la
+            compra, mediante transferencia bancaria. El tiempo de procesamiento dependerá de los plazos de la entidad
+            financiera.
+          </p>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+  <WhatsAppFloat />
+</BaseLayout>
+
+<style>
+  .legal-section {
+    padding: clamp(28px, 5vw, 56px) 0 clamp(40px, 6vw, 72px);
+  }
+
+  .legal-section__inner {
+    padding-inline: clamp(20px, 6vw, 84px);
+  }
+
+  .legal-copy {
+    max-width: 980px;
+    margin: 0 auto;
+    font-size: clamp(1rem, 1.05vw, 1.05rem);
+    line-height: 1.8;
+    color: var(--text);
+  }
+
+  .legal-copy :where(h2, p, ul, ol, li) {
+    font: inherit;
+  }
+
+  .legal-copy p,
+  .legal-copy h2,
+  .legal-copy ul,
+  .legal-copy ol {
+    margin: 0;
+  }
+
+  .legal-copy h2 {
+    font-weight: 700;
+    margin-top: 1.35rem;
+  }
+
+  .legal-copy p + p,
+  .legal-copy p + ul,
+  .legal-copy p + ol,
+  .legal-copy ul + p,
+  .legal-copy ol + p {
+    margin-top: 0.75rem;
+  }
+
+  .legal-copy ul,
+  .legal-copy ol {
+    padding-left: 1.35rem;
+    display: grid;
+    gap: 0.7rem;
+  }
+
+  .legal-copy li::marker {
+    color: var(--brand);
+  }
+
+  @media (max-width: 760px) {
+    .legal-section__inner {
+      padding-inline: 0;
+    }
+
+    .legal-copy {
+      line-height: 1.75;
+    }
+  }
+</style>

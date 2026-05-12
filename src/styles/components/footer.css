@@ -1,5 +1,5 @@
 .site-footer {
-  padding: var(--space-8) 0 var(--space-4);
+  padding: var(--space-9) 0 var(--space-4);
   background: #e9edf3;
 }
 
@@ -95,6 +95,19 @@
   color: var(--muted);
   font-size: 0.95rem;
   line-height: 1.4;
+}
+
+.footer-claims-link {
+  display: inline-flex;
+  margin-top: var(--space-5);
+  width: clamp(132px, 10vw, 170px);
+  max-width: 100%;
+}
+
+.footer-claims-link img {
+  width: 100%;
+  height: auto;
+  display: block;
 }
 
 .footer-column a:hover {

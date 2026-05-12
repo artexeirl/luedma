@@ -256,7 +256,7 @@ function mountMobileMenu(root: HTMLElement): void {
   };
 
   menuButtons.forEach((button) => {
-    button.addEventListener('click', (event) => {
+    button.addEventListener('click', () => {
       const isDesktopCategoriesTrigger = button.classList.contains('menu-trigger');
 
       if (isDesktop() && isDesktopCategoriesTrigger) {

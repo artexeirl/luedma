@@ -3,10 +3,12 @@
     "siteName": "Maquinarias Luedma",
     "siteUrl": "https://www.maquinariasluedma.com.pe",
     "locale": "es-PE",
-    "phone": "+51 936 829 528",
-    "whatsappNumber": "51936829528",
+    "phone": "+51 999 163 774",
+    "email": "maquinariasluedma@gmail.com",
+    "whatsappNumber": "51999163774",
     "whatsappDefaultMessage": "Hola Maquinarias Luedma. Quiero informacion sobre sus productos.",
     "location": "Lima, Peru",
+    "address": "C.C. Plaza Ferretero Las Malvinas Jr. Huarochirí 536 INT 1089 PSJE B - 1146 PSJE A 1er Piso",
     "social": {
       "facebook": "https://www.facebook.com/profile.php?id=61580686476857",
       "instagram": "https://www.instagram.com/maquinariasluedmaperu?igsh=MXNzaGhjcWYwb3owag=="
@@ -14,8 +16,8 @@
     "logo": "/images/LOGO-LUEDMA.webp",
     "favicon": "/favicon.ico",
     "defaultSeo": {
-      "title": "Venta de Herramientas Eléctricas y Equipos de Taller | Luedma",
-      "description": "Herramientas electricas, manuales y accesorios para uso profesional.",
+      "title": "Venta de Herramientas Eléctricas y Equipos Industriales | Maquinarias Luedma",
+      "description": "Encuentra el mejor catálogo de herramientas eléctricas y equipos industriales en Lima para taller y obra con garantía. ¡Descubre nuestros mejores precios!",
       "image": "/images/hotsale-banner.webp",
       "canonicalPath": "/"
     }
@@ -30,6 +32,34 @@
       "path": "/product-category/herramientas-electricas/",
       "children": [
         {
+          "label": "Accesorios de Herramientas",
+          "path": "/product-category/accesorios-de-herramientas/"
+        },
+        {
+          "label": "Bombas de Agua",
+          "path": "/product-category/bombas-de-agua/"
+        },
+        {
+          "label": "Cabezales",
+          "path": "/product-category/cabezales/"
+        },
+        {
+          "label": "Combos",
+          "path": "/product-category/combos/"
+        },
+        {
+          "label": "Equipos de Combustión",
+          "path": "/product-category/equipos-de-combustion/"
+        },
+        {
+          "label": "Equipos de Pintado",
+          "path": "/product-category/equipos-de-pintado/"
+        },
+        {
+          "label": "Equipos de Taller",
+          "path": "/product-category/equipos-de-taller/"
+        },
+        {
           "label": "Herramientas Eléctricas",
           "path": "/product-category/herramientas-electricas/"
         },
@@ -38,8 +68,8 @@
           "path": "/product-category/herramientas-manuales/"
         },
         {
-          "label": "Accesorios de Herramientas",
-          "path": "/product-category/accesorios-de-herramientas/"
+          "label": "Motores",
+          "path": "/product-category/motores/"
         },
         {
           "label": "Seguridad e Iluminación",
@@ -264,6 +294,198 @@
       "name": "Material de Seguridad",
       "path": "/product-category/seguridad-e-iluminacion/material-de-seguridad/",
       "parentSlug": "seguridad-e-iluminacion"
+    },
+    {
+      "slug": "bombas-de-agua",
+      "name": "Bombas de Agua",
+      "path": "/product-category/bombas-de-agua/",
+      "summary": "Motobombas, electrobombas y bombas estacionarias para agua."
+    },
+    {
+      "slug": "bombas-estacionarias",
+      "name": "Bombas Estacionarias",
+      "path": "/product-category/bombas-de-agua/bombas-estacionarias/",
+      "parentSlug": "bombas-de-agua"
+    },
+    {
+      "slug": "electrobombas",
+      "name": "Electrobombas",
+      "path": "/product-category/bombas-de-agua/electrobombas/",
+      "parentSlug": "bombas-de-agua"
+    },
+    {
+      "slug": "motobombas",
+      "name": "Motobombas",
+      "path": "/product-category/bombas-de-agua/motobombas/",
+      "parentSlug": "bombas-de-agua"
+    },
+    {
+      "slug": "cabezales",
+      "name": "Cabezales",
+      "path": "/product-category/cabezales/",
+      "summary": "Compresora e hidrolavadoras para trabajo profesional."
+    },
+    {
+      "slug": "compresora",
+      "name": "Compresora",
+      "path": "/product-category/cabezales/compresora/",
+      "parentSlug": "cabezales"
+    },
+    {
+      "slug": "hidrolavadoras",
+      "name": "Hidrolavadoras",
+      "path": "/product-category/cabezales/hidrolavadoras/",
+      "parentSlug": "cabezales"
+    },
+    {
+      "slug": "combos",
+      "name": "Combos",
+      "path": "/product-category/combos/",
+      "summary": "Combos para carwash, carpinteria, construccion y mineria."
+    },
+    {
+      "slug": "combo-carwash",
+      "name": "Combo carwash",
+      "path": "/product-category/combos/combo-carwash/",
+      "parentSlug": "combos"
+    },
+    {
+      "slug": "combo-carpintero",
+      "name": "Combo carpintero",
+      "path": "/product-category/combos/combo-carpintero/",
+      "parentSlug": "combos"
+    },
+    {
+      "slug": "combo-constructor",
+      "name": "Combo constructor",
+      "path": "/product-category/combos/combo-constructor/",
+      "parentSlug": "combos"
+    },
+    {
+      "slug": "combo-minero",
+      "name": "Combo minero",
+      "path": "/product-category/combos/combo-minero/",
+      "parentSlug": "combos"
+    },
+    {
+      "slug": "equipos-de-combustion",
+      "name": "Equipos de Combustión",
+      "path": "/product-category/equipos-de-combustion/",
+      "summary": "Generadores, motosierras y equipos a combustión para trabajo pesado."
+    },
+    {
+      "slug": "ahoyadores",
+      "name": "Ahoyadores",
+      "path": "/product-category/equipos-de-combustion/ahoyadores/",
+      "parentSlug": "equipos-de-combustion"
+    },
+    {
+      "slug": "amoladoras",
+      "name": "Amoladoras",
+      "path": "/product-category/equipos-de-combustion/amoladoras/",
+      "parentSlug": "equipos-de-combustion"
+    },
+    {
+      "slug": "cortacesped",
+      "name": "Cortacésped",
+      "path": "/product-category/equipos-de-combustion/cortacesped/",
+      "parentSlug": "equipos-de-combustion"
+    },
+    {
+      "slug": "fumigadores",
+      "name": "Fumigadores",
+      "path": "/product-category/equipos-de-combustion/fumigadores/",
+      "parentSlug": "equipos-de-combustion"
+    },
+    {
+      "slug": "generadores",
+      "name": "Generadores",
+      "path": "/product-category/equipos-de-combustion/generadores/",
+      "parentSlug": "equipos-de-combustion"
+    },
+    {
+      "slug": "motoazadas",
+      "name": "Motoazadas",
+      "path": "/product-category/equipos-de-combustion/motoazadas/",
+      "parentSlug": "equipos-de-combustion"
+    },
+    {
+      "slug": "motocultores",
+      "name": "Motocultores",
+      "path": "/product-category/equipos-de-combustion/motocultores/",
+      "parentSlug": "equipos-de-combustion"
+    },
+    {
+      "slug": "motoguadanas",
+      "name": "Motoguadañas",
+      "path": "/product-category/equipos-de-combustion/motoguadanas/",
+      "parentSlug": "equipos-de-combustion"
+    },
+    {
+      "slug": "motosoldadoras",
+      "name": "Motosoldadoras",
+      "path": "/product-category/equipos-de-combustion/motosoldadoras/",
+      "parentSlug": "equipos-de-combustion"
+    },
+    {
+      "slug": "motosierras",
+      "name": "Motosierras",
+      "path": "/product-category/equipos-de-combustion/motosierras/",
+      "parentSlug": "equipos-de-combustion"
+    },
+    {
+      "slug": "podadoras",
+      "name": "Podadoras",
+      "path": "/product-category/equipos-de-combustion/podadoras/",
+      "parentSlug": "equipos-de-combustion"
+    },
+    {
+      "slug": "sopladoras",
+      "name": "Sopladoras",
+      "path": "/product-category/equipos-de-combustion/sopladoras/",
+      "parentSlug": "equipos-de-combustion"
+    },
+    {
+      "slug": "equipos-de-pintado",
+      "name": "Equipos de Pintado",
+      "path": "/product-category/equipos-de-pintado/",
+      "summary": "Compresores de aire y sistemas airless para pintado profesional."
+    },
+    {
+      "slug": "airless",
+      "name": "Airless",
+      "path": "/product-category/equipos-de-pintado/airless/",
+      "parentSlug": "equipos-de-pintado"
+    },
+    {
+      "slug": "compresores-de-aire",
+      "name": "Compresores de Aire",
+      "path": "/product-category/equipos-de-pintado/compresores-de-aire/",
+      "parentSlug": "equipos-de-pintado"
+    },
+    {
+      "slug": "motores",
+      "name": "Motores",
+      "path": "/product-category/motores/",
+      "summary": "Motores gasolineros, petroleros y eléctricos para distintas aplicaciones."
+    },
+    {
+      "slug": "electricos",
+      "name": "Eléctricos",
+      "path": "/product-category/motores/electricos/",
+      "parentSlug": "motores"
+    },
+    {
+      "slug": "gasolineros",
+      "name": "Gasolineros",
+      "path": "/product-category/motores/gasolineros/",
+      "parentSlug": "motores"
+    },
+    {
+      "slug": "petroleros",
+      "name": "Petroleros",
+      "path": "/product-category/motores/petroleros/",
+      "parentSlug": "motores"
     }
   ],
   "brands": [
@@ -419,6 +641,46 @@
       "seo": {
         "title": "Libro de Reclamaciones | Maquinarias Luedma",
         "description": "Canal oficial de reclamos de Maquinarias Luedma."
+      }
+    },
+    {
+      "slug": "politicas-de-privacidad",
+      "name": "Política de Privacidad",
+      "path": "/politicas-de-privacidad/",
+      "content": "Documento de Política de Privacidad de Maquinarias Luedma E.I.R.L. con información sobre tratamiento, uso y protección de datos personales.",
+      "seo": {
+        "title": "Política de Privacidad | Maquinarias Luedma",
+        "description": "Conoce cómo Maquinarias Luedma recopila, usa y protege tus datos personales."
+      }
+    },
+    {
+      "slug": "politica-de-devoluciones",
+      "name": "Política de Devoluciones",
+      "path": "/politica-de-devoluciones/",
+      "content": "Política de devoluciones y garantías de Maquinarias Luedma.",
+      "seo": {
+        "title": "Política de Devoluciones | Maquinarias Luedma",
+        "description": "Conoce las condiciones de cambios, devoluciones y garantías de Maquinarias Luedma."
+      }
+    },
+    {
+      "slug": "politica-de-envios",
+      "name": "Política de Envíos",
+      "path": "/politica-de-envios/",
+      "content": "Política de envíos y despacho nacional de Maquinarias Luedma.",
+      "seo": {
+        "title": "Política de Envíos | Maquinarias Luedma",
+        "description": "Revisa la cobertura, plazos y condiciones de envío de Maquinarias Luedma."
+      }
+    },
+    {
+      "slug": "terminos-y-condiciones",
+      "name": "Términos y Condiciones",
+      "path": "/terminos-y-condiciones/",
+      "content": "Términos y condiciones del catálogo virtual de Maquinarias Luedma.",
+      "seo": {
+        "title": "Términos y Condiciones | Maquinarias Luedma",
+        "description": "Revisa las condiciones de uso del catálogo digital de Maquinarias Luedma."
       }
     }
   ],

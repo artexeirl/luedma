@@ -42,6 +42,14 @@ export function canonicalUrl(siteUrl: string, path: string): string {
   return `${normalizedSite}${normalizePath(path)}`;
 }
 
+export function shopCategoryPathFromSlugs(slug: string, parentSlug?: string): string {
+  const encodedSlug = encodeURIComponent(slug);
+  if (parentSlug) {
+    return `/tienda/c/${encodeURIComponent(parentSlug)}/${encodedSlug}/`;
+  }
+  return `/tienda/c/${encodedSlug}/`;
+}
+
 export function categoryParamFromPath(path: string): string {
   const normalized = normalizePath(path).replace('/product-category/', '');
   return normalized.replace(/^\//, '').replace(/\/$/, '');

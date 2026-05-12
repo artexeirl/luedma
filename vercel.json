@@ -1,0 +1,97 @@
+{
+  "redirects": [
+    {
+      "source": "/contact",
+      "destination": "/contacto/",
+      "permanent": true
+    },
+    {
+      "source": "/contact/",
+      "destination": "/contacto/",
+      "permanent": true
+    },
+    {
+      "source": "/about-us",
+      "destination": "/nosotros/",
+      "permanent": true
+    },
+    {
+      "source": "/about-us/",
+      "destination": "/nosotros/",
+      "permanent": true
+    },
+    {
+      "source": "/catalogo",
+      "destination": "/tienda/",
+      "permanent": true
+    },
+    {
+      "source": "/catalogo/:path*",
+      "destination": "/tienda/",
+      "permanent": true
+    },
+    {
+      "source": "/c",
+      "destination": "/tienda/",
+      "permanent": true
+    },
+    {
+      "source": "/c/:path*",
+      "destination": "/tienda/c/:path*/",
+      "permanent": true
+    },
+    {
+      "source": "/m/:slug",
+      "destination": "/tienda/m/:slug/",
+      "permanent": true
+    },
+    {
+      "source": "/marca/:slug",
+      "destination": "/tienda/m/:slug/",
+      "permanent": true
+    },
+    {
+      "source": "/product-category/:path*",
+      "destination": "/tienda/c/:path*/",
+      "permanent": true
+    },
+    {
+      "source": "/index.php/product-category/:path*",
+      "destination": "/tienda/c/:path*/",
+      "permanent": true
+    },
+    {
+      "source": "/index.php/product/:path*",
+      "destination": "/product/:path*",
+      "permanent": true
+    },
+    {
+      "source": "/index.php/marca/:slug",
+      "destination": "/tienda/m/:slug/",
+      "permanent": true
+    },
+    {
+      "source": "/",
+      "has": [
+        {
+          "type": "query",
+          "key": "page_id",
+          "value": "82"
+        }
+      ],
+      "destination": "/search/",
+      "permanent": true
+    },
+    {
+      "source": "/",
+      "has": [
+        {
+          "type": "query",
+          "key": "product-page"
+        }
+      ],
+      "destination": "/tienda/",
+      "permanent": true
+    }
+  ]
+}

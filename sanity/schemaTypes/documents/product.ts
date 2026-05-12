@@ -74,9 +74,15 @@ export const productType = defineType({
       validation: (r) => r.required(),
     }),
     subcategoryField('accesorios-de-herramientas', 'subcategoryAccesorios', 'Subcategoria'),
+    subcategoryField('bombas-de-agua', 'subcategoryBombasAgua', 'Subcategoria'),
+    subcategoryField('cabezales', 'subcategoryCabezal', 'Subcategoria'),
+    subcategoryField('combos', 'subcategoryCombos', 'Subcategoria'),
+    subcategoryField('equipos-de-combustion', 'subcategoryCombustion', 'Subcategoria'),
+    subcategoryField('equipos-de-pintado', 'subcategoryPintado', 'Subcategoria'),
     subcategoryField('equipos-de-taller', 'subcategoryConstruccion', 'Subcategoria'),
     subcategoryField('herramientas-electricas', 'subcategoryElectricas', 'Subcategoria'),
     subcategoryField('herramientas-manuales', 'subcategoryManuales', 'Subcategoria'),
+    subcategoryField('motores', 'subcategoryMotores', 'Subcategoria'),
     subcategoryField('seguridad-e-iluminacion', 'subcategorySeguridad', 'Subcategoria'),
     defineField({
       name: 'shortDescription',
@@ -193,13 +199,19 @@ export const productType = defineType({
       stock: 'stock',
       categoryRoot: 'categoryRoot',
       subA: 'subcategoryAccesorios',
+      subB: 'subcategoryBombasAgua',
+      subCa: 'subcategoryCabezal',
+      subCo: 'subcategoryCombos',
+      subComb: 'subcategoryCombustion',
+      subP: 'subcategoryPintado',
       subC: 'subcategoryConstruccion',
       subE: 'subcategoryElectricas',
       subM: 'subcategoryManuales',
+      subMo: 'subcategoryMotores',
       subS: 'subcategorySeguridad',
     },
-    prepare({title, subtitle, media, stock, categoryRoot, subA, subC, subE, subM, subS}) {
-      const subcategory = subA || subC || subE || subM || subS || categoryRoot;
+    prepare({title, subtitle, media, stock, categoryRoot, subA, subB, subCa, subCo, subComb, subP, subC, subE, subM, subMo, subS}) {
+      const subcategory = subA || subB || subCa || subCo || subComb || subP || subC || subE || subM || subMo || subS || categoryRoot;
       return {
         title,
         subtitle: `${subtitle || 'Sin SKU'} · ${subcategory || 'Sin categoria'} · ${

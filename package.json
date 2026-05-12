@@ -24,6 +24,7 @@
     "@sanity/client": "^7.10.0",
     "@vercel/speed-insights": "^2.0.0",
     "astro": "^6.1.9",
+    "nodemailer": "^6.10.1",
     "react": "^19.2.5",
     "react-dom": "^19.2.5",
     "styled-components": "^6.4.1"
@@ -33,6 +34,7 @@
     "@astrojs/node": "^10.0.6",
     "@astrojs/vercel": "^10.0.6",
     "@sanity/vision": "^5.23.0",
+    "@types/nodemailer": "^8.0.0",
     "sanity": "^5.23.0",
     "typescript": "^5.9.3",
     "vitest": "^4.0.7"

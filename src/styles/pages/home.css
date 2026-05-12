@@ -606,6 +606,10 @@
   display: block;
 }
 
+.shipping-banner a {
+  display: block;
+}
+
 .shipping-banner img {
   width: 100%;
   height: auto;

@@ -4,8 +4,9 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import WhatsAppFloat from '../components/WhatsAppFloat.astro';
-import { brands } from '../data/snapshot';
+import { brands, siteSettings } from '../data/snapshot';
 import { hasSanityConfig, sanityFetch } from '../lib/sanity.client';
+import { SALES_EMAIL } from '../utils/contact';
 
 type ShowcaseItem = {
   slug?: string;
@@ -16,10 +17,27 @@ type ShowcaseItem = {
   image?: string;
   path?: string;
 };
+
+type ShowcaseEntry = {
+  key: string;
+  label: string;
+  items: ShowcaseItem[];
+};
 const buildShopBrandFilterPath = (slug: string) => `/tienda/m/${encodeURIComponent(slug)}/`;
 const toCardThumb = (src?: string) => {
   if (!src) return src;
   return src.includes('cdn.sanity.io') ? `${src}?w=400&h=400&fit=crop&auto=format` : src;
+};
+const toResponsiveHeroSrc = (src?: string, width = 1600) => {
+  if (!src) return src;
+  return src.includes('cdn.sanity.io') ? `${src}?w=${width}&fit=max&auto=format` : src;
+};
+const buildHeroSrcSet = (src?: string, widths = [960, 1280, 1600, 1920]) => {
+  if (!src || !src.includes('cdn.sanity.io')) {
+    return '';
+  }
+
+  return widths.map((width) => `${toResponsiveHeroSrc(src, width)} ${width}w`).join(', ');
 };
 type CmsHomeData = {
   heroSlides?: Array<{
@@ -94,30 +112,34 @@ if (hasSanityConfig) {
   }
 }
 const isExternalHref = (href?: string) => Boolean(href && /^(https?:)?\/\//.test(href));
+const isShowcaseEntry = (entry: ShowcaseEntry | null): entry is ShowcaseEntry => Boolean(entry);
 const cmsShowcaseEntries =
-  homeCms?.featuredProductsByBrand?.filter((entry): entry is NonNullable<typeof entry> => Boolean(entry)).map((entry, entryIndex) => {
-    const brandLabel = entry.brand?.name?.trim();
-    const brandSlug = entry.brand?.slug?.trim();
-    if (!brandLabel || !brandSlug || !entry.products || entry.products.length === 0) {
-      return null;
-    }
+  homeCms?.featuredProductsByBrand
+    ?.filter((entry): entry is NonNullable<typeof entry> => Boolean(entry))
+    .map((entry, entryIndex): ShowcaseEntry | null => {
+      const brandLabel = entry.brand?.name?.trim();
+      const brandSlug = entry.brand?.slug?.trim();
+      if (!brandLabel || !brandSlug || !entry.products || entry.products.length === 0) {
+        return null;
+      }
 
-    const key = `${brandSlug}-${entryIndex}`;
-    const items = entry.products
-      .filter((product): product is NonNullable<typeof product> => Boolean(product))
-      .slice(0, 8)
-      .map((product) => ({
-        slug: product.slug,
-        brand: brandLabel,
-        name: product.name || 'Producto',
-        sku: product.sku || undefined,
-        badge: product.isNew ? 'NUEVO' : undefined,
-        image: toCardThumb(product.images?.[0]?.asset?.url),
-        path: product.slug ? `/product/${product.slug}/` : '/tienda/',
-      }));
+      const key = `${brandSlug}-${entryIndex}`;
+      const items: ShowcaseItem[] = entry.products
+        .filter((product): product is NonNullable<typeof product> => Boolean(product))
+        .slice(0, 8)
+        .map((product) => ({
+          slug: product.slug,
+          brand: brandLabel,
+          name: product.name || 'Producto',
+          sku: product.sku || undefined,
+          badge: product.isNew ? 'NUEVO' : undefined,
+          image: toCardThumb(product.images?.[0]?.asset?.url),
+          path: product.slug ? `/product/${product.slug}/` : '/tienda/',
+        }));
 
-    return { key, label: brandLabel, items };
-  }).filter((entry): entry is { key: string; label: string; items: ShowcaseItem[] } => Boolean(entry)) || [];
+      return { key, label: brandLabel, items };
+    })
+    .filter(isShowcaseEntry) || [];
 
 const SHOWCASE_BRAND_TABS =
   cmsShowcaseEntries.length > 0
@@ -264,27 +286,51 @@ const featuredPages = Array.from({ length: Math.ceil(featuredProducts.length / 4
                   rel={isExternalHref(slide.href) ? 'noreferrer' : undefined}
                 >
                   <picture>
-                    <source media="(max-width: 760px)" srcset={slide.mobile} />
+                    <source
+                      media="(max-width: 760px)"
+                      srcset={buildHeroSrcSet(slide.mobile) || slide.mobile}
+                      sizes="100vw"
+                    />
+                    <source
+                      media="(min-width: 761px)"
+                      srcset={buildHeroSrcSet(slide.desktop) || slide.desktop}
+                      sizes="100vw"
+                    />
                     <img
-                      src={slide.desktop}
+                      src={toResponsiveHeroSrc(slide.desktop, 1600)}
                       alt={slide.alt}
                       width="1920"
                       height="640"
                       loading={index === 0 ? 'eager' : 'lazy'}
+                      fetchpriority={index === 0 ? 'high' : 'auto'}
                       decoding="async"
+                      srcset={buildHeroSrcSet(slide.desktop) || undefined}
+                      sizes="100vw"
                     />
                   </picture>
                 </a>
               ) : (
                 <picture>
-                  <source media="(max-width: 760px)" srcset={slide.mobile} />
+                  <source
+                    media="(max-width: 760px)"
+                    srcset={buildHeroSrcSet(slide.mobile) || slide.mobile}
+                    sizes="100vw"
+                  />
+                  <source
+                    media="(min-width: 761px)"
+                    srcset={buildHeroSrcSet(slide.desktop) || slide.desktop}
+                    sizes="100vw"
+                  />
                   <img
-                    src={slide.desktop}
+                    src={toResponsiveHeroSrc(slide.desktop, 1600)}
                     alt={slide.alt}
                     width="1920"
                     height="640"
                     loading={index === 0 ? 'eager' : 'lazy'}
+                    fetchpriority={index === 0 ? 'high' : 'auto'}
                     decoding="async"
+                    srcset={buildHeroSrcSet(slide.desktop) || undefined}
+                    sizes="100vw"
                   />
                 </picture>
               )}
@@ -349,7 +395,7 @@ const featuredPages = Array.from({ length: Math.ceil(featuredProducts.length / 4
           </div>
         </div>
 
-        <script type="application/json" data-showcase-index set:html={JSON.stringify(effectiveShowcaseIndex)}></script>
+        <script is:inline type="application/json" data-showcase-index set:html={JSON.stringify(effectiveShowcaseIndex)}></script>
       </div>
     </section>
 
@@ -429,10 +475,17 @@ const featuredPages = Array.from({ length: Math.ceil(featuredProducts.length / 4
 
     <section class="section shipping-banner" aria-label="envío destacado">
       <div class="container">
-        <picture>
-          <source media="(max-width: 760px)" srcset="/images/banners/movil/banner-envio-movil.webp" />
-          <img src="/images/banners/banner-envio.webp" alt="Banner de envío" loading="lazy" decoding="async" />
-        </picture>
+        <a href="/tienda/" aria-label="Ir a la tienda de productos">
+          <picture>
+            <source media="(max-width: 760px)" srcset="/images/banners/movil/banner-envio-movil.webp" />
+            <img
+              src="/images/banners/banner-envio.webp"
+              alt="Banner de Maquinarias Luedma con acceso a la tienda de productos"
+              loading="lazy"
+              decoding="async"
+            />
+          </picture>
+        </a>
       </div>
     </section>
 
@@ -444,15 +497,15 @@ const featuredPages = Array.from({ length: Math.ceil(featuredProducts.length / 4
           <ul class="contact-map__list">
             <li>
               <span class="contact-map__icon" aria-hidden="true"><img src="/icons/map-pin.svg" alt="" /></span>
-              <span>Las Malvinas Jr. Huarochirí 560, Lima, Perú</span>
+              <span>{siteSettings.address}</span>
             </li>
             <li>
               <span class="contact-map__icon" aria-hidden="true"><img src="/icons/brand-whatsapp.svg" alt="" /></span>
-              <a href="https://wa.me/51936829528" target="_blank" rel="noreferrer">+51 936 829 528</a>
+              <a href={`https://wa.me/${siteSettings.whatsappNumber}`} target="_blank" rel="noreferrer">{siteSettings.phone}</a>
             </li>
             <li>
               <span class="contact-map__icon" aria-hidden="true"><img src="/icons/mail.svg" alt="" /></span>
-              <a href="mailto:maquinariasluedma@gmail.com">maquinariasluedma@gmail.com</a>
+              <a href={`mailto:${SALES_EMAIL}`}>{SALES_EMAIL}</a>
             </li>
           </ul>
 
@@ -477,7 +530,11 @@ const featuredPages = Array.from({ length: Math.ceil(featuredProducts.length / 4
         <div class="contact-map__embed">
           <iframe
             title="Mapa de Maquinarias Luedma"
-            src="https://www.google.com/maps?q=Jr.+Huarochir%C3%AD+560,+Lima,+Per%C3%BA&output=embed"
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d580.030082573926!2d-77.04463027725194!3d-12.046153655634013!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x9105c8d2788dd61f%3A0xa00b8b215a42b702!2sCentro%20Comercial%20Plaza%20Ferretero!5e0!3m2!1ses-419!2spe!4v1778383084932!5m2!1ses-419!2spe"
+            width="600"
+            height="450"
+            style="border:0;"
+            allowfullscreen=""
             loading="lazy"
             referrerpolicy="no-referrer-when-downgrade"
           ></iframe>

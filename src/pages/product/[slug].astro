@@ -39,10 +39,19 @@ const fallbackRelated = products
     return score(b) - score(a);
   })
   .slice(0, 12);
+
+function buildThumbImageUrl(image: string): string {
+  if (!image.includes('cdn.sanity.io')) {
+    return image;
+  }
+
+  return `${image}?w=300&h=300&fit=crop&auto=format`;
+}
+
 const relatedItems = (relatedRaw.length > 0 ? relatedRaw : fallbackRelated).slice(0, 12).map((item) => ({
   ...item,
   brandName: getBrandBySlug(item.brandSlug)?.name || item.brandSlug,
-  thumb: item.images?.[0]?.includes('cdn.sanity.io') ? `${item.images[0]}?w=400&h=400&fit=crop&auto=format` : item.images?.[0],
+  thumb: item.images?.[0] ? buildThumbImageUrl(item.images[0]) : undefined,
 }));
 const relatedPages = Array.from({ length: Math.ceil(relatedItems.length / 4) }, (_, i) => relatedItems.slice(i * 4, i * 4 + 4));
 
@@ -153,6 +162,7 @@ const technicalRows = parseTechnicalRows(technicalSheetRawHtml);
     description: product.excerpt,
     canonicalPath: product.path,
     image: mainImage,
+    ogType: 'product',
   }}
   schemas={[productSchema, breadcrumbSchema]}
 >
@@ -164,15 +174,7 @@ const technicalRows = parseTechnicalRows(technicalSheetRawHtml);
       <section class="product-layout">
         <article class="product-gallery-panel">
           <div class="product-gallery" data-island="product-gallery" data-island-props={JSON.stringify(galleryProps)}>
-            <div class="product-gallery__main">
-              <img data-gallery-main src={mainImage} alt={product.name} width="1200" height="1200" loading="eager" />
-            </div>
             <div class:list={{ 'product-gallery__thumbs-shell': true, 'has-carousel': hasThumbCarousel }}>
-              {hasThumbCarousel && (
-                <button class="product-gallery__thumbs-nav product-gallery__thumbs-nav--up" type="button" data-gallery-prev aria-label="Ver miniaturas anteriores">
-                  <img src="/icons/chevron-down.svg" alt="" aria-hidden="true" />
-                </button>
-              )}
               <div class="product-gallery__thumbs-viewport" data-gallery-viewport>
                 <div class="product-gallery__thumbs-track" data-gallery-track>
                   {galleryImages.map((image, index) => (
@@ -183,16 +185,28 @@ const technicalRows = parseTechnicalRows(technicalSheetRawHtml);
                       type="button"
                       class={index === 0 ? 'is-active' : ''}
                     >
-                      <img src={image} alt={`Miniatura ${index + 1}`} loading="lazy" width="120" height="120" />
+                      <img src={buildThumbImageUrl(image)} alt={`Miniatura ${index + 1}`} loading="lazy" width="120" height="120" />
                     </button>
                   ))}
                 </div>
               </div>
-              {hasThumbCarousel && (
-                <button class="product-gallery__thumbs-nav product-gallery__thumbs-nav--down" type="button" data-gallery-next aria-label="Ver más miniaturas">
-                  <img src="/icons/chevron-down.svg" alt="" aria-hidden="true" />
-                </button>
-              )}
+            </div>
+            <div class="product-gallery__stage">
+              <div class="product-gallery__main" data-gallery-stage>
+                {galleryImages.length > 1 && (
+                  <button class="product-gallery__main-nav product-gallery__main-nav--prev" type="button" data-gallery-main-prev aria-label="Imagen anterior">
+                    <img src="/icons/chevron-left.svg" alt="" aria-hidden="true" />
+                  </button>
+                )}
+                <div class="product-gallery__main-frame">
+                  <img data-gallery-main src={mainImage} alt={product.name} width="1200" height="1200" loading="eager" />
+                </div>
+                {galleryImages.length > 1 && (
+                  <button class="product-gallery__main-nav product-gallery__main-nav--next" type="button" data-gallery-main-next aria-label="Imagen siguiente">
+                    <img src="/icons/chevron-right.svg" alt="" aria-hidden="true" />
+                  </button>
+                )}
+              </div>
             </div>
           </div>
         </article>

@@ -4,6 +4,7 @@ import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
 import WhatsAppFloat from '../../components/WhatsAppFloat.astro';
 import { siteSettings } from '../../data/snapshot';
+import { CONTACT_EMAIL } from '../../utils/contact';
 
 type FaqCategory = {
   id: string;
@@ -26,7 +27,6 @@ const FAQ_CATEGORIES: FaqCategory[] = [
 ];
 
 const FAQ_ITEMS: FaqItem[] = [
-  // ─── ENVÍOS ──────────────────────────────────────────────
   {
     category: 'envios',
     question: '¿Hacen envíos a todo Perú?',
@@ -35,7 +35,7 @@ const FAQ_ITEMS: FaqItem[] = [
   {
     category: 'envios',
     question: '¿Cuál es el costo de envío?',
-    answer: `<p>El costo de envío varía según el peso del producto, la ubicación de entrega y la agencia de transporte. Para Lima Metropolitana, ofrecemos tarifas preferenciales. Puedes consultar el costo exacto al momento de realizar tu pedido comunicándote con nuestro equipo vía WhatsApp o llamando al <a href="tel:+51936829528">+51 936 829 528</a>.</p>`,
+    answer: `<p>El costo de envío varía según el peso del producto, la ubicación de entrega y la agencia de transporte. Para Lima Metropolitana, ofrecemos tarifas preferenciales. Puedes consultar el costo exacto al momento de realizar tu pedido comunicándote con nuestro equipo vía WhatsApp o llamando al <a href="tel:+${siteSettings.whatsappNumber}">${siteSettings.phone}</a>.</p>`,
   },
   {
     category: 'envios',
@@ -45,27 +45,23 @@ const FAQ_ITEMS: FaqItem[] = [
   {
     category: 'envios',
     question: '¿Puedo recoger mi pedido en tienda?',
-    answer: `<p>Sí, puedes recoger tu pedido directamente en nuestra tienda ubicada en <strong>Jr. Huarochirí 560, Las Malvinas, Lima</strong>. Una vez que tu pedido esté listo, te notificaremos para que puedas pasar a recogerlo en nuestro horario de atención: lunes a sábado de 7:00 a. m. a 9:00 p. m.</p>`,
+    answer: `<p>Sí, puedes recoger tu pedido directamente en nuestra tienda ubicada en <strong>${siteSettings.address}</strong>. Una vez que tu pedido esté listo, te notificaremos para que puedas pasar a recogerlo en nuestro horario de atención: lunes a sábado de 7:00 a. m. a 9:00 p. m.</p>`,
   },
-
-  // ─── PAGOS ───────────────────────────────────────────────
   {
     category: 'pagos',
     question: '¿Qué métodos de pago aceptan?',
-    answer: `<p>Trabajamos con los siguientes métodos de pago:</p><ul><li>Depósito o transferencia bancaria (BCP, BBVA, Interbank, Scotiabank)</li><li>Yape y Plin</li><li>Efectivo (en tienda)</li></ul><p>Para empresas, emitimos factura con todos los datos de ley. Consulta por nuestros precios corporativos y descuentos por volumen.</p>`,
+    answer: `<p>Aceptamos los siguientes métodos de pago:</p><ul><li>Depósito o transferencia bancaria a nuestras cuentas de <strong>BCP</strong> y <strong>BBVA</strong></li><li><strong>Yape</strong> al número principal de la tienda</li><li>Efectivo (en tienda)</li></ul><p>Si quieres ver los datos completos de cada cuenta, revisa nuestra <a href="/metodos-de-pago/">página de Métodos de Pago</a>. Para empresas, emitimos factura con todos los datos de ley.</p>`,
   },
   {
     category: 'pagos',
     question: '¿Ofrecen crédito o financiamiento?',
-    answer: `<p>Sí, ofrecemos condiciones especiales de crédito para empresas y clientes frecuentes, previa evaluación. Si deseas solicitar crédito comercial, contáctanos vía WhatsApp al <a href="https://wa.me/51936829528" target="_blank" rel="noreferrer">+51 936 829 528</a> con tus datos y te informaremos sobre los requisitos y líneas de crédito disponibles.</p>`,
+    answer: `<p>Sí, ofrecemos condiciones especiales de crédito para empresas y clientes frecuentes, previa evaluación. Si deseas solicitar crédito comercial, contáctanos vía WhatsApp al <a href="https://wa.me/${siteSettings.whatsappNumber}" target="_blank" rel="noreferrer">${siteSettings.phone}</a> con tus datos y te informaremos sobre los requisitos y líneas de crédito disponibles.</p>`,
   },
   {
     category: 'pagos',
     question: '¿Las transferencias bancarias se confirman al instante?',
-    answer: `<p>Las transferencias interbancarias pueden demorar hasta 24 horas en reflejarse, dependiendo del banco emisor. Las transferencias a misma entidad bancaria suelen ser inmediatas. Una vez recibida la confirmación del pago, procedemos con el despacho. Te recomendamos enviarnos el comprobante por WhatsApp para agilizar el proceso.</p>`,
+    answer: `<p>Las transferencias entre distintos bancos pueden demorar en reflejarse, según la entidad emisora. Las transferencias dentro del mismo banco y los pagos por Yape suelen confirmarse más rápido. Una vez validado el pago, procedemos con el despacho. Te recomendamos enviarnos el comprobante por WhatsApp para agilizar el proceso.</p>`,
   },
-
-  // ─── PRODUCTOS ───────────────────────────────────────────
   {
     category: 'productos',
     question: '¿Venden productos originales?',
@@ -74,7 +70,7 @@ const FAQ_ITEMS: FaqItem[] = [
   {
     category: 'productos',
     question: '¿Puedo ver el producto antes de comprar?',
-    answer: `<p>¡Por supuesto! Puedes visitar nuestra tienda física en <strong>Jr. Huarochirí 560, Las Malvinas, Lima</strong> para ver, probar y recibir asesoría personalizada sobre cualquier producto de nuestro catálogo. Nuestro equipo está capacitado para resolver todas tus dudas técnicas y ayudarte a elegir la herramienta adecuada para tu proyecto.</p>`,
+    answer: `<p>¡Por supuesto! Puedes visitar nuestra tienda física en <strong>${siteSettings.address}</strong> para ver, probar y recibir asesoría personalizada sobre cualquier producto de nuestro catálogo. Nuestro equipo está capacitado para resolver todas tus dudas técnicas y ayudarte a elegir la herramienta adecuada para tu proyecto.</p>`,
   },
   {
     category: 'productos',
@@ -84,10 +80,8 @@ const FAQ_ITEMS: FaqItem[] = [
   {
     category: 'productos',
     question: '¿Ofrecen asesoría para elegir la herramienta correcta?',
-    answer: `<p>Sí, nuestro equipo brinda asesoría técnica especializada para ayudarte a seleccionar la herramienta o equipo que mejor se adapte a tu necesidad. Puedes contactarnos por WhatsApp al <a href="https://wa.me/51936829528" target="_blank" rel="noreferrer">+51 936 829 528</a>, por teléfono al <a href="tel:+51936829528">+51 936 829 528</a>, o visitarnos directamente en tienda. Te orientamos según tu tipo de trabajo, presupuesto y frecuencia de uso.</p>`,
+    answer: `<p>Sí, nuestro equipo brinda asesoría técnica especializada para ayudarte a seleccionar la herramienta o equipo que mejor se adapte a tu necesidad. Puedes contactarnos por WhatsApp al <a href="https://wa.me/${siteSettings.whatsappNumber}" target="_blank" rel="noreferrer">${siteSettings.phone}</a>, por teléfono al <a href="tel:+${siteSettings.whatsappNumber}">${siteSettings.phone}</a>, o visitarnos directamente en tienda. Te orientamos según tu tipo de trabajo, presupuesto y frecuencia de uso.</p>`,
   },
-
-  // ─── GARANTÍA ────────────────────────────────────────────
   {
     category: 'garantia',
     question: '¿Todos los productos tienen garantía?',
@@ -96,19 +90,17 @@ const FAQ_ITEMS: FaqItem[] = [
   {
     category: 'garantia',
     question: '¿Qué hago si mi producto llega dañado o presenta fallas?',
-    answer: `<p>Si recibes un producto en mal estado o detectas una falla de fábrica, contáctanos dentro de los primeros 7 días hábiles vía WhatsApp al <a href="https://wa.me/51936829528" target="_blank" rel="noreferrer">+51 936 829 528</a> con tu número de pedido y evidencia fotográfica del daño. Coordinaremos el cambio o la reparación según corresponda. Para fallas cubiertas por garantía, el fabricante evaluará el producto y procederá con la reparación o reposición.</p>`,
+    answer: `<p>Si recibes un producto en mal estado o detectas una falla de fábrica, contáctanos dentro de los primeros 7 días hábiles vía WhatsApp al <a href="https://wa.me/${siteSettings.whatsappNumber}" target="_blank" rel="noreferrer">${siteSettings.phone}</a> con tu número de pedido y evidencia fotográfica del daño. Coordinaremos el cambio o la reparación según corresponda. Para fallas cubiertas por garantía, el fabricante evaluará el producto y procederá con la reparación o reposición.</p>`,
   },
   {
     category: 'garantia',
     question: '¿Puedo cambiar o devolver un producto?',
     answer: `<p>Aceptamos cambios y devoluciones dentro de los 7 días hábiles posteriores a la compra, siempre que el producto se encuentre en su empaque original, sin uso y en perfectas condiciones. No aplica para productos eléctricos que hayan sido instalados, usados o manipulados. Para iniciar el proceso, contáctanos por WhatsApp y te indicaremos los pasos a seguir.</p>`,
   },
-
-  // ─── TIENDA ──────────────────────────────────────────────
   {
     category: 'tienda',
     question: '¿Dónde están ubicados?',
-    answer: `<p>Nos encontramos en <strong>Jr. Huarochirí 560, Las Malvinas, Lima, Perú</strong>, una zona estratégica con fácil acceso y cerca de las principales vías de la ciudad. Puedes visitarnos de lunes a sábado de 7:00 a. m. a 9:00 p. m. para recibir atención personalizada.</p>`,
+    answer: `<p>Nos encontramos en <strong>${siteSettings.address}</strong>, una zona estratégica con fácil acceso y cerca de las principales vías de la ciudad. Puedes visitarnos de lunes a sábado de 7:00 a. m. a 9:00 p. m. para recibir atención personalizada.</p>`,
   },
   {
     category: 'tienda',
@@ -118,7 +110,7 @@ const FAQ_ITEMS: FaqItem[] = [
   {
     category: 'tienda',
     question: '¿Cómo puedo contactarlos?',
-    answer: `<p>Puedes contactarnos a través de los siguientes canales:</p><ul><li><strong>WhatsApp:</strong> <a href="https://wa.me/51936829528" target="_blank" rel="noreferrer">+51 936 829 528</a></li><li><strong>Teléfono:</strong> <a href="tel:+51936829528">+51 936 829 528</a></li><li><strong>Email:</strong> <a href="mailto:maquinariasluedma@gmail.com">maquinariasluedma@gmail.com</a></li><li><strong>Tienda:</strong> Jr. Huarochirí 560, Las Malvinas, Lima</li></ul><p>También puedes visitar nuestra <a href="/contacto/">página de contacto</a> para enviarnos tu consulta directamente.</p>`,
+    answer: `<p>Puedes contactarnos a través de los siguientes canales:</p><ul><li><strong>WhatsApp:</strong> <a href="https://wa.me/${siteSettings.whatsappNumber}" target="_blank" rel="noreferrer">${siteSettings.phone}</a></li><li><strong>Teléfono:</strong> <a href="tel:+${siteSettings.whatsappNumber}">${siteSettings.phone}</a></li><li><strong>Email:</strong> <a href="mailto:${CONTACT_EMAIL}">${CONTACT_EMAIL}</a></li><li><strong>Tienda:</strong> ${siteSettings.address}</li></ul><p>También puedes visitar nuestra <a href="/contacto/">página de contacto</a> para enviarnos tu consulta directamente.</p>`,
   },
   {
     category: 'tienda',
@@ -127,7 +119,6 @@ const FAQ_ITEMS: FaqItem[] = [
   },
 ];
 
-// Build category counts
 const categoryCounts = new Map<string, number>();
 categoryCounts.set('all', FAQ_ITEMS.length);
 for (const item of FAQ_ITEMS) {
@@ -231,7 +222,6 @@ for (const item of FAQ_ITEMS) {
     const root = document.querySelector('.faq-page');
     if (!root) return;
 
-    // ─── Category filter ─────────────────────────────────
     const categoryBtns = Array.from(root.querySelectorAll('[data-faq-category]'));
     const items = Array.from(root.querySelectorAll('[data-faq-item]'));
 
@@ -259,7 +249,6 @@ for (const item of FAQ_ITEMS) {
       });
     });
 
-    // ─── Accordion ───────────────────────────────────────
     const triggers = Array.from(root.querySelectorAll('[data-faq-trigger]'));
 
     const closeAll = (except?: Element) => {
@@ -279,8 +268,6 @@ for (const item of FAQ_ITEMS) {
         if (!item) return;
 
         const isOpen = item.classList.contains('is-open');
-
-        // Close all others
         closeAll(trigger);
 
         if (isOpen) {

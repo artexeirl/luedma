@@ -268,7 +268,7 @@
   display: none;
 }
 
-.catalog-filters__actions .btn { width: 100%; min-height: 48px; }
+.catalog-filters__actions .btn { width: 100%; min-height: 48px; text-transform: uppercase; }
 
 /* Info wrapper: summary + reset inline */
 .catalog-results__info {

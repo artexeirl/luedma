@@ -14,6 +14,7 @@ export interface SeoMeta {
   image?: string;
   canonicalPath?: string;
   noindex?: boolean;
+  ogType?: 'website' | 'article' | 'product';
 }
 
 export interface SiteSettings {
@@ -21,9 +22,11 @@ export interface SiteSettings {
   siteUrl: string;
   locale: string;
   phone: string;
+  email?: string;
   whatsappNumber: string;
   whatsappDefaultMessage: string;
   location: string;
+  address: string;
   social: {
     facebook?: string;
     instagram?: string;

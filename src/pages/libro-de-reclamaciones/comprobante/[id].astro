@@ -1,0 +1,265 @@
+---
+import '../../../styles/pages/nosotros.css';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import Header from '../../../components/Header.astro';
+import Footer from '../../../components/Footer.astro';
+import WhatsAppFloat from '../../../components/WhatsAppFloat.astro';
+import { siteSettings } from '../../../data/snapshot';
+import { sanityFetch } from '../../../lib/sanity.client';
+
+const {id} = Astro.params;
+
+function formatPeruDate(date?: string): string {
+  if (!date) return '-';
+  const parts = new Intl.DateTimeFormat('es-PE', {
+    timeZone: 'America/Lima',
+    day: '2-digit',
+    month: '2-digit',
+    year: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+  }).formatToParts(new Date(date));
+  const get = (type: Intl.DateTimeFormatPartTypes) => parts.find((part) => part.type === type)?.value || '';
+  return `${get('day')}/${get('month')}/${get('year')} - ${get('hour')}:${get('minute')}`;
+}
+
+const claim = id
+  ? await sanityFetch<{
+      claimType?: string;
+      submittedAt?: string;
+      consumerName?: string;
+      documentType?: string;
+      documentNumber?: string;
+      department?: string;
+      province?: string;
+      district?: string;
+      address?: string;
+      phone?: string;
+      email?: string;
+      productService?: string;
+      contractedGoodDescription?: string;
+      amount?: string;
+      purchaseChannel?: string;
+      orderNumber?: string;
+      detail?: string;
+      request?: string;
+      isMinor?: boolean;
+      guardianName?: string;
+      guardianDocument?: string;
+      guardianPhone?: string;
+      guardianEmail?: string;
+      status?: string;
+    }>(`*[_type == "claimRecord" && _id == $id][0]{
+      claimType,
+      submittedAt,
+      consumerName,
+      documentType,
+      documentNumber,
+      department,
+      province,
+      district,
+      address,
+      phone,
+      email,
+      productService,
+      contractedGoodDescription,
+      amount,
+      purchaseChannel,
+      orderNumber,
+      detail,
+      request,
+      isMinor,
+      guardianName,
+      guardianDocument,
+      guardianPhone,
+      guardianEmail,
+      status
+    }`, {id})
+  : null;
+
+const claimLabel = claim?.claimType === 'queja' ? 'Queja' : 'Reclamo';
+const formattedDate = formatPeruDate(claim?.submittedAt);
+---
+
+<BaseLayout
+  seo={{
+    title: `Constancia de ${claimLabel} | ${siteSettings.siteName}`,
+    description: 'Constancia imprimible del Libro de Reclamaciones.',
+    canonicalPath: `/libro-de-reclamaciones/comprobante/${id || ''}/`,
+    noindex: true,
+  }}
+>
+  <Header />
+
+  <main id="contenido" class="about-page">
+    <section class="about-hero">
+      <div class="container about-hero__inner">
+        <nav class="about-hero__breadcrumb" aria-label="Breadcrumb">
+          <a href="/libro-de-reclamaciones/">Libro de Reclamaciones</a>
+          <span aria-hidden="true">/</span>
+          <strong>Constancia</strong>
+        </nav>
+        <h1>Constancia de {claimLabel}</h1>
+      </div>
+    </section>
+
+    <section class="claim-receipt">
+      <div class="container claim-receipt__inner">
+        {claim ? (
+          <article class="claim-receipt__card">
+            <div class="claim-receipt__actions">
+              <button class="btn btn-primary" type="button" id="print-receipt">Descargar / Imprimir</button>
+            </div>
+
+            <section class="claim-receipt__printable" id="claim-receipt-printable">
+              <img class="claim-receipt__logo" src={siteSettings.logo} alt={`Logo ${siteSettings.siteName}`} />
+
+              <dl class="claim-receipt__grid">
+                <div><dt>Código</dt><dd>{id}</dd></div>
+                <div><dt>Tipo</dt><dd>{claimLabel}</dd></div>
+                <div><dt>Fecha</dt><dd>{formattedDate}</dd></div>
+                <div><dt>Estado</dt><dd>{claim.status || 'recibido'}</dd></div>
+                <div><dt>Nombre</dt><dd>{claim.consumerName}</dd></div>
+                <div><dt>Documento</dt><dd>{claim.documentType?.toUpperCase()} {claim.documentNumber}</dd></div>
+                <div><dt>Departamento</dt><dd>{claim.department || '-'}</dd></div>
+                <div><dt>Provincia</dt><dd>{claim.province || '-'}</dd></div>
+                <div><dt>Distrito</dt><dd>{claim.district || '-'}</dd></div>
+                <div class="claim-receipt__full"><dt>Dirección</dt><dd>{claim.address}</dd></div>
+                <div><dt>Teléfono</dt><dd>{claim.phone}</dd></div>
+                <div><dt>Correo</dt><dd>{claim.email}</dd></div>
+                <div><dt>Bien a reclamar</dt><dd>{claim.productService}</dd></div>
+                <div><dt>Monto</dt><dd>{claim.amount || '-'}</dd></div>
+                <div><dt>Canal de compra</dt><dd>{claim.purchaseChannel || '-'}</dd></div>
+                <div><dt>Número de pedido o comprobante</dt><dd>{claim.orderNumber || '-'}</dd></div>
+                <div class="claim-receipt__full"><dt>Descripción del bien contratado</dt><dd>{claim.contractedGoodDescription || '-'}</dd></div>
+                <div class="claim-receipt__full"><dt>Detalle</dt><dd>{claim.detail}</dd></div>
+                <div class="claim-receipt__full"><dt>Pedido</dt><dd>{claim.request}</dd></div>
+                {claim.isMinor && (
+                  <>
+                    <div><dt>Representante</dt><dd>{claim.guardianName || '-'}</dd></div>
+                    <div><dt>Doc. representante</dt><dd>{claim.guardianDocument || '-'}</dd></div>
+                    <div><dt>Tel. representante</dt><dd>{claim.guardianPhone || '-'}</dd></div>
+                    <div><dt>Correo representante</dt><dd>{claim.guardianEmail || '-'}</dd></div>
+                  </>
+                )}
+              </dl>
+            </section>
+          </article>
+        ) : (
+          <article class="claim-receipt__card">
+            <p>No se encontró la constancia solicitada.</p>
+          </article>
+        )}
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+  <WhatsAppFloat />
+</BaseLayout>
+
+<script>
+  const printButton = document.getElementById('print-receipt');
+  if (printButton instanceof HTMLButtonElement) {
+    printButton.addEventListener('click', () => window.print());
+  }
+</script>
+
+<style>
+  .claim-receipt {
+    padding: clamp(28px, 5vw, 56px) 0 clamp(42px, 6vw, 72px);
+  }
+
+  .claim-receipt__inner {
+    padding-inline: clamp(20px, 6vw, 84px);
+  }
+
+  .claim-receipt__card {
+    max-width: 980px;
+    margin: 0 auto;
+    display: grid;
+    gap: 18px;
+    font-size: clamp(1rem, 1.02vw, 1.05rem);
+    line-height: 1.75;
+  }
+
+  .claim-receipt__actions {
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  .claim-receipt__printable {
+    display: grid;
+    gap: 18px;
+  }
+
+  .claim-receipt__logo {
+    width: clamp(180px, 18vw, 230px);
+    height: auto;
+    display: block;
+  }
+
+  .claim-receipt__grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+    margin: 0;
+  }
+
+  .claim-receipt__grid > div,
+  .claim-receipt__full {
+    border: var(--border-width) var(--border-style) var(--line);
+    padding: 14px;
+  }
+
+  .claim-receipt__grid dt,
+  .claim-receipt__full dt {
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+
+  .claim-receipt__grid dd,
+  .claim-receipt__full dd {
+    margin: 0;
+  }
+
+  .claim-receipt__full {
+    grid-column: 1 / -1;
+  }
+
+  @media print {
+    .site-header,
+    .site-footer,
+    .trust-strip,
+    .whatsapp-float,
+    .about-hero,
+    .claim-receipt__actions {
+      display: none !important;
+    }
+
+    .claim-receipt,
+    .claim-receipt__inner,
+    .claim-receipt__card {
+      padding: 0 !important;
+      margin: 0 !important;
+      max-width: none !important;
+    }
+
+    #claim-receipt-printable {
+      width: 100%;
+      padding: 24px 0;
+      background: white;
+    }
+  }
+
+  @media (max-width: 760px) {
+    .claim-receipt__inner {
+      padding-inline: 0;
+    }
+
+    .claim-receipt__grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
